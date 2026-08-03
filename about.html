@@ -1,36 +1,1831 @@
-<!DOCTYPE html>
-<html lang="en">
+<html data-theme="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>About Me</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8"></meta>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
+<title>CardioTrack Pro — Hypertension Management Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"></link>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"></link>
+<style>
+  :root { --transition: 0.3s cubic-bezier(0.4,0,0.2,1); }
+  [data-theme="dark"] {
+    --bg: #0C1222; --bg2: #111A2E; --bg3: #162035;
+    --fg: #E2E8F0; --fg-muted: #7A8BA5; --fg-dim: #4A5B73;
+    --accent: #14B8A6; --accent-h: #0D9488; --accent-glow: rgba(20,184,166,0.15);
+    --accent2: #F59E0B; --accent2-h: #D97706;
+    --card: rgba(17,26,46,0.65); --card-border: rgba(255,255,255,0.07);
+    --card-hover: rgba(20,30,55,0.8);
+    --danger: #F43F5E; --danger-bg: rgba(244,63,94,0.1);
+    --success: #10B981; --success-bg: rgba(16,185,129,0.1);
+    --warning: #F59E0B; --warning-bg: rgba(245,158,11,0.1);
+    --input-bg: rgba(15,23,42,0.6); --input-border: rgba(255,255,255,0.1);
+    --shadow: 0 8px 32px rgba(0,0,0,0.3);
+    --orb1: rgba(20,184,166,0.08); --orb2: rgba(245,158,11,0.06); --orb3: rgba(244,63,94,0.05);
+  }
+  [data-theme="light"] {
+    --bg: #EFF3F8; --bg2: #E2E8F0; --bg3: #D5DCE6;
+    --fg: #1E293B; --fg-muted: #64748B; --fg-dim: #94A3B8;
+    --accent: #0D9488; --accent-h: #0F766E; --accent-glow: rgba(13,148,136,0.1);
+    --accent2: #D97706; --accent2-h: #B45309;
+    --card: rgba(255,255,255,0.7); --card-border: rgba(0,0,0,0.07);
+    --card-hover: rgba(255,255,255,0.9);
+    --danger: #E11D48; --danger-bg: rgba(225,29,72,0.08);
+    --success: #059669; --success-bg: rgba(5,150,105,0.08);
+    --warning: #D97706; --warning-bg: rgba(217,119,6,0.08);
+    --input-bg: rgba(255,255,255,0.8); --input-border: rgba(0,0,0,0.1);
+    --shadow: 0 8px 32px rgba(0,0,0,0.08);
+    --orb1: rgba(13,148,136,0.06); --orb2: rgba(217,119,6,0.05); --orb3: rgba(225,29,72,0.03);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--fg);
+    overflow-x: hidden; min-height: 100vh; transition: background var(--transition), color var(--transition);
+  }
+  h1,h2,h3,h4,h5,h6 { font-family: 'Space Grotesk', sans-serif; }
+
+  /* Animated background orbs */
+  .bg-orbs { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .bg-orb {
+    position:absolute; border-radius:50%; filter:blur(80px); animation: orbFloat 20s ease-in-out infinite;
+  }
+  .bg-orb:nth-child(1) { width:500px; height:500px; background:var(--orb1); top:-10%; left:-5%; animation-delay:0s; }
+  .bg-orb:nth-child(2) { width:400px; height:400px; background:var(--orb2); top:50%; right:-8%; animation-delay:-7s; }
+  .bg-orb:nth-child(3) { width:350px; height:350px; background:var(--orb3); bottom:-5%; left:30%; animation-delay:-14s; }
+  @keyframes orbFloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(30px,-40px) scale(1.1); }
+    66% { transform: translate(-20px,30px) scale(0.95); }
+  }
+
+  /* Glass card */
+  .glass {
+    background: var(--card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border); border-radius: 16px;
+    box-shadow: var(--shadow); transition: all var(--transition);
+  }
+  .glass:hover { background: var(--card-hover); }
+  .glass-sm { border-radius: 12px; }
+  .glass-flat { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 16px; }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed; left:0; top:0; bottom:0; width: 260px; z-index:50;
+    background: var(--card); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid var(--card-border); display:flex; flex-direction:column;
+    transition: transform var(--transition); padding: 24px 0;
+  }
+  .sidebar-hidden { transform: translateX(-100%); }
+  .sidebar .logo { padding: 0 24px 24px; border-bottom: 1px solid var(--card-border); margin-bottom: 16px; }
+  .sidebar nav { flex:1; overflow-y:auto; padding: 0 12px; }
+  .nav-item {
+    display:flex; align-items:center; gap:12px; padding:11px 16px; border-radius:10px;
+    color: var(--fg-muted); cursor:pointer; transition: all var(--transition); font-size:14px; font-weight:500;
+    margin-bottom:2px; position:relative; overflow:hidden;
+  }
+  .nav-item:hover { color: var(--fg); background: var(--accent-glow); }
+  .nav-item.active {
+    color: var(--accent); background: var(--accent-glow);
+  }
+  .nav-item.active::before {
+    content:''; position:absolute; left:0; top:15%; bottom:15%; width:3px;
+    background: var(--accent); border-radius:0 3px 3px 0;
+  }
+  .nav-item i { width:20px; text-align:center; font-size:15px; }
+
+  /* Main */
+  .main { margin-left: 260px; min-height:100vh; position:relative; z-index:1; transition: margin var(--transition); }
+  .main-full { margin-left:0; }
+  .topbar {
+    position:sticky; top:0; z-index:40; padding:16px 28px; display:flex; align-items:center;
+    justify-content:space-between; gap:16px;
+    background: var(--card); backdrop-filter: blur(20px); border-bottom:1px solid var(--card-border);
+  }
+  .content { padding: 28px; }
+
+  /* Section visibility */
+  .section { display:none; animation: fadeIn 0.3s ease; }
+  .section.active { display:block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Form elements */
+  .form-input {
+    width:100%; padding:10px 14px; border-radius:10px; font-size:14px; font-family:'DM Sans',sans-serif;
+    background: var(--input-bg); border:1px solid var(--input-border); color: var(--fg);
+    transition: all var(--transition); outline:none;
+  }
+  .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .form-input::placeholder { color: var(--fg-dim); }
+  select.form-input { cursor:pointer; }
+  .form-label { display:block; font-size:12px; font-weight:600; color:var(--fg-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; }
+  .form-group { margin-bottom:16px; }
+
+  /* Buttons */
+  .btn {
+    display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border-radius:10px;
+    font-size:14px; font-weight:600; font-family:'Space Grotesk',sans-serif; cursor:pointer;
+    border:none; transition: all var(--transition); text-decoration:none;
+  }
+  .btn-primary { background: var(--accent); color:#fff; }
+  .btn-primary:hover { background: var(--accent-h); transform:translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+  .btn-secondary { background: var(--input-bg); color:var(--fg); border:1px solid var(--input-border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { background: var(--danger); color:#fff; }
+  .btn-danger:hover { opacity:0.9; }
+  .btn-sm { padding:7px 14px; font-size:12px; border-radius:8px; }
+  .btn-icon { padding:9px 11px; }
+
+  /* Stat cards */
+  .stat-card { padding:20px; }
+  .stat-value { font-family:'Space Grotesk',sans-serif; font-size:32px; font-weight:700; line-height:1.1; }
+  .stat-label { font-size:12px; color:var(--fg-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+
+  /* Warning banner */
+  .warning-banner {
+    padding:14px 18px; border-radius:12px; display:flex; align-items:flex-start; gap:12px;
+    font-size:14px; line-height:1.5; margin-bottom:12px;
+  }
+  .warning-banner.danger { background:var(--danger-bg); border:1px solid rgba(244,63,94,0.2); color:var(--danger); }
+  .warning-banner.warning { background:var(--warning-bg); border:1px solid rgba(245,158,11,0.2); color:var(--warning); }
+  .warning-banner.success { background:var(--success-bg); border:1px solid rgba(16,185,129,0.2); color:var(--success); }
+  .warning-banner i { margin-top:2px; flex-shrink:0; }
+
+  /* Table */
+  .data-table { width:100%; border-collapse:separate; border-spacing:0; font-size:13px; }
+  .data-table th { text-align:left; padding:10px 14px; color:var(--fg-muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--card-border); }
+  .data-table td { padding:10px 14px; border-bottom:1px solid var(--card-border); }
+  .data-table tr:hover td { background: var(--accent-glow); }
+
+  /* Toast */
+  .toast-container { position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+  .toast {
+    padding:12px 20px; border-radius:12px; font-size:13px; font-weight:500; backdrop-filter:blur(20px);
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards; max-width:360px;
+    border:1px solid var(--card-border);
+  }
+  .toast.success { background:var(--success-bg); color:var(--success); border-color:rgba(16,185,129,0.3); }
+  .toast.error { background:var(--danger-bg); color:var(--danger); border-color:rgba(244,63,94,0.3); }
+  .toast.info { background:var(--accent-glow); color:var(--accent); border-color:rgba(20,184,166,0.3); }
+  @keyframes toastIn { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateY(-10px); } }
+
+  /* Chart container */
+  .chart-wrap { position:relative; width:100%; }
+  .chart-wrap canvas { width:100%!important; }
+
+  /* Range slider */
+  input[type="range"] {
+    -webkit-appearance:none; width:100%; height:6px; border-radius:3px;
+    background: var(--input-border); outline:none; transition:background var(--transition);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:18px; height:18px; border-radius:50%;
+    background:var(--accent); cursor:pointer; border:2px solid var(--bg);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  /* Badge */
+  .badge {
+    display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px;
+    font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.3px;
+  }
+  .badge-danger { background:var(--danger-bg); color:var(--danger); }
+  .badge-warning { background:var(--warning-bg); color:var(--warning); }
+  .badge-success { background:var(--success-bg); color:var(--success); }
+  .badge-accent { background:var(--accent-glow); color:var(--accent); }
+
+  /* Mobile overlay */
+  .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:45; backdrop-filter:blur(4px); }
+  .sidebar-overlay.show { display:block; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--fg-dim); border-radius:3px; }
+  ::-webkit-scrollbar-thumb:hover { background:var(--fg-muted); }
+
+  /* Grid helpers */
+  .grid-2 { display:grid; grid-template-columns: repeat(2,1fr); gap:16px; }
+  .grid-3 { display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
+  .grid-4 { display:grid; grid-template-columns: repeat(4,1fr); gap:16px; }
+
+  /* Hamburger */
+  .hamburger { display:none; background:none; border:none; color:var(--fg); font-size:20px; cursor:pointer; padding:4px; }
+
+  /* Print */
+  @media print {
+    .sidebar, .topbar, .sidebar-overlay, .bg-orbs, .no-print, .toast-container { display:none!important; }
+    .main { margin-left:0!important; }
+    .content { padding:0!important; }
+    .section { display:none!important; }
+    #sec-reports { display:block!important; }
+    .glass { background:#fff!important; border:1px solid #ddd!important; box-shadow:none!important; backdrop-filter:none!important; }
+    body { background:#fff!important; color:#111!important; }
+    .stat-value { color:#111!important; }
+    .warning-banner { border:1px solid #999!important; background:#f9f9f9!important; color:#333!important; }
+  }
+
+  /* Responsive */
+  @media (max-width:1024px) {
+    .grid-4 { grid-template-columns: repeat(2,1fr); }
+    .grid-3 { grid-template-columns: repeat(2,1fr); }
+  }
+  @media (max-width:768px) {
+    .sidebar { transform:translateX(-100%); }
+    .sidebar.open { transform:translateX(0); }
+    .main { margin-left:0!important; }
+    .hamburger { display:block; }
+    .content { padding:16px; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+    .topbar { padding:12px 16px; }
+    .stat-value { font-size:24px; }
+    .btn { padding:8px 14px; font-size:13px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:0.01ms!important; transition-duration:0.01ms!important; }
+  }
+</style>
 </head>
-
 <body>
+<!-- Background orbs -->
+<div class="bg-orbs"><div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div></div>
 
-<header>
-    <h1>About Me</h1>
-</header>
+<!-- Toast container -->
+<div class="toast-container" id="toasts"></div>
 
-<nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="projects.html">Projects</a>
-    <a href="contact.html">Contact</a>
-</nav>
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-<section class="content">
-    <h2>Who I Am</h2>
-    <p>I’m Buzz — exploring Persian poetry, Khayyamic rubāʿīyat, emotional logic, AI cognition, and Codex‑ready knowledge systems.</p>
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div style="align-items: center; display: flex; gap: 10px;">
+      <div style="align-items: center; background: var(--accent); border-radius: 10px; display: flex; height: 36px; justify-content: center; width: 36px;">
+        <i class="fas fa-heartbeat" style="color: white; font-size: 16px;"></i>
+      </div>
+      <div>
+        <div style="color: var(--fg); font-family: 'Space Grotesk',sans-serif; font-size: 16px; font-weight: 700;">CardioTrack</div>
+        <div style="color: var(--fg-dim); font-size: 10px; letter-spacing: 1px; text-transform: uppercase;">Pro Dashboard</div>
+      </div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-item active" data-section="overview" onclick="showSection('overview')"><i class="fas fa-chart-line"></i>Overview</div>
+    <div class="nav-item" data-section="patient" onclick="showSection('patient')"><i class="fas fa-user-circle"></i>Patient Profile</div>
+    <div class="nav-item" data-section="vitals" onclick="showSection('vitals')"><i class="fas fa-heart-pulse"></i>Vitals</div>
+    <div class="nav-item" data-section="medications" onclick="showSection('medications')"><i class="fas fa-pills"></i>Medications</div>
+    <div class="nav-item" data-section="labs" onclick="showSection('labs')"><i class="fas fa-flask"></i>Lab Values</div>
+    <div class="nav-item" data-section="diet" onclick="showSection('diet')"><i class="fas fa-apple-whole"></i>Diet &amp; Nutrition</div>
+    <div class="nav-item" data-section="lifestyle" onclick="showSection('lifestyle')"><i class="fas fa-person-running"></i>Lifestyle</div>
+    <div class="nav-item" data-section="rsi" onclick="showSection('rsi')"><i class="fas fa-microchip"></i>RSI Engine</div>
+    <div class="nav-item" data-section="reports" onclick="showSection('reports')"><i class="fas fa-file-medical"></i>Reports</div>
+  </nav>
+  <div style="border-top: 1px solid var(--card-border); margin-top: auto; padding: 16px 20px;">
+    <div style="color: var(--fg-dim); font-size: 11px;">Data stored locally in browser. No server required.</div>
+  </div>
+</aside>
 
-    <h2>My Work</h2>
-    <p>I build modular archives, compare poetic styles, design emotional‑mapping glyphs, and experiment with AI‑assisted creativity.</p>
-</section>
+<!-- Main content -->
+<div class="main" id="mainArea">
+  <!-- Top bar -->
+  <header class="topbar">
+    <div style="align-items: center; display: flex; gap: 12px;">
+      <button aria-label="Toggle menu" class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div>
+        <h1 id="topbarTitle" style="font-size: 18px; font-weight: 700;">Overview</h1>
+        <p id="topbarSub" style="color: var(--fg-muted); font-size: 12px;">Hypertension Management Dashboard</p>
+      </div>
+    </div>
+    <div class="no-print" style="align-items: center; display: flex; gap: 8px;">
+      <button aria-label="Toggle theme" class="btn btn-secondary btn-icon" onclick="toggleTheme()" title="Toggle dark/light mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="exportJSON()"><i class="fas fa-code"></i><span class="hide-mobile">JSON</span></button>
+      <button class="btn btn-secondary btn-sm" onclick="exportCSV()"><i class="fas fa-table"></i><span class="hide-mobile">CSV</span></button>
+      <button class="btn btn-primary btn-sm" onclick="exportPDF()"><i class="fas fa-file-pdf"></i><span class="hide-mobile">PDF</span></button>
+    </div>
+  </header>
 
-<footer>
-    <p>© 2026 Buzz — All Rights Reserved</p>
-</footer>
+  <div class="content">
+    <!-- ===== OVERVIEW ===== -->
+    <div class="section active" id="sec-overview">
+      <div id="warningsOverview"></div>
+      <div class="grid-4" id="statCards">
+        <div class="glass stat-card"><div style="align-items: flex-start; display: flex; justify-content: space-between;"><div><div class="stat-value" id="statBP" style="color: var(--accent);">--/--</div><div class="stat-label">Last Blood Pressure</div></div><div class="stat-icon" style="background: var(--accent-glow); color: var(--accent);"><i class="fas fa-heart-pulse"></i></div></div></div>
+        <div class="glass stat-card"><div style="align-items: flex-start; display: flex; justify-content: space-between;"><div><div class="stat-value" id="statBMI" style="color: var(--accent2);">--</div><div class="stat-label">BMI</div></div><div class="stat-icon" style="background: var(--warning-bg); color: var(--accent2);"><i class="fas fa-weight-scale"></i></div></div></div>
+        <div class="glass stat-card"><div style="align-items: flex-start; display: flex; justify-content: space-between;"><div><div class="stat-value" id="statEGFR" style="color: var(--success);">--</div><div class="stat-label">eGFR (mL/min)</div></div><div class="stat-icon" style="background: var(--success-bg); color: var(--success);"><i class="fas fa-kidneys"></i></div></div></div>
+        <div class="glass stat-card"><div style="align-items: flex-start; display: flex; justify-content: space-between;"><div><div class="stat-value" id="statRisk">--</div><div class="stat-label">Risk Score</div></div><div class="stat-icon" id="statRiskIcon" style="background: var(--accent-glow); color: var(--accent);"><i class="fas fa-shield-halved"></i></div></div></div>
+      </div>
+      <div class="overview-charts-grid" style="display: grid; gap: 16px; grid-template-columns: 2fr 1fr; margin-top: 20px;">
+        <div class="glass" style="padding: 20px;">
+          <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 16px;">Blood Pressure Trend</h3>
+          <div class="chart-wrap" style="height: 260px;"><canvas id="chartBPOverview"></canvas></div>
+        </div>
+        <div class="glass" style="padding: 20px;">
+          <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 16px;">DASH Diet Score</h3>
+          <div class="chart-wrap" style="height: 220px;"><canvas id="chartDASHOverview"></canvas></div>
+          <div id="dashScoreLabel" style="color: var(--fg-muted); font-size: 13px; margin-top: 8px; text-align: center;">Complete diet assessment</div>
+        </div>
+      </div>
+      <div class="overview-bottom-grid" style="display: grid; gap: 16px; grid-template-columns: 1fr 1fr; margin-top: 16px;">
+        <div class="glass" style="padding: 20px;">
+          <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px;">Active Medications</h3>
+          <div id="overviewMeds"><p style="color: var(--fg-muted); font-size: 13px;">No medications recorded yet.</p></div>
+        </div>
+        <div class="glass" style="padding: 20px;">
+          <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px;">Quick Actions</h3>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <button class="btn btn-secondary btn-sm" onclick="showSection('vitals')"><i class="fas fa-plus"></i> Log Vitals</button>
+            <button class="btn btn-secondary btn-sm" onclick="showSection('labs')"><i class="fas fa-plus"></i> Enter Labs</button>
+            <button class="btn btn-secondary btn-sm" onclick="showSection('rsi')"><i class="fas fa-play"></i> Run RSI Engine</button>
+            <button class="btn btn-secondary btn-sm" onclick="showSection('reports')"><i class="fas fa-file-medical"></i> Generate Report</button>
+            <button class="btn btn-secondary btn-sm" onclick="showSection('diet')"><i class="fas fa-utensils"></i> DASH Assessment</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <!-- ===== PATIENT PROFILE ===== -->
+    <div class="section" id="sec-patient">
+      <div class="glass" style="max-width: 720px; padding: 24px;">
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Patient Profile</h2>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="pName" onchange="saveState()" placeholder="John Doe" /></div>
+          <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" id="pDOB" onchange="saveState()" type="date" /></div>
+          <div class="form-group"><label class="form-label">Age</label><input class="form-input" id="pAge" max="120" min="0" onchange="saveState()" placeholder="55" type="number" /></div>
+          <div class="form-group"><label class="form-label">Gender</label><select class="form-input" id="pGender" onchange="saveState()"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Height (cm)</label><input class="form-input" id="pHeight" max="250" min="50" onchange="saveState()" placeholder="175" type="number" /></div>
+          <div class="form-group"><label class="form-label">Weight (kg)</label><input class="form-input" id="pWeight" max="300" min="20" onchange="saveState()" placeholder="80" type="number" /></div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Primary Diagnosis</label><input class="form-input" id="pDiagnosis" onchange="saveState()" placeholder="Essential Hypertension" /></div>
+          <div class="form-group"><label class="form-label">Attending Physician</label><input class="form-input" id="pPhysician" onchange="saveState()" placeholder="Dr. Smith" /></div>
+        </div>
+        <div class="form-group"><label class="form-label">Comorbidities</label><input class="form-input" id="pComorbid" onchange="saveState()" placeholder="Type 2 Diabetes, CKD Stage 2" /></div>
+        <div class="form-group"><label class="form-label">Allergies</label><input class="form-input" id="pAllergies" onchange="saveState()" placeholder="None known" /></div>
+        <div style="margin-top: 8px;"><button class="btn btn-primary" onclick="saveState();toast('Patient profile saved','success')"><i class="fas fa-save"></i> Save Profile</button></div>
+      </div>
+    </div>
+
+    <!-- ===== VITALS ===== -->
+    <div class="section" id="sec-vitals">
+      <div class="vitals-grid" style="display: grid; gap: 16px; grid-template-columns: 1fr 1fr;">
+        <!-- BP Logger -->
+        <div class="glass" style="padding: 24px;">
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-heart-pulse" style="color: var(--accent); margin-right: 8px;"></i>Blood Pressure &amp; Pulse</h3>
+          <div class="grid-2">
+            <div class="form-group"><label class="form-label">Systolic (mmHg)</label><input class="form-input" id="bpSys" max="260" min="60" placeholder="120" type="number" /></div>
+            <div class="form-group"><label class="form-label">Diastolic (mmHg)</label><input class="form-input" id="bpDia" max="160" min="30" placeholder="80" type="number" /></div>
+            <div class="form-group"><label class="form-label">Pulse (bpm)</label><input class="form-input" id="bpPulse" max="220" min="30" placeholder="72" type="number" /></div>
+            <div class="form-group"><label class="form-label">Date/Time</label><input class="form-input" id="bpDate" type="datetime-local" /></div>
+          </div>
+          <div class="form-group"><label class="form-label">Notes</label><input class="form-input" id="bpNotes" placeholder="Morning reading, after medication" /></div>
+          <button class="btn btn-primary" onclick="addBP()"><i class="fas fa-plus"></i> Add Reading</button>
+        </div>
+        <!-- Weight/BMI -->
+        <div class="glass" style="padding: 24px;">
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-weight-scale" style="color: var(--accent2); margin-right: 8px;"></i>Weight &amp; BMI</h3>
+          <div class="grid-2">
+            <div class="form-group"><label class="form-label">Weight (kg)</label><input class="form-input" id="wtKg" max="300" min="20" placeholder="80" step="0.1" type="number" /></div>
+            <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="wtDate" type="date" /></div>
+          </div>
+          <div class="form-group"><label class="form-label">Waist Circumference (cm, optional)</label><input class="form-input" id="wtWaist" max="200" min="50" placeholder="90" type="number" /></div>
+          <button class="btn btn-primary" onclick="addWeight()"><i class="fas fa-plus"></i> Add Weight</button>
+          <div id="bmiDisplay" style="background: var(--accent-glow); border-radius: 10px; margin-top: 16px; padding: 14px;">
+            <div style="color: var(--fg-muted); font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase;">Current BMI</div>
+            <div id="bmiValue" style="color: var(--accent); font-size: 28px; font-weight: 700; margin-top: 4px;">--</div>
+            <div id="bmiCategory" style="color: var(--fg-muted); font-size: 12px; margin-top: 2px;">Enter weight to calculate</div>
+          </div>
+        </div>
+      </div>
+      <!-- BP Chart -->
+      <div class="glass" style="margin-top: 16px; padding: 24px;">
+        <div style="align-items: center; display: flex; justify-content: space-between; margin-bottom: 16px;">
+          <h3 style="font-size: 16px; font-weight: 700;">Blood Pressure History</h3>
+          <button class="btn btn-secondary btn-sm" onclick="clearBP()"><i class="fas fa-trash"></i> Clear</button>
+        </div>
+        <div class="chart-wrap" style="height: 300px;"><canvas id="chartBP"></canvas></div>
+      </div>
+      <!-- Weight Chart -->
+      <div class="glass" style="margin-top: 16px; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Weight &amp; BMI Trend</h3>
+        <div class="chart-wrap" style="height: 250px;"><canvas id="chartWeight"></canvas></div>
+      </div>
+      <!-- BP Table -->
+      <div class="glass" style="margin-top: 16px; overflow-x: auto; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Reading Log</h3>
+        <table class="data-table" id="bpTable"><thead><tr><th>Date</th><th>Systolic</th><th>Diastolic</th><th>Pulse</th><th>Category</th><th>Notes</th><th></th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== MEDICATIONS ===== -->
+    <div class="section" id="sec-medications">
+      <div class="glass" style="max-width: 720px; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-pills" style="color: var(--accent); margin-right: 8px;"></i>Medication Tracker</h3>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Medication Name</label><input class="form-input" id="medName" placeholder="Candesartan" value="Candesartan" /></div>
+          <div class="form-group"><label class="form-label">Dose</label><input class="form-input" id="medDose" min="0.5" placeholder="8" step="0.5" type="number" value="8" /></div>
+          <div class="form-group"><label class="form-label">Unit</label><select class="form-input" id="medUnit"><option>mg</option><option>mcg</option><option>mL</option></select></div>
+          <div class="form-group"><label class="form-label">Frequency</label><select class="form-input" id="medFreq"><option>Once daily</option><option>Twice daily</option><option>Three times daily</option><option>As needed</option><option>Weekly</option></select></div>
+          <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" id="medStart" type="date" /></div>
+          <div class="form-group"><label class="form-label">Time of Day</label><select class="form-input" id="medTime"><option>Morning</option><option>Evening</option><option>Morning &amp; Evening</option></select></div>
+        </div>
+        <div class="form-group"><label class="form-label">Notes / Side Effects</label><input class="form-input" id="medNotes" placeholder="Dizziness noted initially, resolved after 2 weeks" /></div>
+        <button class="btn btn-primary" onclick="addMed()"><i class="fas fa-plus"></i> Add Medication</button>
+      </div>
+      <div class="glass" style="margin-top: 16px; overflow-x: auto; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Current Medications</h3>
+        <table class="data-table" id="medTable"><thead><tr><th>Medication</th><th>Dose</th><th>Frequency</th><th>Time</th><th>Started</th><th>Notes</th><th></th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="glass" style="margin-top: 16px; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">Candesartan Reference</h3>
+        <div style="color: var(--fg-muted); font-size: 13px; line-height: 1.7;">
+          <p><strong style="color: var(--fg);">Class:</strong> Angiotensin II Receptor Blocker (ARB)</p>
+          <p><strong style="color: var(--fg);">Starting Dose:</strong> 8 mg once daily (typical for hypertension)</p>
+          <p><strong style="color: var(--fg);">Max Dose:</strong> 32 mg once daily</p>
+          <p><strong style="color: var(--fg);">Expected BP Reduction:</strong> ~8-12/5-8 mmHg at 8-16 mg</p>
+          <p><strong style="color: var(--fg);">Key Monitoring:</strong> Potassium, creatinine, eGFR at baseline and 1-2 weeks after initiation/dose change</p>
+          <p><strong style="color: var(--fg);">Contraindications:</strong> Pregnancy, bilateral renal artery stenosis, hyperkalemia</p>
+          <p style="background: var(--warning-bg); border-radius: 8px; color: var(--warning); margin-top: 8px; padding: 10px;"><i class="fas fa-triangle-exclamation"></i> Risk of hyperkalemia increases with concurrent potassium-sparing diuretics, potassium supplements, or CKD. Monitor serum potassium closely.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== LAB VALUES ===== -->
+    <div class="section" id="sec-labs">
+      <div class="glass" style="padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-flask" style="color: var(--accent); margin-right: 8px;"></i>Laboratory Values</h3>
+        <div class="grid-3">
+          <div class="form-group"><label class="form-label">eGFR (mL/min/1.73m²)</label><input class="form-input" id="labEGFR" min="0" placeholder="90" step="1" type="number" /></div>
+          <div class="form-group"><label class="form-label">Creatinine (mg/dL)</label><input class="form-input" id="labCreat" min="0" placeholder="1.0" step="0.01" type="number" /></div>
+          <div class="form-group"><label class="form-label">Potassium (mEq/L)</label><input class="form-input" id="labK" min="0" placeholder="4.0" step="0.1" type="number" /></div>
+          <div class="form-group"><label class="form-label">Sodium (mEq/L)</label><input class="form-input" id="labNa" min="0" placeholder="140" step="0.1" type="number" /></div>
+          <div class="form-group"><label class="form-label">HbA1c (%)</label><input class="form-input" id="labHbA1c" min="0" placeholder="6.5" step="0.1" type="number" /></div>
+          <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="labDate" type="date" /></div>
+        </div>
+        <h4 style="color: var(--fg-muted); font-size: 13px; font-weight: 600; letter-spacing: 0.5px; margin: 16px 0 12px; text-transform: uppercase;">Lipid Panel</h4>
+        <div class="grid-3">
+          <div class="form-group"><label class="form-label">Total Cholesterol (mg/dL)</label><input class="form-input" id="labTC" min="0" placeholder="200" step="1" type="number" /></div>
+          <div class="form-group"><label class="form-label">LDL (mg/dL)</label><input class="form-input" id="labLDL" min="0" placeholder="120" step="1" type="number" /></div>
+          <div class="form-group"><label class="form-label">HDL (mg/dL)</label><input class="form-input" id="labHDL" min="0" placeholder="50" step="1" type="number" /></div>
+          <div class="form-group"><label class="form-label">Triglycerides (mg/dL)</label><input class="form-input" id="labTG" min="0" placeholder="150" step="1" type="number" /></div>
+        </div>
+        <button class="btn btn-primary" onclick="addLab()"><i class="fas fa-plus"></i> Save Lab Results</button>
+      </div>
+      <div class="glass" style="margin-top: 16px; overflow-x: auto; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Lab History</h3>
+        <table class="data-table" id="labTable"><thead><tr><th>Date</th><th>eGFR</th><th>Creatinine</th><th>K+</th><th>Na+</th><th>HbA1c</th><th>LDL</th><th>HDL</th><th></th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="glass" style="margin-top: 16px; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Lab Values Trend</h3>
+        <div class="chart-wrap" style="height: 300px;"><canvas id="chartLabs"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ===== DIET & NUTRITION ===== -->
+    <div class="section" id="sec-diet">
+      <div class="glass" style="padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;"><i class="fas fa-apple-whole" style="color: var(--success); margin-right: 8px;"></i>DASH Diet Scoring</h3>
+        <p style="color: var(--fg-muted); font-size: 13px; margin-bottom: 20px;">Rate your average daily intake for each food group. Score 0-10 per category.</p>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Fruits <span id="fruitVal" style="color: var(--accent);">5</span>/10</label><input id="dashFruits" max="10" min="0" oninput="updateDASH()" type="range" value="5" /></div>
+          <div class="form-group"><label class="form-label">Vegetables <span id="vegVal" style="color: var(--accent);">5</span>/10</label><input id="dashVeg" max="10" min="0" oninput="updateDASH()" type="range" value="5" /></div>
+          <div class="form-group"><label class="form-label">Dairy (low-fat) <span id="dairyVal" style="color: var(--accent);">4</span>/10</label><input id="dashDairy" max="10" min="0" oninput="updateDASH()" type="range" value="4" /></div>
+          <div class="form-group"><label class="form-label">Whole Grains <span id="grainVal" style="color: var(--accent);">5</span>/10</label><input id="dashGrains" max="10" min="0" oninput="updateDASH()" type="range" value="5" /></div>
+          <div class="form-group"><label class="form-label">Meat/Fish/Poultry <span id="meatVal" style="color: var(--accent);">5</span>/10</label><input id="dashMeat" max="10" min="0" oninput="updateDASH()" type="range" value="5" /></div>
+          <div class="form-group"><label class="form-label">Nuts/Seeds/Legumes <span id="nutsVal" style="color: var(--accent);">3</span>/10</label><input id="dashNuts" max="10" min="0" oninput="updateDASH()" type="range" value="3" /></div>
+          <div class="form-group"><label class="form-label">Sweets (lower=better) <span id="sweetVal" style="color: var(--accent);">5</span>/10</label><input id="dashSweets" max="10" min="0" oninput="updateDASH()" type="range" value="5" /></div>
+          <div class="form-group"><label class="form-label">Fats/Oils (lower=better) <span id="fatVal" style="color: var(--accent);">5</span>/10</label><input id="dashFats" max="10" min="0" oninput="updateDASH()" type="range" value="5" /></div>
+        </div>
+        <div style="align-items: center; display: flex; gap: 20px; margin-top: 16px;">
+          <div id="dashTotal" style="color: var(--accent); font-size: 36px; font-weight: 700;">40</div>
+          <div><div style="color: var(--fg-muted); font-size: 13px;">out of 80 points</div><div id="dashGrade" style="font-size: 14px; font-weight: 600; margin-top: 2px;">Moderate Adherence</div></div>
+          <button class="btn btn-primary btn-sm" onclick="saveDASH()" style="margin-left: auto;"><i class="fas fa-save"></i> Save Score</button>
+        </div>
+      </div>
+      <div class="diet-charts-grid" style="display: grid; gap: 16px; grid-template-columns: 1fr 1fr; margin-top: 16px;">
+        <div class="glass" style="padding: 24px;">
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">DASH Score Breakdown</h3>
+          <div class="chart-wrap" style="height: 280px;"><canvas id="chartDASH"></canvas></div>
+        </div>
+        <div class="glass" style="padding: 24px;">
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Sodium &amp; Potassium Analysis</h3>
+          <div class="grid-2">
+            <div class="form-group"><label class="form-label">Daily Sodium (mg)</label><input class="form-input" id="naDaily" min="0" onchange="updateNaK()" placeholder="2300" step="50" type="number" /></div>
+            <div class="form-group"><label class="form-label">Daily Potassium (mg)</label><input class="form-input" id="kDaily" min="0" onchange="updateNaK()" placeholder="3500" step="50" type="number" /></div>
+          </div>
+          <div class="chart-wrap" style="height: 200px; margin-top: 16px;"><canvas id="chartNaK"></canvas></div>
+          <div id="nakAnalysis" style="color: var(--fg-muted); font-size: 13px; line-height: 1.6; margin-top: 12px;"></div>
+        </div>
+      </div>
+      <div class="glass" style="margin-top: 16px; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-leaf" style="color: var(--success); margin-right: 8px;"></i>Personalized Nutrition Recommendations</h3>
+        <div id="nutritionRecs" style="color: var(--fg-muted); font-size: 14px; line-height: 1.7;"></div>
+      </div>
+    </div>
+
+    <!-- ===== LIFESTYLE ===== -->
+    <div class="section" id="sec-lifestyle">
+      <div class="lifestyle-grid" style="display: grid; gap: 16px; grid-template-columns: 1fr 1fr;">
+        <div class="glass" style="padding: 24px;">
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-person-running" style="color: var(--accent); margin-right: 8px;"></i>Exercise Planner</h3>
+          <div class="grid-2">
+            <div class="form-group"><label class="form-label">Activity Type</label><select class="form-input" id="exType"><option>Walking</option><option>Jogging</option><option>Cycling</option><option>Swimming</option><option>Strength Training</option><option>Yoga</option><option>Other</option></select></div>
+            <div class="form-group"><label class="form-label">Duration (min)</label><input class="form-input" id="exDur" max="300" min="1" placeholder="30" type="number" /></div>
+            <div class="form-group"><label class="form-label">Intensity</label><select class="form-input" id="exIntensity"><option>Low</option><option>Moderate</option><option>Vigorous</option></select></div>
+            <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="exDate" type="date" /></div>
+          </div>
+          <button class="btn btn-primary" onclick="addExercise()"><i class="fas fa-plus"></i> Log Exercise</button>
+          <div class="glass" style="margin-top: 16px; padding: 16px;">
+            <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">Recommended Weekly Exercise</h4>
+            <div id="exercisePlan" style="color: var(--fg-muted); font-size: 13px; line-height: 1.6;"></div>
+          </div>
+        </div>
+        <div class="glass" style="padding: 24px;">
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-clipboard-check" style="color: var(--accent2); margin-right: 8px;"></i>Lifestyle Assessment</h3>
+          <div class="form-group"><label class="form-label">Smoking Status</label><select class="form-input" id="lsSmoke" onchange="saveLifestyle()"><option>Never</option><option>Former</option><option>Current</option></select></div>
+          <div class="form-group"><label class="form-label">Alcohol (drinks/week)</label><input class="form-input" id="lsAlcohol" max="50" min="0" onchange="saveLifestyle()" placeholder="0" type="number" /></div>
+          <div class="form-group"><label class="form-label">Average Sleep (hours)</label><input class="form-input" id="lsSleep" max="24" min="0" onchange="saveLifestyle()" placeholder="7" step="0.5" type="number" /></div>
+          <div class="form-group"><label class="form-label">Stress Level (1-10)</label><input id="lsStress" max="10" min="1" oninput="document.getElementById('stressVal').textContent=this.value;saveLifestyle()" type="range" value="5" /><span id="stressVal" style="color: var(--accent); margin-left: 8px;">5</span></div>
+          <div class="form-group"><label class="form-label">Caffeine (cups/day)</label><input class="form-input" id="lsCaffeine" max="20" min="0" onchange="saveLifestyle()" placeholder="2" type="number" /></div>
+          <div class="form-group"><label class="form-label">Additional Notes</label><input class="form-input" id="lsNotes" onchange="saveLifestyle()" placeholder="Meditation practice, etc." /></div>
+        </div>
+      </div>
+      <div class="glass" style="margin-top: 16px; overflow-x: auto; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Exercise Log</h3>
+        <table class="data-table" id="exTable"><thead><tr><th>Date</th><th>Activity</th><th>Duration</th><th>Intensity</th><th></th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="glass" style="margin-top: 16px; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Weekly Exercise Summary</h3>
+        <div class="chart-wrap" style="height: 250px;"><canvas id="chartExercise"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ===== RSI ENGINE ===== -->
+    <div class="section" id="sec-rsi">
+      <div class="glass" style="padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;"><i class="fas fa-microchip" style="color: var(--accent); margin-right: 8px;"></i>RSI Recursive Optimization Engine</h3>
+        <p style="color: var(--fg-muted); font-size: 13px; margin-bottom: 20px;">Simulates 10 iterations of Renin-System Inhibition optimization to find the optimal Candesartan dosing strategy based on patient parameters, safety constraints, and target blood pressure.</p>
+        <div id="rsiWarnings"></div>
+        <div class="grid-3">
+          <div class="form-group"><label class="form-label">Current Systolic BP</label><input class="form-input" id="rsiSBP" max="250" min="80" placeholder="145" type="number" /></div>
+          <div class="form-group"><label class="form-label">Current Diastolic BP</label><input class="form-input" id="rsiDBP" max="150" min="40" placeholder="90" type="number" /></div>
+          <div class="form-group"><label class="form-label">Target SBP</label><input class="form-input" id="rsiTarget" max="140" min="90" placeholder="120" type="number" value="120" /></div>
+          <div class="form-group"><label class="form-label">Current Candesartan Dose (mg)</label><input class="form-input" id="rsiDose" max="32" min="2" placeholder="8" step="2" type="number" value="8" /></div>
+          <div class="form-group"><label class="form-label">eGFR</label><input class="form-input" id="rsiEGFR" min="0" placeholder="75" type="number" /></div>
+          <div class="form-group"><label class="form-label">Serum Potassium</label><input class="form-input" id="rsiK" max="8" min="2" placeholder="4.2" step="0.1" type="number" /></div>
+        </div>
+        <div class="grid-3">
+          <div class="form-group"><label class="form-label">Age</label><input class="form-input" id="rsiAge" max="100" min="18" placeholder="55" type="number" /></div>
+          <div class="form-group"><label class="form-label">Weight (kg)</label><input class="form-input" id="rsiWeight" max="200" min="30" placeholder="80" type="number" /></div>
+          <div class="form-group"><label class="form-label">DASH Diet Score (0-80)</label><input class="form-input" id="rsiDASH" max="80" min="0" placeholder="40" type="number" /></div>
+        </div>
+        <button class="btn btn-primary" onclick="runRSI()" style="margin-top: 8px;"><i class="fas fa-play"></i> Run RSI Optimization (10 Iterations)</button>
+      </div>
+      <div id="rsiResults" style="margin-top: 16px;"></div>
+    </div>
+
+    <!-- ===== REPORTS ===== -->
+    <div class="section" id="sec-reports">
+      <div class="no-print" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+        <button class="btn btn-primary" onclick="generateReport('physician')"><i class="fas fa-user-doctor"></i> Physician Report</button>
+        <button class="btn btn-secondary" onclick="generateReport('patient')"><i class="fas fa-hand-holding-heart"></i> Patient Summary</button>
+        <button class="btn btn-secondary" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
+        <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+      </div>
+      <div class="glass" id="reportContent" style="padding: 32px;">
+        <div style="color: var(--fg-muted); padding: 60px 20px; text-align: center;">
+          <i class="fas fa-file-medical" style="display: block; font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+          <p style="font-size: 16px;">Click a button above to generate a report</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========== STATE MANAGEMENT ========== */
+const STORAGE_KEY = 'cardiotrack_data';
+let state = loadState();
+let charts = {};
+
+function defaultState() {
+  return {
+    patient: { name:'', dob:'', age:'', gender:'', height:'', weight:'', diagnosis:'', physician:'', comorbid:'', allergies:'' },
+    vitals: { bp:[], weight:[] },
+    medications: [],
+    labs: [],
+    diet: { fruits:5, veg:5, dairy:4, grains:5, meat:5, nuts:3, sweets:5, fats:5, naDaily:0, kDaily:0 },
+    lifestyle: { smoke:'Never', alcohol:0, sleep:7, stress:5, caffeine:2, notes:'', exercise:[] },
+    rsiResults: null
+  };
+}
+
+function loadState() {
+  try {
+    const d = localStorage.getItem(STORAGE_KEY);
+    if (d) { const s = JSON.parse(d); return deepMerge(defaultState(), s); }
+  } catch(e) { console.warn('State load error:', e); }
+  return defaultState();
+}
+
+function saveState() {
+  // Read patient form into state
+  state.patient.name = el('pName').value;
+  state.patient.dob = el('pDOB').value;
+  state.patient.age = el('pAge').value;
+  state.patient.gender = el('pGender').value;
+  state.patient.height = el('pHeight').value;
+  state.patient.weight = el('pWeight').value;
+  state.patient.diagnosis = el('pDiagnosis').value;
+  state.patient.physician = el('pPhysician').value;
+  state.patient.comorbid = el('pComorbid').value;
+  state.patient.allergies = el('pAllergies').value;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  refreshOverview();
+}
+
+function deepMerge(target, source) {
+  const out = Object.assign({}, target);
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      out[key] = deepMerge(target[key] || {}, source[key]);
+    } else {
+      out[key] = source[key];
+    }
+  }
+  return out;
+}
+
+function el(id) { return document.getElementById(id); }
+
+/* ========== TOAST ========== */
+function toast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = '<i class="fas fa-' + (type==='success'?'check-circle':type==='error'?'times-circle':'info-circle') + '"></i> ' + msg;
+  el('toasts').appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+/* ========== NAVIGATION ========== */
+const sectionTitles = {
+  overview: ['Overview', 'Hypertension Management Dashboard'],
+  patient: ['Patient Profile', 'Personal information and medical history'],
+  vitals: ['Vitals', 'Blood pressure, pulse, weight, and BMI tracking'],
+  medications: ['Medications', 'Medication tracker with Candesartan management'],
+  labs: ['Lab Values', 'Laboratory results and trends'],
+  diet: ['Diet & Nutrition', 'DASH diet scoring and nutritional analysis'],
+  lifestyle: ['Lifestyle', 'Exercise planning and lifestyle assessment'],
+  rsi: ['RSI Engine', 'Recursive System Inhibition optimization'],
+  reports: ['Reports', 'Physician and patient reports with export']
+};
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sec = el('sec-' + name);
+  if (sec) sec.classList.add('active');
+  const nav = document.querySelector(`.nav-item[data-section="${name}"]`);
+  if (nav) nav.classList.add('active');
+  const t = sectionTitles[name] || ['',''];
+  el('topbarTitle').textContent = t[0];
+  el('topbarSub').textContent = t[1];
+  // Close mobile sidebar
+  el('sidebar').classList.remove('open');
+  el('sidebarOverlay').classList.remove('show');
+  // Init charts when section becomes visible
+  setTimeout(() => initChartsForSection(name), 50);
+}
+
+function toggleSidebar() {
+  el('sidebar').classList.toggle('open');
+  el('sidebarOverlay').classList.toggle('show');
+}
+
+/* ========== THEME ========== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  el('themeIcon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+  // Rebuild charts for new theme
+  Object.values(charts).forEach(c => { if (c) c.destroy(); });
+  charts = {};
+  initChartsForSection(document.querySelector('.section.active')?.id?.replace('sec-','') || 'overview');
+}
+
+/* ========== BLOOD PRESSURE ========== */
+function addBP() {
+  const sys = parseInt(el('bpSys').value);
+  const dia = parseInt(el('bpDia').value);
+  const pulse = parseInt(el('bpPulse').value);
+  const date = el('bpDate').value || new Date().toISOString().slice(0,16);
+  const notes = el('bpNotes').value;
+  if (!sys || !dia) { toast('Please enter systolic and diastolic values', 'error'); return; }
+  if (sys <= dia) { toast('Systolic must be greater than diastolic', 'error'); return; }
+  state.vitals.bp.push({ date, sys, dia, pulse: pulse||null, notes });
+  state.vitals.bp.sort((a,b) => new Date(a.date) - new Date(b.date));
+  if (state.vitals.bp.length > 100) state.vitals.bp = state.vitals.bp.slice(-100);
+  saveStateToDisk();
+  el('bpSys').value=''; el('bpDia').value=''; el('bpPulse').value=''; el('bpNotes').value='';
+  renderBPTable(); refreshOverview();
+  toast('Blood pressure reading added', 'success');
+}
+
+function clearBP() {
+  if (state.vitals.bp.length === 0) return;
+  state.vitals.bp = [];
+  saveStateToDisk();
+  renderBPTable(); refreshOverview();
+  toast('Blood pressure history cleared', 'info');
+}
+
+function bpCategory(sys, dia) {
+  if (sys >= 180 || dia >= 120) return ['Crisis','danger'];
+  if (sys >= 140 || dia >= 90) return ['Hypertension Stage 2','danger'];
+  if (sys >= 130 || dia >= 80) return ['Hypertension Stage 1','warning'];
+  if (sys >= 120 && dia < 80) return ['Elevated','warning'];
+  return ['Normal','success'];
+}
+
+function renderBPTable() {
+  const tbody = el('bpTable').querySelector('tbody');
+  if (state.vitals.bp.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--fg-muted);text-align:center;padding:20px;">No readings yet</td></tr>'; return; }
+  tbody.innerHTML = state.vitals.bp.slice().reverse().map((r,i) => {
+    const [cat, cls] = bpCategory(r.sys, r.dia);
+    const d = new Date(r.date);
+    return `<tr><td>${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td><strong>${r.sys}</strong></td><td>${r.dia}</td><td>${r.pulse||'--'}</td><td><span class="badge badge-${cls}">${cat}</span></td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.notes||''}</td><td><button class="btn btn-secondary btn-sm" onclick="deleteBP(${state.vitals.bp.length-1-i})" style="padding:4px 8px;"><i class="fas fa-times"></i></button></td></tr>`;
+  }).join('');
+}
+
+function deleteBP(idx) {
+  state.vitals.bp.splice(idx, 1);
+  saveStateToDisk(); renderBPTable(); refreshOverview();
+}
+
+/* ========== WEIGHT/BMI ========== */
+function addWeight() {
+  const kg = parseFloat(el('wtKg').value);
+  const date = el('wtDate').value || new Date().toISOString().slice(0,10);
+  const waist = parseFloat(el('wtWaist').value) || null;
+  if (!kg) { toast('Please enter weight', 'error'); return; }
+  const h = parseFloat(state.patient.height) || parseFloat(el('pHeight').value);
+  const bmi = h ? (kg / ((h/100)**2)).toFixed(1) : null;
+  state.vitals.weight.push({ date, kg, waist, bmi });
+  state.vitals.weight.sort((a,b) => new Date(a.date) - new Date(b.date));
+  saveStateToDisk();
+  el('wtKg').value=''; el('wtWaist').value='';
+  updateBMIDisplay();
+  refreshOverview();
+  toast('Weight entry added', 'success');
+}
+
+function updateBMIDisplay() {
+  const w = state.vitals.weight;
+  if (w.length === 0) return;
+  const last = w[w.length-1];
+  el('bmiValue').textContent = last.bmi || '--';
+  if (last.bmi) {
+    let cat = 'Normal weight';
+    let col = 'var(--success)';
+    if (last.bmi < 18.5) { cat = 'Underweight'; col = 'var(--warning)'; }
+    else if (last.bmi >= 25 && last.bmi < 30) { cat = 'Overweight'; col = 'var(--warning)'; }
+    else if (last.bmi >= 30 && last.bmi < 35) { cat = 'Obese Class I'; col = 'var(--danger)'; }
+    else if (last.bmi >= 35) { cat = 'Obese Class II+'; col = 'var(--danger)'; }
+    el('bmiCategory').textContent = cat;
+    el('bmiCategory').style.color = col;
+  }
+}
+
+/* ========== MEDICATIONS ========== */
+function addMed() {
+  const name = el('medName').value.trim();
+  const dose = el('medDose').value;
+  if (!name || !dose) { toast('Please enter medication name and dose', 'error'); return; }
+  state.medications.push({
+    name, dose: parseFloat(dose), unit: el('medUnit').value,
+    freq: el('medFreq').value, start: el('medStart').value,
+    time: el('medTime').value, notes: el('medNotes').value
+  });
+  saveStateToDisk(); renderMedTable(); refreshOverview();
+  el('medName').value='Candesartan'; el('medDose').value='8'; el('medNotes').value='';
+  toast('Medication added', 'success');
+}
+
+function renderMedTable() {
+  const tbody = el('medTable').querySelector('tbody');
+  if (state.medications.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--fg-muted);text-align:center;padding:20px;">No medications recorded</td></tr>'; return; }
+  tbody.innerHTML = state.medications.map((m,i) => `<tr><td><strong>${m.name}</strong></td><td>${m.dose} ${m.unit}</td><td>${m.freq}</td><td>${m.time}</td><td>${m.start||'--'}</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.notes||''}</td><td><button class="btn btn-secondary btn-sm" onclick="deleteMed(${i})" style="padding:4px 8px;"><i class="fas fa-times"></i></button></td></tr>`).join('');
+}
+
+function deleteMed(idx) {
+  state.medications.splice(idx, 1);
+  saveStateToDisk(); renderMedTable(); refreshOverview();
+}
+
+/* ========== LAB VALUES ========== */
+function addLab() {
+  const eGFR = parseFloat(el('labEGFR').value);
+  const creat = parseFloat(el('labCreat').value);
+  const K = parseFloat(el('labK').value);
+  const Na = parseFloat(el('labNa').value);
+  const HbA1c = parseFloat(el('labHbA1c').value);
+  const date = el('labDate').value || new Date().toISOString().slice(0,10);
+  if (!eGFR && !creat && !K) { toast('Please enter at least one lab value', 'error'); return; }
+  state.labs.push({
+    date, eGFR: eGFR||null, creat: creat||null, K: K||null, Na: Na||null, HbA1c: HbA1c||null,
+    TC: parseFloat(el('labTC').value)||null, LDL: parseFloat(el('labLDL').value)||null,
+    HDL: parseFloat(el('labHDL').value)||null, TG: parseFloat(el('labTG').value)||null
+  });
+  state.labs.sort((a,b) => new Date(a.date) - new Date(b.date));
+  saveStateToDisk(); renderLabTable(); refreshOverview();
+  ['labEGFR','labCreat','labK','labNa','labHbA1c','labTC','labLDL','labHDL','labTG'].forEach(id => el(id).value='');
+  toast('Lab results saved', 'success');
+}
+
+function renderLabTable() {
+  const tbody = el('labTable').querySelector('tbody');
+  if (state.labs.length === 0) { tbody.innerHTML = '<tr><td colspan="9" style="color:var(--fg-muted);text-align:center;padding:20px;">No lab results</td></tr>'; return; }
+  tbody.innerHTML = state.labs.slice().reverse().map((r,i) => {
+    const kCls = r.K > 5.5 ? 'danger' : r.K > 5.0 ? 'warning' : r.K ? 'success' : '';
+    const kBadge = kCls ? `<span class="badge badge-${kCls}">${r.K}</span>` : (r.K||'--');
+    return `<tr><td>${r.date}</td><td>${r.eGFR||'--'}</td><td>${r.creat||'--'}</td><td>${kBadge}</td><td>${r.Na||'--'}</td><td>${r.HbA1c||'--'}</td><td>${r.LDL||'--'}</td><td>${r.HDL||'--'}</td><td><button class="btn btn-secondary btn-sm" onclick="deleteLab(${state.labs.length-1-i})" style="padding:4px 8px;"><i class="fas fa-times"></i></button></td></tr>`;
+  }).join('');
+}
+
+function deleteLab(idx) {
+  state.labs.splice(idx, 1);
+  saveStateToDisk(); renderLabTable(); refreshOverview();
+}
+
+/* ========== DASH DIET ========== */
+function updateDASH() {
+  const ids = ['Fruits','Veg','Dairy','Grains','Meat','Nuts','Sweets','Fats'];
+  const keys = ['fruits','veg','dairy','grains','meat','nuts','sweets','fats'];
+  let total = 0;
+  ids.forEach((id,i) => {
+    const v = parseInt(el('dash'+id).value);
+    el(id.toLowerCase()+'Val').textContent = v;
+    state.diet[keys[i]] = v;
+    total += v;
+  });
+  el('dashTotal').textContent = total;
+  let grade = 'Poor Adherence';
+  if (total >= 65) grade = 'Excellent Adherence';
+  else if (total >= 50) grade = 'Good Adherence';
+  else if (total >= 35) grade = 'Moderate Adherence';
+  el('dashGrade').textContent = grade;
+  updateDASHChart();
+}
+
+function saveDASH() {
+  saveStateToDisk();
+  toast('DASH diet score saved', 'success');
+  refreshOverview();
+}
+
+function updateNaK() {
+  state.diet.naDaily = parseFloat(el('naDaily').value) || 0;
+  state.diet.kDaily = parseFloat(el('kDaily').value) || 0;
+  saveStateToDisk();
+  updateNaKChart();
+  updateNaKAnalysis();
+}
+
+function updateNaKAnalysis() {
+  const na = state.diet.naDaily;
+  const k = state.diet.kDaily;
+  let html = '';
+  if (na > 0) {
+    if (na <= 1500) html += '<span class="badge badge-success">Optimal sodium</span> — Excellent for BP control.<br>';
+    else if (na <= 2300) html += '<span class="badge badge-warning">Moderate sodium</span> — Consider reducing to &lt;1500mg for greater BP benefit.<br>';
+    else html += '<span class="badge badge-danger">High sodium</span> — Exceeds recommended limit. Reducing sodium can lower SBP by 5-6 mmHg.<br>';
+  }
+  if (k > 0) {
+    if (k >= 3500) html += '<span class="badge badge-success">Good potassium intake</span> — Supports healthy BP.<br>';
+    else if (k >= 2600) html += '<span class="badge badge-warning">Moderate potassium</span> — Aim for 3500-4700mg daily.<br>';
+    else html += '<span class="badge badge-danger">Low potassium</span> — Increasing potassium can lower SBP by 4-5 mmHg.<br>';
+  }
+  if (na > 0 && k > 0) {
+    const ratio = (na / k).toFixed(1);
+    if (ratio < 1) html += `Na:K ratio: <strong>${ratio}</strong> — Excellent ratio for BP management.`;
+    else if (ratio < 2) html += `Na:K ratio: <strong>${ratio}</strong> — Acceptable, but lower is better.`;
+    else html += `Na:K ratio: <strong>${ratio}</strong> — High ratio. Increase potassium-rich foods and reduce sodium.`;
+  }
+  if (!html) html = 'Enter daily sodium and potassium values above to see analysis.';
+  el('nakAnalysis').innerHTML = html;
+}
+
+/* ========== LIFESTYLE ========== */
+function saveLifestyle() {
+  state.lifestyle.smoke = el('lsSmoke').value;
+  state.lifestyle.alcohol = parseFloat(el('lsAlcohol').value) || 0;
+  state.lifestyle.sleep = parseFloat(el('lsSleep').value) || 7;
+  state.lifestyle.stress = parseInt(el('lsStress').value) || 5;
+  state.lifestyle.caffeine = parseInt(el('lsCaffeine').value) || 0;
+  state.lifestyle.notes = el('lsNotes').value;
+  saveStateToDisk();
+}
+
+function addExercise() {
+  const type = el('exType').value;
+  const dur = parseInt(el('exDur').value);
+  const intensity = el('exIntensity').value;
+  const date = el('exDate').value || new Date().toISOString().slice(0,10);
+  if (!dur) { toast('Please enter duration', 'error'); return; }
+  state.lifestyle.exercise.push({ date, type, dur, intensity });
+  saveStateToDisk(); renderExTable();
+  el('exDur').value = '';
+  toast('Exercise logged', 'success');
+}
+
+function renderExTable() {
+  const tbody = el('exTable').querySelector('tbody');
+  if (state.lifestyle.exercise.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--fg-muted);text-align:center;padding:20px;">No exercise logged</td></tr>'; return; }
+  tbody.innerHTML = state.lifestyle.exercise.slice().reverse().map((r,i) => `<tr><td>${r.date}</td><td>${r.type}</td><td>${r.dur} min</td><td><span class="badge badge-${r.intensity==='Vigorous'?'danger':r.intensity==='Moderate'?'warning':'success'}">${r.intensity}</span></td><td><button class="btn btn-secondary btn-sm" onclick="deleteEx(${state.lifestyle.exercise.length-1-i})" style="padding:4px 8px;"><i class="fas fa-times"></i></button></td></tr>`).join('');
+}
+
+function deleteEx(idx) {
+  state.lifestyle.exercise.splice(idx, 1);
+  saveStateToDisk(); renderExTable();
+}
+
+function updateExercisePlan() {
+  const bp = getLatestBP();
+  const age = parseInt(state.patient.age) || 55;
+  const bmi = getLatestBMI();
+  let plan = '<ul style="padding-left:18px;">';
+  plan += '<li><strong>Aerobic:</strong> 150 min/week moderate or 75 min/week vigorous (walking, cycling, swimming)</li>';
+  plan += '<li><strong>Resistance:</strong> 2-3 sessions/week, major muscle groups</li>';
+  if (bp && bp.sys > 140) plan += '<li style="color:var(--warning);">Caution: Start with low-intensity walking (10-15 min) and gradually increase</li>';
+  if (bmi && bmi > 30) plan += '<li>Focus on low-impact activities initially (swimming, cycling, walking)</li>';
+  plan += '<li><strong>Flexibility:</strong> Stretching or yoga 2-3 times/week</li>';
+  plan += '<li><strong>Blood pressure check:</strong> Before and after exercise sessions</li>';
+  plan += '</ul>';
+  el('exercisePlan').innerHTML = plan;
+}
+
+/* ========== RSI ENGINE ========== */
+function runRSI() {
+  const sbp = parseFloat(el('rsiSBP').value);
+  const dbp = parseFloat(el('rsiDBP').value);
+  const target = parseFloat(el('rsiTarget').value) || 120;
+  let dose = parseFloat(el('rsiDose').value) || 8;
+  const eGFR = parseFloat(el('rsiEGFR').value) || 75;
+  const K = parseFloat(el('rsiK').value) || 4.2;
+  const age = parseFloat(el('rsiAge').value) || 55;
+  const weight = parseFloat(el('rsiWeight').value) || 80;
+  const dashScore = parseFloat(el('rsiDASH').value) || 40;
+
+  if (!sbp || !dbp) { toast('Please enter current BP values', 'error'); return; }
+
+  const results = [];
+  let converged = false;
+
+  for (let i = 0; i < 10; i++) {
+    // Estimate BP reduction for current dose
+    // Base: ~8mmHg SBP per 8mg, diminishing returns at higher doses
+    const doseFactor = 1 - Math.exp(-dose / 12);
+    const baseSBPReduction = 12 * doseFactor;
+    const baseDBPReduction = 7 * doseFactor;
+
+    // DASH diet additive effect (0-11 mmHg SBP proportional to score/80)
+    const dashEffect = (dashScore / 80) * 11;
+
+    // eGFR modifier: reduced effect if kidney impairment
+    const egfrMod = eGFR < 30 ? 0.5 : eGFR < 60 ? 0.75 : 1.0;
+
+    // Weight modifier
+    const weightMod = weight > 100 ? 0.85 : weight > 85 ? 0.92 : 1.0;
+
+    // Age modifier (older patients respond slightly better to ARBs)
+    const ageMod = age > 65 ? 1.05 : age > 55 ? 1.02 : 1.0;
+
+    const totalSBPReduction = (baseSBPReduction + dashEffect) * egfrMod * weightMod * ageMod;
+    const totalDBPReduction = baseDBPReduction * egfrMod * weightMod;
+
+    const estSBP = Math.max(70, sbp - totalSBPReduction);
+    const estDBP = Math.max(40, dbp - totalDBPReduction);
+
+    // Risk calculations
+    // Potassium risk: higher with higher dose and baseline K
+    const kRisk = Math.min(100, Math.max(0, (K - 3.5) * 15 + (dose / 32) * 20 + (eGFR < 60 ? 15 : 0)));
+    // Kidney risk: based on eGFR
+    const kidneyRisk = Math.min(100, Math.max(0, eGFR < 30 ? 80 : eGFR < 45 ? 50 : eGFR < 60 ? 25 : 5));
+    // Hypotension risk
+    const hypoRisk = Math.min(100, Math.max(0, estSBP < 90 ? 90 : estSBP < 100 ? 50 : estSBP < 110 ? 15 : 0));
+
+    // Safety score
+    const safetyScore = Math.max(0, 100 - (kRisk * 0.4 + kidneyRisk * 0.3 + hypoRisk * 0.3));
+
+    // Dose adjustment logic
+    const error = estSBP - target;
+    let adjustment = 0;
+    if (error > 15 && safetyScore > 65) adjustment = 8;
+    else if (error > 10 && safetyScore > 60) adjustment = 4;
+    else if (error > 5 && safetyScore > 55) adjustment = 2;
+    else if (error < -15) adjustment = -8;
+    else if (error < -10) adjustment = -4;
+    else if (error < -5) adjustment = -2;
+
+    // Additional safety constraints
+    if (kRisk > 60) adjustment = Math.min(adjustment, 0);
+    if (hypoRisk > 50) adjustment = Math.min(adjustment, 0);
+    if (kidneyRisk > 60 && dose >= 8) adjustment = Math.min(adjustment, 0);
+
+    const newDose = Math.max(2, Math.min(32, dose + adjustment));
+    converged = Math.abs(error) <= 5 && safetyScore >= 50;
+
+    results.push({
+      iter: i+1, dose: Math.round(dose*10)/10, estSBP: Math.round(estSBP*10)/10,
+      estDBP: Math.round(estDBP*10)/10, sbpReduction: Math.round(totalSBPReduction*10)/10,
+      kRisk: Math.round(kRisk), kidneyRisk: Math.round(kidneyRisk), hypoRisk: Math.round(hypoRisk),
+      safetyScore: Math.round(safetyScore), adjustment, converged
+    });
+
+    dose = newDose;
+    if (converged && i >= 3) break;
+  }
+
+  state.rsiResults = { results, inputSBP: sbp, inputDBP: dbp, target, inputDose: parseFloat(el('rsiDose').value)||8 };
+  saveStateToDisk();
+  renderRSIResults(results);
+  toast('RSI optimization complete', 'success');
+}
+
+function renderRSIResults(results) {
+  const last = results[results.length - 1];
+  const riskColor = last.safetyScore >= 70 ? 'var(--success)' : last.safetyScore >= 50 ? 'var(--warning)' : 'var(--danger)';
+
+  let html = `
+  <div class="grid-3" style="margin-bottom:16px;">
+    <div class="glass stat-card"><div class="stat-label">Recommended Dose</div><div class="stat-value" style="color:var(--accent);">${last.dose} mg</div></div>
+    <div class="glass stat-card"><div class="stat-label">Estimated SBP</div><div class="stat-value" style="color:var(--accent2);">${last.estSBP} mmHg</div></div>
+    <div class="glass stat-card"><div class="stat-label">Safety Score</div><div class="stat-value" style="color:${riskColor};">${last.safetyScore}%</div></div>
+  </div>`;
+
+  // Warnings
+  let warnings = '';
+  if (last.kRisk > 60) warnings += '<div class="warning-banner danger"><i class="fas fa-triangle-exclamation"></i><div><strong>High Potassium Risk</strong> — Current parameters indicate significant hyperkalemia risk. Consider dose reduction or potassium monitoring.</div></div>';
+  if (last.kidneyRisk > 50) warnings += '<div class="warning-banner danger"><i class="fas fa-triangle-exclamation"></i><div><strong>Kidney Function Concern</strong> — eGFR suggests renal impairment. Close monitoring and possible dose adjustment required.</div></div>';
+  if (last.hypoRisk > 40) warnings += '<div class="warning-banner warning"><i class="fas fa-triangle-exclamation"></i><div><strong>Hypotension Risk</strong> — Estimated BP may be too low. Consider dose reduction.</div></div>';
+  if (last.converged) warnings += '<div class="warning-banner success"><i class="fas fa-check-circle"></i><div><strong>Converged</strong> — Optimization found a stable solution within target range.</div></div>';
+  if (warnings) html += `<div style="margin-bottom:16px;">${warnings}</div>`;
+
+  // Convergence chart
+  html += `<div class="glass" style="padding:24px;margin-bottom:16px;">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Optimization Convergence</h3>
+    <div class="chart-wrap" style="height:280px;"><canvas id="chartRSI"></canvas></div>
+  </div>`;
+
+  // Results table
+  html += `<div class="glass" style="padding:24px;overflow-x:auto;">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Iteration Details</h3>
+    <table class="data-table"><thead><tr><th>Iter</th><th>Dose (mg)</th><th>Est. SBP</th><th>Est. DBP</th><th>SBP Reduction</th><th>K+ Risk</th><th>Kidney Risk</th><th>Hypo Risk</th><th>Safety</th><th>Adjust</th><th>Status</th></tr></thead><tbody>
+    ${results.map(r => `<tr><td>${r.iter}</td><td><strong>${r.dose}</strong></td><td>${r.estSBP}</td><td>${r.estDBP}</td><td>-${r.sbpReduction}</td><td><span class="badge badge-${r.kRisk>60?'danger':r.kRisk>30?'warning':'success'}">${r.kRisk}%</span></td><td><span class="badge badge-${r.kidneyRisk>50?'danger':r.kidneyRisk>25?'warning':'success'}">${r.kidneyRisk}%</span></td><td><span class="badge badge-${r.hypoRisk>40?'danger':r.hypoRisk>15?'warning':'success'}">${r.hypoRisk}%</span></td><td style="font-weight:600;color:${r.safetyScore>=70?'var(--success)':r.safetyScore>=50?'var(--warning)':'var(--danger)'};">${r.safetyScore}%</td><td>${r.adjustment > 0 ? '+' : ''}${r.adjustment}</td><td>${r.converged ? '<span class="badge badge-success">Converged</span>' : '<span class="badge badge-accent">Iterating</span>'}</td></tr>`).join('')}
+    </tbody></table>
+  </div>`;
+
+  // Estimated BP reduction summary
+  const totalReduction = state.rsiResults.inputSBP - last.estSBP;
+  html += `<div class="glass" style="padding:24px;">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Estimated BP Reduction Summary</h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:center;">
+      <div><div style="font-size:28px;font-weight:700;color:var(--accent);">-${Math.round(totalReduction)}</div><div style="font-size:12px;color:var(--fg-muted);">mmHg Systolic</div></div>
+      <div><div style="font-size:28px;font-weight:700;color:var(--accent2);">-${Math.round(state.rsiResults.inputDBP - last.estDBP)}</div><div style="font-size:12px;color:var(--fg-muted);">mmHg Diastolic</div></div>
+      <div><div style="font-size:28px;font-weight:700;color:var(--success);">${last.dose}</div><div style="font-size:12px;color:var(--fg-muted);">mg Candesartan</div></div>
+      <div><div style="font-size:28px;font-weight:700;color:${riskColor};">${last.safetyScore}%</div><div style="font-size:12px;color:var(--fg-muted);">Safety Score</div></div>
+    </div>
+  </div>`;
+
+  el('rsiResults').innerHTML = html;
+
+  // Render RSI chart
+  setTimeout(() => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const textColor = isDark ? '#7A8BA5' : '#64748B';
+    if (charts.rsi) charts.rsi.destroy();
+    const ctx = el('chartRSI').getContext('2d');
+    charts.rsi = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: results.map(r => 'Iter ' + r.iter),
+        datasets: [
+          { label: 'Est. SBP', data: results.map(r => r.estSBP), borderColor: '#14B8A6', backgroundColor: 'rgba(20,184,166,0.1)', fill: true, tension: 0.3, pointRadius: 4 },
+          { label: 'Target SBP', data: results.map(() => state.rsiResults.target), borderColor: '#F59E0B', borderDash: [6,4], pointRadius: 0, fill: false },
+          { label: 'Dose (mg)', data: results.map(r => r.dose), borderColor: '#A78BFA', backgroundColor: 'rgba(167,139,250,0.1)', fill: false, tension: 0.3, pointRadius: 4, yAxisID: 'y1' },
+          { label: 'Safety %', data: results.map(r => r.safetyScore), borderColor: '#10B981', borderDash: [3,3], pointRadius: 3, fill: false, tension: 0.3, yAxisID: 'y1' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: textColor, font: { family: 'DM Sans', size: 11 } } } },
+        scales: {
+          x: { ticks: { color: textColor }, grid: { color: gridColor } },
+          y: { position: 'left', title: { display: true, text: 'mmHg', color: textColor }, ticks: { color: textColor }, grid: { color: gridColor } },
+          y1: { position: 'right', title: { display: true, text: 'mg / %', color: textColor }, ticks: { color: textColor }, grid: { drawOnChartArea: false } }
+        }
+      }
+    });
+  }, 100);
+}
+
+/* ========== RISK SCORING ========== */
+function calculateRiskScore() {
+  let score = 50; // Base
+  let factors = [];
+  const bp = getLatestBP();
+  const labs = getLatestLabs();
+  const bmi = getLatestBMI();
+  const age = parseInt(state.patient.age) || 55;
+
+  // BP contribution (30 points max)
+  if (bp) {
+    if (bp.sys >= 180 || bp.dia >= 120) { score += 30; factors.push({ name: 'BP Crisis', pts: 30, severity: 'danger' }); }
+    else if (bp.sys >= 140 || bp.dia >= 90) { score += 22; factors.push({ name: 'Hypertension Stage 2', pts: 22, severity: 'danger' }); }
+    else if (bp.sys >= 130 || bp.dia >= 80) { score += 15; factors.push({ name: 'Hypertension Stage 1', pts: 15, severity: 'warning' }); }
+    else if (bp.sys >= 120) { score += 5; factors.push({ name: 'Elevated BP', pts: 5, severity: 'warning' }); }
+    else { factors.push({ name: 'Normal BP', pts: -5, severity: 'success' }); score -= 5; }
+  }
+
+  // eGFR (20 points max)
+  if (labs && labs.eGFR !== null) {
+    if (labs.eGFR < 30) { score += 20; factors.push({ name: 'Severe CKD', pts: 20, severity: 'danger' }); }
+    else if (labs.eGFR < 45) { score += 14; factors.push({ name: 'Moderate-Severe CKD', pts: 14, severity: 'danger' }); }
+    else if (labs.eGFR < 60) { score += 8; factors.push({ name: 'Moderate CKD', pts: 8, severity: 'warning' }); }
+    else { factors.push({ name: 'Normal eGFR', pts: 0, severity: 'success' }); }
+  }
+
+  // Potassium (15 points max)
+  if (labs && labs.K !== null) {
+    if (labs.K > 5.5) { score += 15; factors.push({ name: 'Critical Hyperkalemia', pts: 15, severity: 'danger' }); }
+    else if (labs.K > 5.0) { score += 10; factors.push({ name: 'High Potassium', pts: 10, severity: 'danger' }); }
+    else if (labs.K > 4.5) { score += 3; factors.push({ name: 'Borderline K+', pts: 3, severity: 'warning' }); }
+    else { factors.push({ name: 'Normal Potassium', pts: 0, severity: 'success' }); }
+  }
+
+  // BMI (10 points max)
+  if (bmi) {
+    if (bmi >= 35) { score += 10; factors.push({ name: 'Obesity Class II+', pts: 10, severity: 'danger' }); }
+    else if (bmi >= 30) { score += 7; factors.push({ name: 'Obesity Class I', pts: 7, severity: 'warning' }); }
+    else if (bmi >= 25) { score += 3; factors.push({ name: 'Overweight', pts: 3, severity: 'warning' }); }
+    else { factors.push({ name: 'Healthy BMI', pts: -3, severity: 'success' }); score -= 3; }
+  }
+
+  // HbA1c (10 points max)
+  if (labs && labs.HbA1c !== null) {
+    if (labs.HbA1c >= 8) { score += 10; factors.push({ name: 'Poor Glycemic Control', pts: 10, severity: 'danger' }); }
+    else if (labs.HbA1c >= 7) { score += 6; factors.push({ name: 'Above Target HbA1c', pts: 6, severity: 'warning' }); }
+    else if (labs.HbA1c >= 6) { score += 2; factors.push({ name: 'Pre-diabetic Range', pts: 2, severity: 'warning' }); }
+    else { factors.push({ name: 'Normal HbA1c', pts: 0, severity: 'success' }); }
+  }
+
+  // Age (10 points max)
+  if (age >= 75) { score += 10; factors.push({ name: 'Age 75+', pts: 10, severity: 'warning' }); }
+  else if (age >= 65) { score += 6; factors.push({ name: 'Age 65-74', pts: 6, severity: 'warning' }); }
+  else if (age >= 55) { score += 3; factors.push({ name: 'Age 55-64', pts: 3, severity: 'warning' }); }
+
+  // Lifestyle (5 points max)
+  if (state.lifestyle.smoke === 'Current') { score += 5; factors.push({ name: 'Current Smoker', pts: 5, severity: 'danger' }); }
+  if (state.lifestyle.alcohol > 14) { score += 3; factors.push({ name: 'Excessive Alcohol', pts: 3, severity: 'warning' }); }
+
+  score = Math.max(0, Math.min(100, score));
+  let level = 'Low';
+  let color = 'var(--success)';
+  if (score >= 70) { level = 'High'; color = 'var(--danger)'; }
+  else if (score >= 45) { level = 'Moderate'; color = 'var(--warning)'; }
+
+  return { score: Math.round(score), level, color, factors };
+}
+
+/* ========== SAFETY WARNINGS ========== */
+function getWarnings() {
+  const warnings = [];
+  const labs = getLatestLabs();
+  const bp = getLatestBP();
+
+  if (labs) {
+    if (labs.K > 5.5) warnings.push({ type: 'danger', icon: 'triangle-exclamation', text: `<strong>Critical Hyperkalemia (K+ ${labs.K} mEq/L)</strong> — Immediate physician consultation required. Discontinue Candesartan and check potassium immediately.` });
+    else if (labs.K > 5.0) warnings.push({ type: 'danger', icon: 'triangle-exclamation', text: `<strong>High Potassium (K+ ${labs.K} mEq/L)</strong> — Risk of hyperkalemia with Candesartan. Consider dose reduction and recheck in 1-2 weeks.` });
+    if (labs.eGFR !== null && labs.eGFR < 30) warnings.push({ type: 'danger', icon: 'triangle-exclamation', text: `<strong>Severe Kidney Impairment (eGFR ${labs.eGFR})</strong> — Candesartan dose adjustment critical. Nephrology consultation recommended.` });
+    else if (labs.eGFR !== null && labs.eGFR < 60) warnings.push({ type: 'warning', icon: 'exclamation-circle', text: `<strong>Moderate Kidney Impairment (eGFR ${labs.eGFR})</strong> — Monitor kidney function closely. Dose adjustment may be needed.` });
+    if (labs.HbA1c !== null && labs.HbA1c >= 8) warnings.push({ type: 'warning', icon: 'exclamation-circle', text: `<strong>Poor Glycemic Control (HbA1c ${labs.HbA1c}%)</strong> — Optimize diabetes management to reduce cardiovascular risk.` });
+  }
+  if (bp) {
+    if (bp.sys < 90) warnings.push({ type: 'danger', icon: 'triangle-exclamation', text: `<strong>Hypotension (SBP ${bp.sys} mmHg)</strong> — Risk of symptomatic hypotension. Consider reducing Candesartan dose.` });
+    else if (bp.sys < 100) warnings.push({ type: 'warning', icon: 'exclamation-circle', text: `<strong>Low Blood Pressure (SBP ${bp.sys} mmHg)</strong> — Monitor for dizziness, falls. May need dose adjustment.` });
+    if (bp.sys >= 180 || bp.dia >= 120) warnings.push({ type: 'danger', icon: 'triangle-exclamation', text: `<strong>Hypertensive Crisis (${bp.sys}/${bp.dia} mmHg)</strong> — Seek immediate medical attention.` });
+  }
+  return warnings;
+}
+
+/* ========== NUTRITION RECOMMENDATIONS ========== */
+function getNutritionRecs() {
+  const dash = state.diet;
+  let recs = [];
+  const na = dash.naDaily;
+  const k = dash.kDaily;
+  const bp = getLatestBP();
+  const labs = getLatestLabs();
+
+  recs.push({ icon: 'carrot', text: 'Increase fruits and vegetables to 8-10 servings daily. Rich in potassium, magnesium, and fiber that help lower BP.' });
+  recs.push({ icon: 'wheat-awn', text: 'Choose whole grains over refined. Aim for 6-8 servings of whole grains daily (oats, brown rice, whole wheat).' });
+
+  if (na > 2300 || na === 0) {
+    recs.push({ icon: 'salt-shaking', text: 'Reduce sodium to less than 1,500 mg/day for optimal BP control. Avoid processed foods, canned soups, and added salt.' });
+  }
+  if (labs && labs.K < 4.0) {
+    recs.push({ icon: 'ban', text: 'Do NOT increase potassium-rich foods without physician approval — current K+ is low, but with Candesartan, rapid changes can be dangerous. Monitor labs first.' });
+  } else if (k < 3500 || k === 0) {
+    recs.push({ icon: 'seedling', text: 'Increase potassium-rich foods: bananas, sweet potatoes, spinach, beans, avocados. Target 3,500-4,700 mg/day.' });
+  }
+  if (dash.dairy < 5) {
+    recs.push({ icon: 'glass-water', text: 'Include 2-3 servings of low-fat dairy daily. Calcium in dairy contributes to BP reduction.' });
+  }
+  if (dash.nuts < 4) {
+    recs.push({ icon: 'tree', text: 'Add nuts, seeds, and legumes 4-5 times per week. Rich in magnesium, potassium, and healthy fats.' });
+  }
+  if (bp && bp.sys > 140) {
+    recs.push({ icon: 'wine-glass', text: 'Limit alcohol to no more than 2 drinks/day for men, 1 for women. Excess alcohol raises BP by 3-4 mmHg.' });
+  }
+  recs.push({ icon: 'mug-hot', text: 'Limit caffeine to 2-3 cups/day. Caffeine can cause acute BP elevation of 3-15 mmHg in sensitive individuals.' });
+
+  return recs;
+}
+
+/* ========== REPORTS ========== */
+function generateReport(type) {
+  const p = state.patient;
+  const bp = getLatestBP();
+  const labs = getLatestLabs();
+  const bmi = getLatestBMI();
+  const risk = calculateRiskScore();
+  const warnings = getWarnings();
+  const now = new Date().toLocaleString();
+
+  if (type === 'physician') {
+    el('reportContent').innerHTML = `
+    <div style="border-bottom:2px solid var(--accent);padding-bottom:16px;margin-bottom:24px;">
+      <h2 style="font-size:22px;font-weight:700;color:var(--accent);">Physician Clinical Report</h2>
+      <p style="font-size:13px;color:var(--fg-muted);margin-top:4px;">Generated: ${now} | CardioTrack Pro</p>
+    </div>
+    <div style="margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Patient Information</h3>
+      <table style="width:100%;font-size:14px;"><tbody>
+        <tr><td style="padding:6px 12px 6px 0;color:var(--fg-muted);width:180px;">Name:</td><td style="font-weight:600;">${p.name||'Not entered'}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:var(--fg-muted);">Age/Gender:</td><td>${p.age||'--'} / ${p.gender||'--'}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:var(--fg-muted);">Diagnosis:</td><td>${p.diagnosis||'--'}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:var(--fg-muted);">Comorbidities:</td><td>${p.comorbid||'None recorded'}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:var(--fg-muted);">Attending Physician:</td><td>${p.physician||'--'}</td></tr>
+      </tbody></table>
+    </div>
+    ${warnings.length ? '<div style="margin-bottom:24px;"><h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:var(--danger);">Active Safety Warnings</h3>' + warnings.map(w => `<div class="warning-banner ${w.type}" style="margin-bottom:8px;"><i class="fas fa-${w.icon}"></i><div>${w.text}</div></div>`).join('') + '</div>' : ''}
+    <div style="margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Current Vitals</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="padding:14px;border-radius:10px;background:var(--accent-glow);text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--accent);">${bp?bp.sys+'/'+bp.dia:'--/--'}</div><div style="font-size:11px;color:var(--fg-muted);margin-top:2px;">BP (mmHg)</div></div>
+        <div style="padding:14px;border-radius:10px;background:var(--warning-bg);text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--accent2);">${bp&&bp.pulse?bp.pulse:'--'}</div><div style="font-size:11px;color:var(--fg-muted);margin-top:2px;">Pulse (bpm)</div></div>
+        <div style="padding:14px;border-radius:10px;background:var(--success-bg);text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--success);">${bmi||'--'}</div><div style="font-size:11px;color:var(--fg-muted);margin-top:2px;">BMI</div></div>
+        <div style="padding:14px;border-radius:10px;background:${risk.color==='var(--danger)'?'var(--danger-bg)':risk.color==='var(--warning)'?'var(--warning-bg)':'var(--success-bg)'};text-align:center;"><div style="font-size:24px;font-weight:700;color:${risk.color};">${risk.score}</div><div style="font-size:11px;color:var(--fg-muted);margin-top:2px;">Risk Score (${risk.level})</div></div>
+      </div>
+    </div>
+    <div style="margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Latest Laboratory Values</h3>
+      ${labs ? `<table class="data-table"><thead><tr><th>Parameter</th><th>Value</th><th>Reference Range</th><th>Status</th></tr></thead><tbody>
+        <tr><td>eGFR</td><td><strong>${labs.eGFR||'--'}</strong> mL/min/1.73m²</td><td>≥60</td><td>${labs.eGFR!==null?(labs.eGFR>=60?'<span class="badge badge-success">Normal</span>':'<span class="badge badge-danger">Impaired</span>'):'--'}</td></tr>
+        <tr><td>Creatinine</td><td><strong>${labs.creat||'--'}</strong> mg/dL</td><td>0.7-1.3</td><td>${labs.creat?(labs.creat<=1.3?'<span class="badge badge-success">Normal</span>':'<span class="badge badge-warning">Elevated</span>'):'--'}</td></tr>
+        <tr><td>Potassium</td><td><strong>${labs.K||'--'}</strong> mEq/L</td><td>3.5-5.0</td><td>${labs.K?(labs.K<=5.0?'<span class="badge badge-success">Normal</span>':labs.K<=5.5?'<span class="badge badge-warning">High</span>':'<span class="badge badge-danger">Critical</span>'):'--'}</td></tr>
+        <tr><td>Sodium</td><td><strong>${labs.Na||'--'}</strong> mEq/L</td><td>136-145</td><td>${labs.Na?(labs.Na>=136&&labs.Na<=145?'<span class="badge badge-success">Normal</span>':'<span class="badge badge-warning">Abnormal</span>'):'--'}</td></tr>
+        <tr><td>HbA1c</td><td><strong>${labs.HbA1c||'--'}</strong> %</td><td><7.0 (diabetic)</td><td>${labs.HbA1c?(labs.HbA1c<7?'<span class="badge badge-success">At Target</span>':'<span class="badge badge-warning">Above Target</span>'):'--'}</td></tr>
+        <tr><td>LDL</td><td><strong>${labs.LDL||'--'}</strong> mg/dL</td><td><100</td><td>${labs.LDL?(labs.LDL<100?'<span class="badge badge-success">Optimal</span>':labs.LDL<130?'<span class="badge badge-warning">Near Optimal</span>':'<span class="badge badge-danger">High</span>'):'--'}</td></tr>
+        <tr><td>HDL</td><td><strong>${labs.HDL||'--'}</strong> mg/dL</td><td>>40 (M), >50 (F)</td><td>${labs.HDL?(labs.HDL>50?'<span class="badge badge-success">Good</span>':'<span class="badge badge-warning">Low</span>'):'--'}</td></tr>
+      </tbody></table>` : '<p style="color:var(--fg-muted);">No lab data available.</p>'}
+    </div>
+    <div style="margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Current Medications</h3>
+      ${state.medications.length ? '<table class="data-table"><thead><tr><th>Medication</th><th>Dose</th><th>Frequency</th><th>Time</th></tr></thead><tbody>' + state.medications.map(m => `<tr><td><strong>${m.name}</strong></td><td>${m.dose} ${m.unit}</td><td>${m.freq}</td><td>${m.time}</td></tr>`).join('') + '</tbody></table>' : '<p style="color:var(--fg-muted);">No medications recorded.</p>'}
+    </div>
+    ${state.rsiResults ? `<div style="margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">RSI Optimization Results</h3>
+      <p style="font-size:14px;color:var(--fg-muted);">Input: SBP ${state.rsiResults.inputSBP}/${state.rsiResults.inputDBP} mmHg on ${state.rsiResults.inputDose}mg Candesartan. Recommended: <strong style="color:var(--accent);">${state.rsiResults.results[state.rsiResults.results.length-1].dose}mg</strong> with estimated SBP <strong>${state.rsiResults.results[state.rsiResults.results.length-1].estSBP} mmHg</strong> and safety score <strong>${state.rsiResults.results[state.rsiResults.results.length-1].safetyScore}%</strong>.</p>
+    </div>` : ''}
+    <div style="margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Risk Factor Analysis</h3>
+      <table class="data-table"><thead><tr><th>Factor</th><th>Contribution</th><th>Severity</th></tr></thead><tbody>
+      ${risk.factors.map(f => `<tr><td>${f.name}</td><td>${f.pts > 0 ? '+' : ''}${f.pts} pts</td><td><span class="badge badge-${f.severity}">${f.severity}</span></td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <div style="padding:16px;border-radius:10px;background:var(--accent-glow);font-size:12px;color:var(--fg-muted);">
+      <strong>Disclaimer:</strong> This report is generated by CardioTrack Pro for informational purposes only. It does not constitute medical advice. All clinical decisions should be made by qualified healthcare professionals based on comprehensive patient evaluation.
+    </div>`;
+  } else {
+    // Patient-friendly summary
+    el('reportContent').innerHTML = `
+    <div style="border-bottom:2px solid var(--accent);padding-bottom:16px;margin-bottom:24px;">
+      <h2 style="font-size:22px;font-weight:700;color:var(--accent);">Your Health Summary</h2>
+      <p style="font-size:13px;color:var(--fg-muted);margin-top:4px;">Generated: ${now}</p>
+    </div>
+    <div style="margin-bottom:24px;">
+      <p style="font-size:15px;line-height:1.7;">Hello, <strong>${p.name||'there'}</strong>! Here's a summary of your health tracking data. Remember to discuss any questions with your healthcare team.</p>
+    </div>
+    ${warnings.length ? '<div style="margin-bottom:24px;">' + warnings.map(w => `<div class="warning-banner ${w.type}" style="margin-bottom:8px;"><i class="fas fa-${w.icon}"></i><div>${w.text}</div></div>`).join('') + '</div>' : '<div class="warning-banner success" style="margin-bottom:24px;"><i class="fas fa-check-circle"></i><div><strong>All clear!</strong> No active safety warnings at this time.</div></div>'}
+    <div style="margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Your Numbers</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="padding:16px;border-radius:10px;background:var(--accent-glow);">
+          <div style="font-size:12px;color:var(--fg-muted);">Blood Pressure</div>
+          <div style="font-size:28px;font-weight:700;color:var(--accent);margin-top:4px;">${bp?bp.sys+'/'+bp.dia:'Not recorded'}</div>
+          <div style="font-size:12px;color:var(--fg-muted);margin-top:4px;">${bp?'Target: below 130/80 mmHg':''}</div>
+        </div>
+        <div style="padding:16px;border-radius:10px;background:var(--warning-bg);">
+          <div style="font-size:12px;color:var(--fg-muted);">BMI</div>
+          <div style="font-size:28px;font-weight:700;color:var(--accent2);margin-top:4px;">${bmi||'Not calculated'}</div>
+          <div style="font-size:12px;color:var(--fg-muted);margin-top:4px;">${bmi?'Target: 18.5-24.9':''}</div>
+        </div>
+      </div>
+    </div>
+    ${labs ? `<div style="margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Lab Results</h3>
+      <div style="font-size:14px;line-height:2;">
+        ${labs.eGFR!==null?`<div>Kidney function (eGFR): <strong>${labs.eGFR}</strong> mL/min — ${labs.eGFR>=60?'This is in the normal range.':'This is below normal. Your doctor may want to monitor this.'}</div>`:''}
+        ${labs.K!==null?`<div>Potassium: <strong>${labs.K}</strong> mEq/L — ${labs.K<=5.0?'This is within the normal range.':'This is higher than normal. Talk to your doctor about your medications and diet.'}</div>`:''}
+        ${labs.HbA1c!==null?`<div>HbA1c: <strong>${labs.HbA1c}</strong>% — ${labs.HbA1c<7?'This is at the target level.':'This is above the typical target of 7%. Work with your doctor on your diabetes management.'}</div>`:''}
+      </div>
+    </div>` : ''}
+    <div style="margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">What You Can Do</h3>
+      <ul style="font-size:14px;line-height:2;padding-left:20px;color:var(--fg-muted);">
+        <li>Take your medications as prescribed, at the same time each day</li>
+        <li>Follow the DASH diet — more fruits, vegetables, whole grains; less salt and processed food</li>
+        <li>Aim for 150 minutes of moderate exercise per week (like brisk walking)</li>
+        <li>Limit alcohol to no more than 1-2 drinks per day</li>
+        <li>Monitor your blood pressure regularly and keep a log</li>
+        <li>Keep all scheduled appointments with your healthcare team</li>
+      </ul>
+    </div>
+    <div style="padding:16px;border-radius:10px;background:var(--accent-glow);font-size:12px;color:var(--fg-muted);">
+      This summary is for your personal reference. Always follow your healthcare provider's instructions. If you experience symptoms like severe headache, chest pain, difficulty breathing, or dizziness, seek medical attention immediately.
+    </div>`;
+  }
+  toast('Report generated', 'success');
+}
+
+/* ========== EXPORT FUNCTIONS ========== */
+function exportPDF() {
+  // Ensure report is generated
+  if (el('reportContent').querySelector('fa-file-medical')) generateReport('physician');
+  const element = el('reportContent');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (isDark) { document.documentElement.setAttribute('data-theme', 'light'); }
+  setTimeout(() => {
+    html2pdf().set({
+      margin: 10, filename: 'CardioTrack_Report_' + new Date().toISOString().slice(0,10) + '.pdf',
+      image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(element).save().then(() => {
+      if (isDark) document.documentElement.setAttribute('data-theme', 'dark');
+      toast('PDF exported successfully', 'success');
+    });
+  }, 200);
+}
+
+function exportCSV() {
+  let csv = '=== Patient ===\nName,Age,Gender,Height,Weight,Diagnosis,Physician\n';
+  const p = state.patient;
+  csv += `"${p.name}","${p.age}","${p.gender}","${p.height}","${p.weight}","${p.diagnosis}","${p.physician}"\n\n`;
+  csv += '=== Blood Pressure Readings ===\nDate,Systolic,Diastolic,Pulse,Notes\n';
+  state.vitals.bp.forEach(r => { csv += `"${r.date}",${r.sys},${r.dia},${r.pulse||''},"${r.notes||''}"\n`; });
+  csv += '\n=== Weight Entries ===\nDate,Weight_kg,BMI,Waist_cm\n';
+  state.vitals.weight.forEach(r => { csv += `"${r.date}",${r.kg},${r.bmi||''},${r.waist||''}\n`; });
+  csv += '\n=== Medications ===\nName,Dose,Unit,Frequency,Time,StartDate,Notes\n';
+  state.medications.forEach(m => { csv += `"${m.name}",${m.dose},"${m.unit}","${m.freq}","${m.time}","${m.start}","${m.notes||''}"\n`; });
+  csv += '\n=== Lab Values ===\nDate,eGFR,Creatinine,Potassium,Sodium,HbA1c,TotalChol,LDL,HDL,Triglycerides\n';
+  state.labs.forEach(r => { csv += `"${r.date}",${r.eGFR||''},${r.creat||''},${r.K||''},${r.Na||''},${r.HbA1c||''},${r.TC||''},${r.LDL||''},${r.HDL||''},${r.TG||''}\n`; });
+  downloadFile(csv, 'CardioTrack_Data_' + new Date().toISOString().slice(0,10) + '.csv', 'text/csv');
+  toast('CSV exported', 'success');
+}
+
+function exportJSON() {
+  const json = JSON.stringify(state, null, 2);
+  downloadFile(json, 'CardioTrack_Data_' + new Date().toISOString().slice(0,10) + '.json', 'application/json');
+  toast('JSON exported', 'success');
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ========== HELPERS ========== */
+function getLatestBP() {
+  const bp = state.vitals.bp;
+  return bp.length > 0 ? bp[bp.length - 1] : null;
+}
+
+function getLatestLabs() {
+  const labs = state.labs;
+  return labs.length > 0 ? labs[labs.length - 1] : null;
+}
+
+function getLatestBMI() {
+  const w = state.vitals.weight;
+  return w.length > 0 && w[w.length-1].bmi ? parseFloat(w[w.length-1].bmi) : null;
+}
+
+function saveStateToDisk() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+/* ========== CHARTS ========== */
+function getChartColors() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    grid: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    text: isDark ? '#7A8BA5' : '#64748B',
+    accent: '#14B8A6', accentBg: 'rgba(20,184,166,0.15)',
+    amber: '#F59E0B', amberBg: 'rgba(245,158,11,0.15)',
+    rose: '#F43F5E', roseBg: 'rgba(244,63,94,0.15)',
+    green: '#10B981', greenBg: 'rgba(16,185,129,0.15)',
+    purple: '#A78BFA', purpleBg: 'rgba(167,139,250,0.15)'
+  };
+}
+
+function initChartsForSection(name) {
+  if (name === 'overview') { initOverviewCharts(); }
+  else if (name === 'vitals') { initVitalsCharts(); }
+  else if (name === 'labs') { initLabsChart(); }
+  else if (name === 'diet') { initDietCharts(); }
+  else if (name === 'lifestyle') { initExerciseChart(); }
+}
+
+function initOverviewCharts() {
+  const c = getChartColors();
+  // BP trend
+  if (charts.bpOverview) charts.bpOverview.destroy();
+  const bpData = state.vitals.bp.slice(-20);
+  const ctx1 = el('chartBPOverview').getContext('2d');
+  charts.bpOverview = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: bpData.map(r => { const d = new Date(r.date); return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }),
+      datasets: [
+        { label: 'Systolic', data: bpData.map(r => r.sys), borderColor: c.accent, backgroundColor: c.accentBg, fill: true, tension: 0.3, pointRadius: 3 },
+        { label: 'Diastolic', data: bpData.map(r => r.dia), borderColor: c.amber, backgroundColor: c.amberBg, fill: true, tension: 0.3, pointRadius: 3 }
+      ]
+    },
+    options: chartLineOptions(c)
+  });
+
+  // DASH doughnut
+  if (charts.dashOverview) charts.dashOverview.destroy();
+  const dashTotal = Object.values(state.diet).slice(0,8).reduce((a,b) => a+b, 0);
+  const ctx2 = el('chartDASHOverview').getContext('2d');
+  charts.dashOverview = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: ['Score', 'Remaining'],
+      datasets: [{ data: [dashTotal, 80-dashTotal], backgroundColor: [dashTotal>=50?c.accent:dashTotal>=35?c.amber:c.rose, 'rgba(128,128,128,0.15)'], borderWidth: 0, borderRadius: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '72%',
+      plugins: { legend: { display: false }, tooltip: { enabled: false } }
+    }
+  });
+  el('dashScoreLabel').textContent = dashTotal + '/80 — ' + (dashTotal>=65?'Excellent':dashTotal>=50?'Good':dashTotal>=35?'Moderate':'Poor') + ' Adherence';
+}
+
+function initVitalsCharts() {
+  const c = getChartColors();
+  // BP chart
+  if (charts.bp) charts.bp.destroy();
+  const bpData = state.vitals.bp;
+  const ctx1 = el('chartBP').getContext('2d');
+  charts.bp = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: bpData.map(r => { const d = new Date(r.date); return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }),
+      datasets: [
+        { label: 'Systolic', data: bpData.map(r => r.sys), borderColor: c.accent, backgroundColor: c.accentBg, fill: true, tension: 0.3, pointRadius: 4 },
+        { label: 'Diastolic', data: bpData.map(r => r.dia), borderColor: c.amber, backgroundColor: c.amberBg, fill: true, tension: 0.3, pointRadius: 4 },
+        { label: 'Pulse', data: bpData.map(r => r.pulse), borderColor: c.purple, borderDash: [4,4], pointRadius: 3, fill: false, tension: 0.3, yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      ...chartLineOptions(c),
+      scales: {
+        x: { ticks: { color: c.text, maxRotation: 45, font: { size: 10 } }, grid: { color: c.grid } },
+        y: { position: 'left', title: { display: true, text: 'mmHg', color: c.text }, ticks: { color: c.text }, grid: { color: c.grid }, min: 40 },
+        y1: { position: 'right', title: { display: true, text: 'bpm', color: c.text }, ticks: { color: c.text }, grid: { drawOnChartArea: false }, min: 40 }
+      }
+    }
+  });
+
+  // Weight chart
+  if (charts.weight) charts.weight.destroy();
+  const wtData = state.vitals.weight;
+  const ctx2 = el('chartWeight').getContext('2d');
+  charts.weight = new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: wtData.map(r => r.date),
+      datasets: [
+        { label: 'Weight (kg)', data: wtData.map(r => r.kg), borderColor: c.accent, backgroundColor: c.accentBg, fill: true, tension: 0.3, pointRadius: 4, yAxisID: 'y' },
+        { label: 'BMI', data: wtData.map(r => r.bmi), borderColor: c.amber, borderDash: [4,4], pointRadius: 3, fill: false, tension: 0.3, yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      ...chartLineOptions(c),
+      scales: {
+        x: { ticks: { color: c.text }, grid: { color: c.grid } },
+        y: { position: 'left', title: { display: true, text: 'kg', color: c.text }, ticks: { color: c.text }, grid: { color: c.grid } },
+        y1: { position: 'right', title: { display: true, text: 'BMI', color: c.text }, ticks: { color: c.text }, grid: { drawOnChartArea: false }, min: 15, max: 45 }
+      }
+    }
+  });
+}
+
+function initLabsChart() {
+  const c = getChartColors();
+  if (charts.labs) charts.labs.destroy();
+  const labData = state.labs;
+  const ctx = el('chartLabs').getContext('2d');
+  charts.labs = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labData.map(r => r.date),
+      datasets: [
+        { label: 'eGFR', data: labData.map(r => r.eGFR), backgroundColor: c.accentBg, borderColor: c.accent, borderWidth: 2, yAxisID: 'y' },
+        { label: 'K+ (mEq/L)', data: labData.map(r => r.K), backgroundColor: c.amberBg, borderColor: c.amber, borderWidth: 2, yAxisID: 'y1' },
+        { label: 'Creatinine (mg/dL)', data: labData.map(r => r.creat), backgroundColor: c.roseBg, borderColor: c.rose, borderWidth: 2, yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: c.text, font: { family: 'DM Sans', size: 11 } } } },
+      scales: {
+        x: { ticks: { color: c.text }, grid: { color: c.grid } },
+        y: { position: 'left', title: { display: true, text: 'eGFR', color: c.text }, ticks: { color: c.text }, grid: { color: c.grid }, min: 0 },
+        y1: { position: 'right', title: { display: true, text: 'mEq/L / mg/dL', color: c.text }, ticks: { color: c.text }, grid: { drawOnChartArea: false }, min: 0 }
+      }
+    }
+  });
+}
+
+function initDietCharts() {
+  updateDASHChart();
+  updateNaKChart();
+  updateNutritionRecs();
+}
+
+function updateDASHChart() {
+  const c = getChartColors();
+  if (charts.dash) charts.dash.destroy();
+  const keys = ['fruits','veg','dairy','grains','meat','nuts','sweets','fats'];
+  const labels = ['Fruits','Vegetables','Dairy','Grains','Meat','Nuts','Sweets','Fats'];
+  const data = keys.map(k => state.diet[k]);
+  const ctx = el('chartDASH').getContext('2d');
+  charts.dash = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [{ label: 'Your Score', data, borderColor: c.accent, backgroundColor: c.accentBg, pointBackgroundColor: c.accent, pointRadius: 4 },
+        { label: 'Ideal', data: [10,10,10,10,10,10,10,10], borderColor: 'rgba(128,128,128,0.3)', backgroundColor: 'rgba(128,128,128,0.05)', pointRadius: 0, borderDash: [4,4] }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { r: { min: 0, max: 10, ticks: { color: c.text, backdropColor: 'transparent', stepSize: 2 }, grid: { color: c.grid }, pointLabels: { color: c.text, font: { family: 'DM Sans', size: 11 } }, angleLines: { color: c.grid } } },
+      plugins: { legend: { labels: { color: c.text, font: { family: 'DM Sans', size: 11 } } } }
+    }
+  });
+}
+
+function updateNaKChart() {
+  const c = getChartColors();
+  if (charts.nak) charts.nak.destroy();
+  const na = state.diet.naDaily || 0;
+  const k = state.diet.kDaily || 0;
+  const ctx = el('chartNaK').getContext('2d');
+  charts.nak = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Sodium (mg)', 'Potassium (mg)'],
+      datasets: [
+        { label: 'Your Intake', data: [na, k], backgroundColor: [c.roseBg, c.greenBg], borderColor: [c.rose, c.green], borderWidth: 2, borderRadius: 8 },
+        { label: 'Recommended Limit/Target', data: [2300, 4700], backgroundColor: ['rgba(128,128,128,0.1)', 'rgba(128,128,128,0.1)'], borderColor: ['rgba(128,128,128,0.4)', 'rgba(128,128,128,0.4)'], borderWidth: 1, borderDash: [4,4], borderRadius: 8 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { labels: { color: c.text, font: { family: 'DM Sans', size: 10 } } } },
+      scales: {
+        x: { ticks: { color: c.text }, grid: { color: c.grid }, title: { display: true, text: 'mg', color: c.text } },
+        y: { ticks: { color: c.text }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function updateNutritionRecs() {
+  const recs = getNutritionRecs();
+  el('nutritionRecs').innerHTML = recs.map(r => `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;padding:12px;border-radius:10px;background:var(--accent-glow);"><i class="fas fa-${r.icon}" style="color:var(--accent);margin-top:3px;width:16px;text-align:center;flex-shrink:0;"></i><span>${r.text}</span></div>`).join('');
+}
+
+function initExerciseChart() {
+  const c = getChartColors();
+  if (charts.exercise) charts.exercise.destroy();
+  const exData = state.lifestyle.exercise;
+  // Group by week
+  const weeks = {};
+  exData.forEach(e => {
+    const d = new Date(e.date);
+    const weekStart = new Date(d);
+    weekStart.setDate(d.getDate() - d.getDay());
+    const key = weekStart.toLocaleDateString();
+    if (!weeks[key]) weeks[key] = { low: 0, moderate: 0, vigorous: 0 };
+    weeks[key][e.intensity.toLowerCase()] += e.dur;
+  });
+  const labels = Object.keys(weeks);
+  const ctx = el('chartExercise').getContext('2d');
+  charts.exercise = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Low (min)', data: labels.map(l => weeks[l].low), backgroundColor: c.greenBg, borderColor: c.green, borderWidth: 1, borderRadius: 4 },
+        { label: 'Moderate (min)', data: labels.map(l => weeks[l].moderate), backgroundColor: c.amberBg, borderColor: c.amber, borderWidth: 1, borderRadius: 4 },
+        { label: 'Vigorous (min)', data: labels.map(l => weeks[l].vigorous), backgroundColor: c.roseBg, borderColor: c.rose, borderWidth: 1, borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: c.text, font: { family: 'DM Sans', size: 11 } } } },
+      scales: {
+        x: { stacked: true, ticks: { color: c.text }, grid: { color: c.grid } },
+        y: { stacked: true, ticks: { color: c.text }, grid: { color: c.grid }, title: { display: true, text: 'Minutes', color: c.text } }
+      }
+    }
+  });
+}
+
+function chartLineOptions(c) {
+  return {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { intersect: false, mode: 'index' },
+    plugins: { legend: { labels: { color: c.text, font: { family: 'DM Sans', size: 11 }, usePointStyle: true, pointStyle: 'circle' } } },
+    scales: {
+      x: { ticks: { color: c.text, maxRotation: 45, font: { size: 10 } }, grid: { color: c.grid } },
+      y: { ticks: { color: c.text }, grid: { color: c.grid } }
+    }
+  };
+}
+
+/* ========== OVERVIEW REFRESH ========== */
+function refreshOverview() {
+  // BP stat
+  const bp = getLatestBP();
+  el('statBP').textContent = bp ? bp.sys + '/' + bp.dia : '--/--';
+  if (bp) {
+    const [cat, cls] = bpCategory(bp.sys, bp.dia);
+    el('statBP').style.color = cls==='danger'?'var(--danger)':cls==='warning'?'var(--warning)':'var(--accent)';
+  }
+
+  // BMI stat
+  const bmi = getLatestBMI();
+  el('statBMI').textContent = bmi || '--';
+  if (bmi) {
+    el('statBMI').style.color = bmi>=30?'var(--danger)':bmi>=25?'var(--warning)':'var(--accent2)';
+  }
+
+  // eGFR stat
+  const labs = getLatestLabs();
+  el('statEGFR').textContent = labs && labs.eGFR !== null ? labs.eGFR : '--';
+  if (labs && labs.eGFR !== null) {
+    el('statEGFR').style.color = labs.eGFR<30?'var(--danger)':labs.eGFR<60?'var(--warning)':'var(--success)';
+  }
+
+  // Risk score
+  const risk = calculateRiskScore();
+  el('statRisk').textContent = risk.score;
+  el('statRisk').style.color = risk.color;
+  el('statRiskIcon').style.background = risk.color==='var(--danger)'?'var(--danger-bg)':risk.color==='var(--warning)'?'var(--warning-bg)':'var(--success-bg)';
+  el('statRiskIcon').style.color = risk.color;
+
+  // Warnings
+  const warnings = getWarnings();
+  el('warningsOverview').innerHTML = warnings.map(w => `<div class="warning-banner ${w.type}"><i class="fas fa-${w.icon}"></i><div>${w.text}</div></div>`).join('');
+
+  // Meds overview
+  if (state.medications.length > 0) {
+    el('overviewMeds').innerHTML = state.medications.map(m =>
+      `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--card-border);"><span class="badge badge-accent">${m.dose} ${m.unit}</span><span style="font-weight:600;font-size:13px;">${m.name}</span><span style="font-size:12px;color:var(--fg-muted);">${m.freq} — ${m.time}</span></div>`
+    ).join('');
+  }
+}
+
+/* ========== INIT ========== */
+function init() {
+  // Populate form fields from state
+  el('pName').value = state.patient.name || '';
+  el('pDOB').value = state.patient.dob || '';
+  el('pAge').value = state.patient.age || '';
+  el('pGender').value = state.patient.gender || '';
+  el('pHeight').value = state.patient.height || '';
+  el('pWeight').value = state.patient.weight || '';
+  el('pDiagnosis').value = state.patient.diagnosis || '';
+  el('pPhysician').value = state.patient.physician || '';
+  el('pComorbid').value = state.patient.comorbid || '';
+  el('pAllergies').value = state.patient.allergies || '';
+
+  // DASH sliders
+  const dashKeys = ['Fruits','Veg','Dairy','Grains','Meat','Nuts','Sweets','Fats'];
+  const dashStateKeys = ['fruits','veg','dairy','grains','meat','nuts','sweets','fats'];
+  dashKeys.forEach((id,i) => {
+    el('dash'+id).value = state.diet[dashStateKeys[i]];
+    el(id.toLowerCase()+'Val').textContent = state.diet[dashStateKeys[i]];
+  });
+  const dashTotal = dashStateKeys.reduce((a,k) => a + state.diet[k], 0);
+  el('dashTotal').textContent = dashTotal;
+  el('dashGrade').textContent = dashTotal>=65?'Excellent Adherence':dashTotal>=50?'Good Adherence':dashTotal>=35?'Moderate Adherence':'Poor Adherence';
+
+  // Na/K
+  el('naDaily').value = state.diet.naDaily || '';
+  el('kDaily').value = state.diet.kDaily || '';
+  updateNaKAnalysis();
+
+  // Lifestyle
+  el('lsSmoke').value = state.lifestyle.smoke || 'Never';
+  el('lsAlcohol').value = state.lifestyle.alcohol || 0;
+  el('lsSleep').value = state.lifestyle.sleep || 7;
+  el('lsStress').value = state.lifestyle.stress || 5;
+  el('stressVal').textContent = state.lifestyle.stress || 5;
+  el('lsCaffeine').value = state.lifestyle.caffeine || 0;
+  el('lsNotes').value = state.lifestyle.notes || '';
+
+  // Set default dates
+  const now = new Date();
+  const dtLocal = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0,16);
+  const dLocal = now.toISOString().slice(0,10);
+  el('bpDate').value = dtLocal;
+  el('wtDate').value = dLocal;
+  el('medStart').value = dLocal;
+  el('labDate').value = dLocal;
+  el('exDate').value = dLocal;
+
+  // Render tables
+  renderBPTable();
+  renderMedTable();
+  renderLabTable();
+  renderExTable();
+  updateBMIDisplay();
+  updateExercisePlan();
+
+  // Refresh overview stats
+  refreshOverview();
+
+  // Init overview charts
+  setTimeout(() => initOverviewCharts(), 100);
+
+  // RSI prefill
+  const bp = getLatestBP();
+  const labs = getLatestLabs();
+  if (bp) { el('rsiSBP').value = bp.sys; el('rsiDBP').value = bp.dia; }
+  if (labs && labs.eGFR) el('rsiEGFR').value = labs.eGFR;
+  if (labs && labs.K) el('rsiK').value = labs.K;
+  el('rsiAge').value = state.patient.age || '';
+  el('rsiWeight').value = state.patient.weight || '';
+  const dashTotalVal = dashStateKeys.reduce((a,k) => a + state.diet[k], 0);
+  el('rsiDASH').value = dashTotalVal;
+
+  // Responsive grid fixes
+  const style = document.createElement('style');
+  style.textContent = `
+    @media (max-width:1024px) {
+      .overview-charts-grid, .vitals-grid, .diet-charts-grid, .lifestyle-grid { grid-template-columns:1fr!important; }
+      .overview-bottom-grid { grid-template-columns:1fr!important; }
+    }
+    .hide-mobile { display:inline; }
+    @media (max-width:640px) { .hide-mobile { display:none; } }
+  `;
+  document.head.appendChild(style);
+}
+
+// Keyboard accessibility for nav
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    el('sidebar').classList.remove('open');
+    el('sidebarOverlay').classList.remove('show');
+  }
+});
+
+// Run init
+init();
+</script>
 </body>
 </html>
