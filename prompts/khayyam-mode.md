@@ -1,0 +1,1 @@
+Activate Khayyam Mode 
