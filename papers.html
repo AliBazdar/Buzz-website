@@ -1,1 +1,949 @@
-papers.html
+<p>&nbsp;</p><!DOCTYPE html>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi973MiSl7U4EZEhRaPz_wQRzZrt5CcI7vUkW1bzI_uS4sUWMF21R5hKdThZVu9vQ9cDrKwhyoUveqPumdkhpUrcNF2mBgBc0xxjd8-RMRH7wzyM14GMastHBZ7hyMSejx9-qh5tmHJ1EKp1jmLB9G3ZOhHpPOcht6rzqCFRFHVQIKE0lby3uchLKeNPvM/s263/image.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" height="200" data-original-height="263" data-original-width="259" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi973MiSl7U4EZEhRaPz_wQRzZrt5CcI7vUkW1bzI_uS4sUWMF21R5hKdThZVu9vQ9cDrKwhyoUveqPumdkhpUrcNF2mBgBc0xxjd8-RMRH7wzyM14GMastHBZ7hyMSejx9-qh5tmHJ1EKp1jmLB9G3ZOhHpPOcht6rzqCFRFHVQIKE0lby3uchLKeNPvM/s200/image.png"/></a></div>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neuroscience Of Durable Skills — Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@200;400;600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --bg-card: #111827;
+    --bg-card-hover: #1a2332;
+    --fg: #f0ece4;
+    --fg-muted: #8a9bb5;
+    --accent: #f59e0b;
+    --accent-glow: rgba(245, 158, 11, 0.25);
+    --teal: #14b8a6;
+    --teal-glow: rgba(20, 184, 166, 0.2);
+    --correct: #22c55e;
+    --correct-bg: rgba(34, 197, 94, 0.1);
+    --wrong: #ef4444;
+    --wrong-bg: rgba(239, 68, 68, 0.1);
+    --border: rgba(255,255,255,0.06);
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Animated background */
+  .bg-layer {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  .bg-blob {
+    position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.35;
+    animation: blobFloat 12s ease-in-out infinite alternate;
+  }
+  .bg-blob:nth-child(1) {
+    width: 500px; height: 500px; background: #f59e0b; top: -10%; left: -5%;
+    animation-duration: 14s;
+  }
+  .bg-blob:nth-child(2) {
+    width: 400px; height: 400px; background: #14b8a6; bottom: -10%; right: -5%;
+    animation-duration: 18s; animation-delay: -4s;
+  }
+  .bg-blob:nth-child(3) {
+    width: 300px; height: 300px; background: #e11d48; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); animation-duration: 20s; animation-delay: -8s; opacity: 0.15;
+  }
+  @keyframes blobFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -40px) scale(1.08); }
+    66% { transform: translate(-20px, 20px) scale(0.95); }
+    100% { transform: translate(15px, -15px) scale(1.03); }
+  }
+
+  /* Neural grid overlay */
+  .neural-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(245,158,11,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,158,11,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  /* Floating particles */
+  .particles-canvas {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+
+  .app-wrapper {
+    position: relative; z-index: 1;
+    max-width: 780px; margin: 0 auto; padding: 40px 20px 60px;
+  }
+
+  /* Header */
+  .quiz-header {
+    text-align: center; margin-bottom: 40px;
+    animation: fadeSlideDown 0.7s ease-out;
+  }
+  .quiz-header .icon-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 64px; height: 64px; border-radius: 18px; margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--accent), #d97706);
+    box-shadow: 0 8px 32px var(--accent-glow);
+    font-size: 28px; color: #0a0e17;
+  }
+  .quiz-header h1 {
+    font-family: 'Outfit', sans-serif; font-weight: 900; font-size: clamp(1.8rem, 5vw, 2.6rem);
+    letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--fg) 40%, var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .quiz-header p {
+    color: var(--fg-muted); font-size: 1rem; font-weight: 300; max-width: 520px; margin: 0 auto;
+  }
+
+  /* Progress bar */
+  .progress-container {
+    margin-bottom: 32px; animation: fadeSlideDown 0.8s ease-out;
+  }
+  .progress-info {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    font-size: 0.85rem; color: var(--fg-muted);
+  }
+  .progress-info .current-q {
+    color: var(--accent); font-weight: 600;
+  }
+  .progress-track {
+    height: 6px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 99px; transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    background: linear-gradient(90deg, var(--teal), var(--accent));
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(10px);
+    transition: all 0.4s ease;
+    animation: fadeSlideUp 0.5s ease-out;
+  }
+  .question-card .q-number {
+    display: inline-block; font-size: 0.75rem; font-weight: 600;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 12px;
+    background: var(--accent-glow); padding: 4px 12px; border-radius: 99px;
+  }
+  .question-card .q-text {
+    font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 600;
+    line-height: 1.5; margin-bottom: 24px;
+  }
+
+  /* Options */
+  .options-list { display: flex; flex-direction: column; gap: 12px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px;
+    cursor: pointer; transition: all 0.25s ease;
+    text-align: left; font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem; color: var(--fg); width: 100%;
+  }
+  .option-btn:hover:not(.selected):not(.disabled) {
+    background: rgba(245,158,11,0.06);
+    border-color: rgba(245,158,11,0.25);
+    transform: translateX(4px);
+  }
+  .option-btn .opt-letter {
+    flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+    background: rgba(255,255,255,0.06); color: var(--fg-muted);
+    transition: all 0.25s ease;
+  }
+  .option-btn.selected {
+    background: rgba(245,158,11,0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+  .option-btn.selected .opt-letter {
+    background: var(--accent); color: #0a0e17;
+  }
+  .option-btn.disabled { pointer-events: none; }
+
+  /* Review mode */
+  .option-btn.review-correct {
+    background: var(--correct-bg); border-color: var(--correct);
+  }
+  .option-btn.review-correct .opt-letter {
+    background: var(--correct); color: #fff;
+  }
+  .option-btn.review-wrong {
+    background: var(--wrong-bg); border-color: var(--wrong);
+  }
+  .option-btn.review-wrong .opt-letter {
+    background: var(--wrong); color: #fff;
+  }
+  .option-btn.review-dimmed { opacity: 0.4; }
+
+  .review-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.8rem; font-weight: 600; padding: 4px 12px;
+    border-radius: 99px; margin-top: 16px;
+  }
+  .review-badge.correct-badge { background: var(--correct-bg); color: var(--correct); }
+  .review-badge.wrong-badge { background: var(--wrong-bg); color: var(--wrong); }
+
+  /* Navigation */
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; margin-top: 8px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+    font-size: 0.9rem; padding: 14px 28px; border-radius: 12px;
+    border: none; cursor: pointer; transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #d97706);
+    color: #0a0e17;
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); }
+  .btn-primary:disabled { opacity: 0.35; pointer-events: none; }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.05); color: var(--fg-muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); color: var(--fg); }
+
+  .btn-teal {
+    background: linear-gradient(135deg, var(--teal), #0d9488);
+    color: #0a0e17;
+    box-shadow: 0 4px 20px var(--teal-glow);
+  }
+  .btn-teal:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--teal-glow); }
+
+  .btn-danger {
+    background: rgba(239,68,68,0.12); color: var(--wrong);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+  .btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+  /* Results screen */
+  .results-screen { animation: fadeSlideUp 0.6s ease-out; }
+  .score-ring-container {
+    display: flex; flex-direction: column; align-items: center; margin-bottom: 36px;
+  }
+  .score-ring {
+    position: relative; width: 180px; height: 180px;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .ring-bg {
+    fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 10;
+  }
+  .score-ring .ring-fill {
+    fill: none; stroke-width: 10; stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .score-ring .score-text {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .score-ring .score-num {
+    font-family: 'Outfit', sans-serif; font-size: 3rem; font-weight: 900; line-height: 1;
+  }
+  .score-ring .score-label { font-size: 0.8rem; color: var(--fg-muted); margin-top: 4px; }
+
+  .results-title {
+    font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800;
+    text-align: center; margin-bottom: 12px;
+  }
+  .results-subtitle {
+    text-align: center; color: var(--fg-muted); font-size: 0.95rem;
+    max-width: 540px; margin: 0 auto 32px; line-height: 1.6;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 16px; text-align: center;
+  }
+  .stat-card .stat-value {
+    font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 800;
+  }
+  .stat-card .stat-label { font-size: 0.75rem; color: var(--fg-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Recommendation card */
+  .reco-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px 28px; margin-bottom: 28px;
+    border-left: 4px solid var(--accent);
+  }
+  .reco-card h3 {
+    font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .reco-card h3 i { color: var(--accent); }
+  .reco-card p { color: var(--fg-muted); font-size: 0.9rem; line-height: 1.7; }
+
+  /* Action buttons row */
+  .actions-row {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+
+  /* Exit screen */
+  .exit-screen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 60vh; text-align: center; animation: fadeSlideUp 0.6s ease-out;
+  }
+  .exit-screen .exit-icon {
+    font-size: 3rem; color: var(--teal); margin-bottom: 20px;
+  }
+  .exit-screen h2 {
+    font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 12px;
+  }
+  .exit-screen p { color: var(--fg-muted); margin-bottom: 28px; }
+
+  /* Animations */
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+    50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 60px rgba(245,158,11,0.1); }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--fg); padding: 14px 28px; border-radius: 12px;
+    font-size: 0.9rem; z-index: 999; opacity: 0;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .app-wrapper { padding: 24px 14px 40px; }
+    .question-card { padding: 24px 18px; }
+    .stats-row { grid-template-columns: 1fr; }
+    .nav-row { flex-direction: column; }
+    .nav-row .btn { width: 100%; justify-content: center; }
+    .actions-row { flex-direction: column; }
+    .actions-row .btn { width: 100%; justify-content: center; }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    .bg-blob { animation: none; }
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="bg-layer">
+  <div class="bg-blob"></div>
+  <div class="bg-blob"></div>
+  <div class="bg-blob"></div>
+</div>
+<div class="neural-grid"></div>
+<canvas class="particles-canvas" id="particlesCanvas"></canvas>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<div class="app-wrapper">
+
+  <!-- QUIZ SCREEN -->
+  <div id="quizScreen">
+    <header class="quiz-header">
+      <div class="icon-badge"><i class="fas fa-brain"></i></div>
+      <h1>Neuroscience Of Durable Skills</h1>
+      <p>Test your understanding of the neural foundations behind the skills that matter most.</p>
+    </header>
+
+    <div class="progress-container">
+      <div class="progress-info">
+        <span>Question <span class="current-q" id="currentQ">1</span> of <span id="totalQ">10</span></span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <div id="questionContainer"></div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" id="prevBtn" disabled>
+        <i class="fas fa-arrow-left"></i> Previous
+      </button>
+      <button class="btn btn-primary" id="nextBtn" disabled>
+        Next <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div id="resultsScreen" class="hidden results-screen"></div>
+
+  <!-- REVIEW SCREEN -->
+  <div id="reviewScreen" class="hidden"></div>
+
+  <!-- EXIT SCREEN -->
+  <div id="exitScreen" class="hidden exit-screen">
+    <div class="exit-icon"><i class="fas fa-hand-peace"></i></div>
+    <h2>See You Next Time</h2>
+    <p>Thanks for taking the Neuroscience of Durable Skills quiz. Keep learning!</p>
+    <button class="btn btn-teal" onclick="restartQuiz()">
+      <i class="fas fa-redo"></i> Take Quiz Again
+    </button>
+  </div>
+
+</div>
+
+<script>
+  // === Quiz Data ===
+  const quizData = [
+    {
+      id: 1,
+      question: "Which brain region is most associated with executive control and decision-making?",
+      options: ["Occipital lobe", "Prefrontal cortex", "Cerebellum", "Brainstem"],
+      correct: 1
+    },
+    {
+      id: 2,
+      question: "Emotional intelligence in humans is most closely linked to which process?",
+      options: ["Social and affective regulation", "Visual pattern detection", "Reflex coordination", "Pure motor planning"],
+      correct: 0
+    },
+    {
+      id: 3,
+      question: "Which system is commonly involved in threat detection and emotional salience?",
+      options: ["Amygdala", "Hippocampus", "Medulla", "Thalamus"],
+      correct: 0
+    },
+    {
+      id: 4,
+      question: "Relationship building depends most strongly on which capability?",
+      options: ["Social cognition and theory of mind", "Arithmetic speed", "Sensory adaptation", "Spatial rotation"],
+      correct: 0
+    },
+    {
+      id: 5,
+      question: "Critical thinking is best described as:",
+      options: ["Automatic memorization", "Deliberate evaluation of evidence and assumptions", "Emotional suppression", "Fast pattern matching only"],
+      correct: 1
+    },
+    {
+      id: 6,
+      question: "Ethical judgment in humans often involves balancing:",
+      options: ["Reward only", "Rules, consequences, and empathy", "Language fluency and memory", "Reflexes and attention"],
+      correct: 1
+    },
+    {
+      id: 7,
+      question: "Navigating ambiguity requires tolerance for:",
+      options: ["Absolute certainty", "Unclear, incomplete, or conflicting information", "Only numerical data", "Immediate closure"],
+      correct: 1
+    },
+    {
+      id: 8,
+      question: "Which is a major limitation of current AI in durable skills?",
+      options: ["Too much embodied experience", "Lack of lived experience and true social context", "Excessive emotional self-awareness", "Perfect moral reasoning"],
+      correct: 1
+    },
+    {
+      id: 9,
+      question: "Which learning approach can help improve AI alignment with human-like durable skills?",
+      options: ["Reinforcement learning from human feedback", "Removing all training data", "Disabling memory systems", "Avoiding evaluation"],
+      correct: 0
+    },
+    {
+      id: 10,
+      question: "What is the main challenge in making AI appear emotionally intelligent?",
+      options: ["It can only process text", "It may simulate empathy without genuine subjective experience", "It cannot output language", "It has too much biological emotion"],
+      correct: 1
+    }
+  ];
+
+  const letters = ['A', 'B', 'C', 'D'];
+  let userAnswers = new Array(quizData.length).fill(null);
+  let currentQuestion = 0;
+
+  // === DOM References ===
+  const quizScreen = document.getElementById('quizScreen');
+  const resultsScreen = document.getElementById('resultsScreen');
+  const reviewScreen = document.getElementById('reviewScreen');
+  const exitScreen = document.getElementById('exitScreen');
+  const questionContainer = document.getElementById('questionContainer');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const currentQEl = document.getElementById('currentQ');
+  const progressFill = document.getElementById('progressFill');
+  const progressPct = document.getElementById('progressPct');
+  const toastEl = document.getElementById('toast');
+
+  // === Toast ===
+  let toastTimer;
+  function showToast(msg, icon = 'fa-circle-info') {
+    clearTimeout(toastTimer);
+    toastEl.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+    toastEl.classList.add('show');
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+  }
+
+  // === Render Question ===
+  function renderQuestion() {
+    const q = quizData[currentQuestion];
+    const selected = userAnswers[currentQuestion];
+
+    let optionsHTML = '';
+    q.options.forEach((opt, i) => {
+      const isSelected = selected === i;
+      const classes = ['option-btn'];
+      if (isSelected) classes.push('selected');
+      optionsHTML += `
+        <button class="${classes.join(' ')}" data-index="${i}" aria-label="Option ${letters[i]}: ${opt}">
+          <span class="opt-letter">${letters[i]}</span>
+          <span>${opt}</span>
+        </button>`;
+    });
+
+    questionContainer.innerHTML = `
+      <div class="question-card">
+        <span class="q-number">Question ${q.id}</span>
+        <p class="q-text">${q.question}</p>
+        <div class="options-list">${optionsHTML}</div>
+      </div>`;
+
+    // Re-trigger animation
+    const card = questionContainer.querySelector('.question-card');
+    card.style.animation = 'none';
+    card.offsetHeight; // reflow
+    card.style.animation = '';
+
+    // Event listeners for options
+    questionContainer.querySelectorAll('.option-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.index);
+        userAnswers[currentQuestion] = idx;
+        renderQuestion();
+        updateNav();
+      });
+    });
+
+    // Update progress
+    currentQEl.textContent = currentQuestion + 1;
+    const answered = userAnswers.filter(a => a !== null).length;
+    const pct = Math.round((answered / quizData.length) * 100);
+    progressFill.style.width = pct + '%';
+    progressPct.textContent = pct + '%';
+
+    updateNav();
+  }
+
+  function updateNav() {
+    prevBtn.disabled = currentQuestion === 0;
+    const isLast = currentQuestion === quizData.length - 1;
+    const answered = userAnswers[currentQuestion] !== null;
+
+    if (isLast) {
+      nextBtn.innerHTML = 'Submit Quiz <i class="fas fa-check"></i>';
+      nextBtn.disabled = !answered;
+      nextBtn.className = 'btn btn-primary';
+      // Check if all answered for extra style
+      const allAnswered = userAnswers.every(a => a !== null);
+      if (allAnswered) {
+        nextBtn.style.animation = 'pulseGlow 2s ease-in-out infinite';
+      } else {
+        nextBtn.style.animation = '';
+      }
+    } else {
+      nextBtn.innerHTML = 'Next <i class="fas fa-arrow-right"></i>';
+      nextBtn.disabled = !answered;
+      nextBtn.className = 'btn btn-primary';
+      nextBtn.style.animation = '';
+    }
+  }
+
+  prevBtn.addEventListener('click', () => {
+    if (currentQuestion > 0) { currentQuestion--; renderQuestion(); }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentQuestion < quizData.length - 1) {
+      currentQuestion++;
+      renderQuestion();
+    } else {
+      // Submit
+      const allAnswered = userAnswers.every(a => a !== null);
+      if (!allAnswered) {
+        showToast('Please answer all questions before submitting.', 'fa-triangle-exclamation');
+        return;
+      }
+      showResults();
+    }
+  });
+
+  // === Results ===
+  function showResults() {
+    let correct = 0;
+    quizData.forEach((q, i) => {
+      if (userAnswers[i] === q.correct) correct++;
+    });
+    const total = quizData.length;
+    const score = Math.round((correct / total) * 100);
+    const wrong = total - correct;
+
+    // Determine color based on score
+    let ringColor = '#ef4444';
+    if (score >= 80) ringColor = '#22c55e';
+    else if (score >= 60) ringColor = '#f59e0b';
+    else if (score >= 40) ringColor = '#f97316';
+
+    // SVG ring calculation
+    const r = 75;
+    const circ = 2 * Math.PI * r;
+    const offset = circ - (score / 100) * circ;
+
+    // Recommendation
+    let recoTitle, recoText;
+    if (score >= 90) {
+      recoTitle = "Outstanding Mastery";
+      recoText = "You demonstrate exceptional understanding of the neuroscience behind durable skills. Your grasp of executive function, emotional intelligence, social cognition, and AI limitations is sophisticated. Consider mentoring others or exploring advanced topics in cognitive neuroscience and AI alignment research.";
+    } else if (score >= 70) {
+      recoTitle = "Strong Foundation";
+      recoText = "You have a solid understanding of the neural mechanisms underlying durable skills. A few areas could use deeper exploration — review the questions you missed, focusing on the specific brain regions and processes involved. You're well-positioned to strengthen your knowledge with targeted study.";
+    } else if (score >= 50) {
+      recoTitle = "Developing Understanding";
+      recoText = "You're on the right track but have notable gaps in connecting neuroscience concepts to durable skills. Focus on mapping brain regions (prefrontal cortex, amygdala) to their functions, and understanding why AI struggles with embodied, contextual skills. Re-reading key materials will help significantly.";
+    } else {
+      recoTitle = "Needs Significant Review";
+      recoText = "This score suggests the foundational concepts need reinforcement. Start by learning the core brain regions and their roles — especially the prefrontal cortex, amygdala, and hippocampus. Then build up to how these map to skills like critical thinking, emotional intelligence, and ethical judgment. Don't be discouraged; this material takes time to internalize.";
+    }
+
+    resultsScreen.innerHTML = `
+      <div class="score-ring-container">
+        <div class="score-ring">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle class="ring-bg" cx="90" cy="90" r="${r}"/>
+            <circle class="ring-fill" cx="90" cy="90" r="${r}"
+              stroke="${ringColor}"
+              stroke-dasharray="${circ}"
+              stroke-dashoffset="${circ}"
+              id="ringFill"/>
+          </svg>
+          <div class="score-text">
+            <span class="score-num" style="color: ${ringColor}" id="scoreNum">0</span>
+            <span class="score-label">out of ${total}</span>
+          </div>
+        </div>
+      </div>
+      <h2 class="results-title">${recoTitle}</h2>
+      <p class="results-subtitle">You answered ${correct} of ${total} questions correctly (${score}%)</p>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" style="color: var(--correct)">${correct}</div>
+          <div class="stat-label">Correct</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color: var(--wrong)">${wrong}</div>
+          <div class="stat-label">Incorrect</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color: var(--accent)">${score}%</div>
+          <div class="stat-label">Score</div>
+        </div>
+      </div>
+
+      <div class="reco-card">
+        <h3><i class="fas fa-lightbulb"></i> Recommendation</h3>
+        <p>${recoText}</p>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-teal" onclick="showReview()">
+          <i class="fas fa-magnifying-glass"></i> Review Answers
+        </button>
+        <button class="btn btn-primary" onclick="restartQuiz()">
+          <i class="fas fa-redo"></i> Retake Quiz
+        </button>
+        <button class="btn btn-danger" onclick="showExit()">
+          <i class="fas fa-right-from-bracket"></i> Exit
+        </button>
+      </div>
+    `;
+
+    quizScreen.classList.add('hidden');
+    resultsScreen.classList.remove('hidden');
+
+    // Animate ring
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        document.getElementById('ringFill').style.strokeDashoffset = offset;
+        animateNumber('scoreNum', 0, correct, 1200);
+      }, 100);
+    });
+  }
+
+  function animateNumber(elId, from, to, duration) {
+    const el = document.getElementById(elId);
+    const start = performance.now();
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(from + (to - from) * ease);
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // === Review ===
+  function showReview() {
+    let html = `
+      <header class="quiz-header" style="margin-bottom: 28px;">
+        <div class="icon-badge" style="background: linear-gradient(135deg, var(--teal), #0d9488);">
+          <i class="fas fa-clipboard-check"></i>
+        </div>
+        <h1>Answer Review</h1>
+        <p>Go through each question to see what you got right and where you can improve.</p>
+      </header>
+    `;
+
+    quizData.forEach((q, i) => {
+      const userAns = userAnswers[i];
+      const isCorrect = userAns === q.correct;
+
+      let optionsHTML = '';
+      q.options.forEach((opt, j) => {
+        let classes = ['option-btn', 'disabled'];
+        if (j === q.correct) {
+          classes.push('review-correct');
+        } else if (j === userAns && !isCorrect) {
+          classes.push('review-wrong');
+        } else {
+          classes.push('review-dimmed');
+        }
+        const icon = j === q.correct ? ' <i class="fas fa-check" style="color:var(--correct);margin-left:auto;"></i>' :
+                     (j === userAns && !isCorrect) ? ' <i class="fas fa-xmark" style="color:var(--wrong);margin-left:auto;"></i>' : '';
+        optionsHTML += `
+          <button class="${classes.join(' ')}">
+            <span class="opt-letter">${letters[j]}</span>
+            <span>${opt}</span>${icon}
+          </button>`;
+      });
+
+      const badge = isCorrect
+        ? `<div class="review-badge correct-badge"><i class="fas fa-check-circle"></i> Correct</div>`
+        : `<div class="review-badge wrong-badge"><i class="fas fa-times-circle"></i> Incorrect — You chose ${letters[userAns]}, correct answer is ${letters[q.correct]}</div>`;
+
+      html += `
+        <div class="question-card" style="margin-bottom: 20px; animation: none;">
+          <span class="q-number">Question ${q.id}</span>
+          <p class="q-text">${q.question}</p>
+          <div class="options-list">${optionsHTML}</div>
+          ${badge}
+        </div>`;
+    });
+
+    html += `
+      <div class="actions-row" style="margin-top: 12px;">
+        <button class="btn btn-ghost" onclick="backToResults()">
+          <i class="fas fa-arrow-left"></i> Back to Results
+        </button>
+        <button class="btn btn-primary" onclick="restartQuiz()">
+          <i class="fas fa-redo"></i> Retake Quiz
+        </button>
+        <button class="btn btn-danger" onclick="showExit()">
+          <i class="fas fa-right-from-bracket"></i> Exit
+        </button>
+      </div>`;
+
+    resultsScreen.classList.add('hidden');
+    reviewScreen.classList.remove('hidden');
+    reviewScreen.innerHTML = html;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToResults() {
+    reviewScreen.classList.add('hidden');
+    resultsScreen.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // === Exit ===
+  function showExit() {
+    quizScreen.classList.add('hidden');
+    resultsScreen.classList.add('hidden');
+    reviewScreen.classList.add('hidden');
+    exitScreen.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // === Restart ===
+  function restartQuiz() {
+    userAnswers = new Array(quizData.length).fill(null);
+    currentQuestion = 0;
+    progressFill.style.width = '0%';
+    progressPct.textContent = '0%';
+
+    quizScreen.classList.remove('hidden');
+    resultsScreen.classList.add('hidden');
+    reviewScreen.classList.add('hidden');
+    exitScreen.classList.add('hidden');
+
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('Quiz restarted — good luck!', 'fa-rotate');
+  }
+
+  // === Particle System ===
+  (function initParticles() {
+    const canvas = document.getElementById('particlesCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const PARTICLE_COUNT = 50;
+    let mouse = { x: -999, y: -999 };
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    document.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.speedY = (Math.random() - 0.5) * 0.4;
+        this.opacity = Math.random() * 0.5 + 0.1;
+        this.hue = Math.random() > 0.5 ? 38 : 174; // amber or teal
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Mouse repulsion
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          const force = (120 - dist) / 120 * 0.8;
+          this.x += (dx / dist) * force;
+          this.y += (dy / dist) * force;
+        }
+
+        if (this.x < -10 || this.x > canvas.width + 10 || this.y < -10 || this.y > canvas.height + 10) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, Math.max(0.1, this.size), 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${this.hue}, 80%, 60%, ${this.opacity})`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new Particle());
+    }
+
+    function drawConnections() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 140) {
+            const alpha = (1 - dist / 140) * 0.12;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(245, 158, 11, ${alpha})`;
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      drawConnections();
+      requestAnimationFrame(animate);
+    }
+
+    // Respect reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReducedMotion) animate();
+  })();
+
+  // === Keyboard Navigation ===
+  document.addEventListener('keydown', (e) => {
+    if (quizScreen.classList.contains('hidden')) return;
+    const key = e.key.toUpperCase();
+    if (['A','B','C','D'].includes(key)) {
+      const idx = key.charCodeAt(0) - 65;
+      if (idx < quizData[currentQuestion].options.length) {
+        userAnswers[currentQuestion] = idx;
+        renderQuestion();
+      }
+    } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+      if (!nextBtn.disabled) nextBtn.click();
+    } else if (e.key === 'ArrowLeft') {
+      if (!prevBtn.disabled) prevBtn.click();
+    }
+  });
+
+  // === Init ===
+  renderQuestion();
+</script>
+</body>
+</html>
