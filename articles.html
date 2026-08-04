@@ -1,1 +1,757 @@
-articles.html
+<!DOCTYPE html>
+ <div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/a/AVvXsEhXFsCWX4cXYU-pNfq9jRmgQTQAtucAinShHjCJSYAmOg0wKCJokNzeqIZ_1cfNjMveec_n6cAfOcOye3k9c7jdEMbkC0n_4YJIbOqdF8NxL-WxyRCjglgjP2tprcPme9pWBFgmoEBEGEJ8tc8MGKl4crRgvCRjMF2hrX3mQ91JAaXoHo-q7Lc0ok1rFBc" style="margin-left: 1em; margin-right: 1em;"><img alt="" data-original-height="213" data-original-width="228" height="240" src="https://blogger.googleusercontent.com/img/a/AVvXsEhXFsCWX4cXYU-pNfq9jRmgQTQAtucAinShHjCJSYAmOg0wKCJokNzeqIZ_1cfNjMveec_n6cAfOcOye3k9c7jdEMbkC0n_4YJIbOqdF8NxL-WxyRCjglgjP2tprcPme9pWBFgmoEBEGEJ8tc8MGKl4crRgvCRjMF2hrX3mQ91JAaXoHo-q7Lc0ok1rFBc" width="257" /></a></div>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Celestia — Your Zodiac Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          },
+          colors: {
+            brand: {
+              black: '#080808',
+              red: '#C41E3A',
+              cream: '#F7F4EB',
+              gold: '#D4A853',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Inter', sans-serif; background: #080808; color: #F7F4EB; overflow-x: hidden; }
+
+    .stars-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 40% 15%, rgba(212,168,83,0.9), transparent),
+        radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1.5px 1.5px at 85% 55%, rgba(212,168,83,0.7), transparent),
+        radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 35% 60%, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1.2px 1.2px at 50% 40%, rgba(212,168,83,0.5), transparent),
+        radial-gradient(1px 1px at 78% 85%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 95% 75%, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1.3px 1.3px at 45% 5%, rgba(212,168,83,0.6), transparent);
+    }
+
+    .reveal-on-scroll {
+      opacity: 0; transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+
+    @keyframes slowSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .zodiac-ring { animation: slowSpin 90s linear infinite; }
+    .zodiac-ring-reverse { animation: slowSpin 120s linear infinite reverse; }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(212,168,83,0.2), 0 0 40px rgba(196,30,58,0.1); }
+      50% { box-shadow: 0 0 30px rgba(212,168,83,0.4), 0 0 60px rgba(196,30,58,0.2); }
+    }
+    .glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    .text-shimmer {
+      background: linear-gradient(90deg, #D4A853 0%, #F7F4EB 25%, #D4A853 50%, #C41E3A 75%, #D4A853 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 6s linear infinite;
+    }
+
+    .zodiac-scroll {
+      display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 0 20px;
+    }
+    .zodiac-scroll::-webkit-scrollbar { display: none; }
+    .zodiac-scroll > * { scroll-snap-align: center; flex-shrink: 0; }
+
+    .sign-card {
+      transition: all 0.3s ease;
+      border: 1px solid rgba(212,168,83,0.15);
+      cursor: pointer;
+    }
+    .sign-card.active { border-color: rgba(212,168,83,0.6); background: rgba(212,168,83,0.08); }
+    .sign-card:active { transform: scale(0.96); }
+
+    .tab-btn {
+      position: relative;
+      transition: color 0.3s ease;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+    .tab-btn.active { color: #D4A853; }
+    .tab-btn.active::after {
+      content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+      width: 20px; height: 2px; background: #D4A853; border-radius: 1px;
+    }
+
+    .trait-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .trait-bar-fill { height: 100%; border-radius: 2px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+    }
+    .heartbeat { animation: heartbeat 2s ease-in-out infinite; }
+
+    .mobile-nav { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+
+    .safe-top { padding-top: env(safe-area-inset-top, 0px); }
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+    .toast {
+      position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px);
+      opacity: 0; transition: all 0.4s ease; z-index: 100; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .compat-heart { color: #D4A853; }
+    .compat-heart.empty { color: #334155; }
+  </style>
+</head>
+<body class="safe-top safe-bottom">
+
+  <div class="stars-bg"></div>
+
+  <div id="toast" class="toast">
+    <div class="bg-brand-gold/90 text-brand-black text-xs font-bold px-4 py-2 rounded-full shadow-lg">
+      <span id="toast-msg">Sign selected!</span>
+    </div>
+  </div>
+
+  <header class="fixed top-0 left-0 right-0 z-50 mobile-nav bg-brand-black/80 border-b border-white/5">
+    <div class="flex items-center justify-between px-5 h-14">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-full border border-brand-gold/40 flex items-center justify-center">
+          <span class="text-brand-gold text-xs">✦</span>
+        </div>
+        <span class="font-serif text-base font-semibold tracking-wide">Celestia</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="searchBtn" class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:border-brand-gold/40 transition-colors">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+        </button>
+        <button id="profileBtn" class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-gold/30 to-brand-red/30 border border-brand-gold/20 flex items-center justify-center">
+          <i data-lucide="user" class="w-4 h-4 text-brand-gold"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="relative min-h-[85vh] flex flex-col items-center justify-center pt-14 px-5 overflow-hidden">
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div class="zodiac-ring w-[300px] h-[300px] md:w-[500px] md:h-[500px] rounded-full border border-brand-gold/10"></div>
+    </div>
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div class="zodiac-ring-reverse w-[220px] h-[220px] md:w-[380px] md:h-[380px] rounded-full border border-white/5"></div>
+    </div>
+
+    <div class="relative z-10 mb-6 float-anim">
+      <div class="w-24 h-24 rounded-full bg-gradient-to-br from-brand-gold/20 to-brand-red/10 border border-brand-gold/30 flex items-center justify-center glow-pulse">
+        <span id="heroSymbol" class="text-4xl">♈</span>
+      </div>
+    </div>
+
+    <p class="relative z-10 text-[10px] font-bold uppercase tracking-[0.25em] text-brand-gold/70 mb-3">
+      <span id="heroDate">Mar 21 – Apr 19</span>
+    </p>
+    <h1 class="relative z-10 font-serif text-4xl md:text-6xl font-bold tracking-tight text-center leading-[1.05] mb-4">
+      <span id="heroName" class="text-shimmer">Aries</span>
+    </h1>
+    <p class="relative z-10 text-sm text-slate-400 text-center max-w-xs leading-relaxed mb-8">
+      <span id="heroDesc">The bold trailblazer. Fearless, energetic, and always ready to ignite the next adventure.</span>
+    </p>
+
+    <div class="relative z-10 flex gap-3">
+      <button onclick="scrollToSection('horoscope')" class="bg-brand-gold text-brand-black text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full hover:bg-brand-cream transition-colors">
+        Read Horoscope
+      </button>
+      <button onclick="scrollToSection('compatibility')" class="border border-white/15 text-brand-cream text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full hover:border-brand-gold/40 transition-colors">
+        Compatibility
+      </button>
+    </div>
+
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+      <span class="text-[9px] uppercase tracking-[0.2em]">Scroll</span>
+      <div class="w-px h-6 bg-gradient-to-b from-white/40 to-transparent"></div>
+    </div>
+  </section>
+
+  <section class="relative z-10 py-8">
+    <div class="px-5 mb-5">
+      <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Choose Your Sign</p>
+      <h2 class="font-serif text-xl font-semibold">The Zodiac Wheel</h2>
+    </div>
+    <div class="zodiac-scroll" id="zodiacScroll"></div>
+  </section>
+
+  <section id="horoscope" class="relative z-10 px-5 py-10 reveal-on-scroll">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Today's Reading</p>
+        <h2 class="font-serif text-xl font-semibold">Daily Horoscope</h2>
+      </div>
+      <div class="text-right">
+        <p class="text-[10px] text-slate-500 uppercase tracking-wider" id="todayDate"></p>
+        <div class="flex items-center gap-1 mt-1 justify-end">
+          <span class="text-brand-gold text-xs">★★★</span><span class="text-slate-600 text-xs">★★</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 mb-4">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-12 h-12 rounded-xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center flex-shrink-0">
+          <span id="horoscopeSymbol" class="text-2xl">♈</span>
+        </div>
+        <div>
+          <h3 id="horoscopeTitle" class="font-serif text-base font-semibold mb-1">Aries — Love & Career</h3>
+          <p id="horoscopeText" class="text-xs text-slate-400 leading-relaxed">
+            Today brings a surge of creative energy. A surprise encounter could shift your perspective on a lingering dilemma. Trust your instincts in matters of the heart — boldness is rewarded. Career-wise, an unexpected opportunity may arise from a casual conversation. Stay open.
+          </p>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="text-center p-2 rounded-lg bg-white/[0.03]">
+          <p class="text-[9px] uppercase tracking-wider text-slate-500 mb-1">Love</p>
+          <p id="loveScore" class="text-sm font-semibold text-brand-red">8/10</p>
+        </div>
+        <div class="text-center p-2 rounded-lg bg-white/[0.03]">
+          <p class="text-[9px] uppercase tracking-wider text-slate-500 mb-1">Career</p>
+          <p id="careerScore" class="text-sm font-semibold text-brand-gold">7/10</p>
+        </div>
+        <div class="text-center p-2 rounded-lg bg-white/[0.03]">
+          <p class="text-[9px] uppercase tracking-wider text-slate-500 mb-1">Health</p>
+          <p id="healthScore" class="text-sm font-semibold text-green-400">9/10</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-4 gap-2">
+      <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center">
+        <p class="text-lg mb-1">🔢</p>
+        <p class="text-[9px] uppercase tracking-wider text-slate-500">Lucky #</p>
+        <p id="luckyNum" class="text-xs font-semibold mt-0.5">7</p>
+      </div>
+      <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center">
+        <p class="text-lg mb-1">🎨</p>
+        <p class="text-[9px] uppercase tracking-wider text-slate-500">Color</p>
+        <p id="luckyColor" class="text-xs font-semibold mt-0.5">Red</p>
+      </div>
+      <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center">
+        <p class="text-lg mb-1">⏰</p>
+        <p class="text-[9px] uppercase tracking-wider text-slate-500">Hour</p>
+        <p id="luckyHour" class="text-xs font-semibold mt-0.5">3 PM</p>
+      </div>
+      <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center">
+        <p class="text-lg mb-1">💎</p>
+        <p class="text-[9px] uppercase tracking-wider text-slate-500">Stone</p>
+        <p id="luckyStone" class="text-xs font-semibold mt-0.5">Diamond</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="relative z-10 px-5 py-10 reveal-on-scroll">
+    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Personality Profile</p>
+    <h2 class="font-serif text-xl font-semibold mb-5">Key Traits</h2>
+
+    <div class="flex gap-5 mb-6 border-b border-white/5 pb-3">
+      <button class="tab-btn active" data-tab="traits" onclick="switchTab(this,'traits')">Traits</button>
+      <button class="tab-btn text-slate-500" data-tab="strengths" onclick="switchTab(this,'strengths')">Strengths</button>
+      <button class="tab-btn text-slate-500" data-tab="challenges" onclick="switchTab(this,'challenges')">Challenges</button>
+    </div>
+
+    <div id="panel-traits" class="tab-panel space-y-4">
+      <div>
+        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Courage</span><span class="text-brand-gold" id="t1v">92%</span></div>
+        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold to-brand-red" style="width:0%" data-width="92%"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Leadership</span><span class="text-brand-gold" id="t2v">88%</span></div>
+        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold to-brand-red" style="width:0%" data-width="88%"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Creativity</span><span class="text-brand-gold" id="t3v">75%</span></div>
+        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold to-brand-red" style="width:0%" data-width="75%"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Patience</span><span class="text-brand-gold" id="t4v">35%</span></div>
+        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold/60 to-brand-red/40" style="width:0%" data-width="35%"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Diplomacy</span><span class="text-brand-gold" id="t5v">48%</span></div>
+        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold/60 to-brand-red/40" style="width:0%" data-width="48%"></div></div>
+      </div>
+    </div>
+
+    <div id="panel-strengths" class="tab-panel hidden">
+      <div class="space-y-3" id="strengthsList"></div>
+    </div>
+
+    <div id="panel-challenges" class="tab-panel hidden">
+      <div class="space-y-3" id="challengesList"></div>
+    </div>
+  </section>
+
+  <section id="compatibility" class="relative z-10 px-5 py-10 reveal-on-scroll">
+    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Cosmic Connections</p>
+    <h2 class="font-serif text-xl font-semibold mb-2">Compatibility</h2>
+    <p class="text-xs text-slate-500 mb-6">Select a sign to check your cosmic match</p>
+
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="bg-gradient-to-br from-brand-red/10 to-transparent border border-brand-red/15 rounded-2xl p-4 text-center">
+        <span class="text-3xl mb-2 block heartbeat">❤️</span>
+        <p class="text-[9px] uppercase tracking-wider text-brand-red/70 mb-1">Best Match</p>
+        <p id="bestMatch" class="font-serif text-lg font-semibold">Leo</p>
+        <p id="bestMatchSymbol" class="text-xs text-slate-500">♌</p>
+      </div>
+      <div class="bg-gradient-to-br from-brand-gold/10 to-transparent border border-brand-gold/15 rounded-2xl p-4 text-center">
+        <span class="text-3xl mb-2 block">🤝</span>
+        <p class="text-[9px] uppercase tracking-wider text-brand-gold/70 mb-1">Soul Friend</p>
+        <p id="soulFriend" class="font-serif text-lg font-semibold">Sagittarius</p>
+        <p id="soulFriendSymbol" class="text-xs text-slate-500">♐</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-4 gap-2" id="compatGrid"></div>
+  </section>
+
+  <section class="relative z-10 px-5 py-10 reveal-on-scroll">
+    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Celestial Influence</p>
+    <h2 class="font-serif text-xl font-semibold mb-5">Ruling Planets</h2>
+
+    <div class="flex gap-3 overflow-x-auto pb-2" style="scrollbar-width:none;">
+      <div class="flex-shrink-0 w-32 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center">
+        <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-brand-red/20 to-brand-gold/10 border border-brand-gold/20 flex items-center justify-center mb-3">
+          <span class="text-2xl">♂</span>
+        </div>
+        <p id="ruler1" class="text-xs font-semibold mb-0.5">Mars</p>
+        <p id="ruler1role" class="text-[10px] text-slate-500">Action & Desire</p>
+      </div>
+      <div class="flex-shrink-0 w-32 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center opacity-50">
+        <div class="w-14 h-14 mx-auto rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-3">
+          <span class="text-2xl">♈</span>
+        </div>
+        <p class="text-xs font-semibold mb-0.5">1st House</p>
+        <p class="text-[10px] text-slate-500">Self & Identity</p>
+      </div>
+      <div class="flex-shrink-0 w-32 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center opacity-30">
+        <div class="w-14 h-14 mx-auto rounded-full bg-white/[0.02] border border-white/[0.04] flex items-center justify-center mb-3">
+          <span class="text-2xl">🔥</span>
+        </div>
+        <p class="text-xs font-semibold mb-0.5">Fire</p>
+        <p class="text-[10px] text-slate-500">Cardinal Modality</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="relative z-10 px-5 py-12 reveal-on-scroll">
+    <div class="relative bg-gradient-to-br from-brand-gold/10 via-brand-red/5 to-transparent border border-brand-gold/15 rounded-3xl p-6 text-center overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-brand-gold/5 blur-2xl"></div>
+      <div class="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-brand-red/5 blur-2xl"></div>
+
+      <span class="text-3xl mb-3 block">🌙</span>
+      <h2 class="font-serif text-2xl font-bold mb-2 relative z-10">Unlock Your Birth Chart</h2>
+      <p class="text-xs text-slate-400 leading-relaxed mb-6 max-w-xs mx-auto relative z-10">
+        Discover the exact positions of every planet at the moment you were born. Your full cosmic blueprint awaits.
+      </p>
+      <button onclick="showToast('Birth chart feature coming soon!')" class="relative z-10 bg-brand-gold text-brand-black text-xs font-bold uppercase tracking-widest px-8 py-3.5 rounded-full hover:bg-brand-cream transition-colors">
+        Get Free Chart
+      </button>
+    </div>
+  </section>
+
+  <footer class="relative z-10 border-t border-white/5 px-5 py-8">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-full border border-brand-gold/30 flex items-center justify-center">
+          <span class="text-brand-gold text-[10px]">✦</span>
+        </div>
+        <span class="font-serif text-sm font-semibold">Celestia</span>
+      </div>
+      <p class="text-[10px] text-slate-600">Written in the stars ✦</p>
+    </div>
+    <div class="flex gap-6 mb-6">
+      <a href="#" class="text-[11px] text-slate-500 hover:text-brand-gold transition-colors">About</a>
+      <a href="#" class="text-[11px] text-slate-500 hover:text-brand-gold transition-colors">Privacy</a>
+      <a href="#" class="text-[11px] text-slate-500 hover:text-brand-gold transition-colors">Contact</a>
+      <a href="#" class="text-[11px] text-slate-500 hover:text-brand-gold transition-colors">FAQ</a>
+    </div>
+    <p class="text-[10px] text-slate-600">© 2025 Celestia. All rights reserved.</p>
+  </footer>
+
+  <nav class="fixed bottom-0 left-0 right-0 z-50 mobile-nav bg-brand-black/90 border-t border-white/5 safe-bottom">
+    <div class="flex items-center justify-around h-14">
+      <button onclick="scrollToTop()" class="flex flex-col items-center gap-0.5 text-brand-gold">
+        <i data-lucide="home" class="w-5 h-5"></i>
+        <span class="text-[9px] font-medium">Home</span>
+      </button>
+      <button onclick="scrollToSection('horoscope')" class="flex flex-col items-center gap-0.5 text-slate-500">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+        <span class="text-[9px] font-medium">Horoscope</span>
+      </button>
+      <button onclick="scrollToSection('compatibility')" class="flex flex-col items-center gap-0.5 text-slate-500">
+        <i data-lucide="heart" class="w-5 h-5"></i>
+        <span class="text-[9px] font-medium">Match</span>
+      </button>
+      <button onclick="showToast('Settings coming soon!')" class="flex flex-col items-center gap-0.5 text-slate-500">
+        <i data-lucide="settings" class="w-5 h-5"></i>
+        <span class="text-[9px] font-medium">Settings</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="h-16"></div>
+
+  <script>
+    // ===== ZODIAC DATA (all 12 signs) =====
+    const zodiac = [
+      { name:'Aries', symbol:'♈', dates:'Mar 21 – Apr 19', element:'Fire', ruler:'Mars', rulerRole:'Action & Desire',
+        desc:'The bold trailblazer. Fearless, energetic, and always ready to ignite the next adventure.',
+        horoscope:'Today brings a surge of creative energy. A surprise encounter could shift your perspective on a lingering dilemma. Trust your instincts in matters of the heart — boldness is rewarded. Career-wise, an unexpected opportunity may arise from a casual conversation. Stay open.',
+        love:8, career:7, health:9, luckyNum:7, luckyColor:'Red', luckyHour:'3 PM', luckyStone:'Diamond',
+        traits:[92,88,75,35,48], bestMatch:'Leo', bestMatchSym:'♌', soulFriend:'Sagittarius', soulFriendSym:'♐',
+        compat:[3,2,1,0,2,3,3,1,2,0,1,3],
+        strengths:['Natural Leader','Fearless Pioneer','Boundless Energy'],
+        challenges:['Impulsivity','Short Temper','Restlessness'] },
+      { name:'Taurus', symbol:'♉', dates:'Apr 20 – May 20', element:'Earth', ruler:'Venus', rulerRole:'Love & Beauty',
+        desc:'The grounded sensualist. Reliable, patient, with an eye for beauty and a love for life\'s pleasures.',
+        horoscope:'A financial opportunity may present itself today. Take your time evaluating — your patience will pay off. In love, small gestures speak louder than grand declarations.',
+        love:7, career:9, health:8, luckyNum:6, luckyColor:'Green', luckyHour:'6 AM', luckyStone:'Emerald',
+        traits:[60,70,80,95,75], bestMatch:'Virgo', bestMatchSym:'♍', soulFriend:'Capricorn', soulFriendSym:'♑',
+        compat:[1,3,2,2,1,0,1,3,3,2,2,0],
+        strengths:['Unwavering Loyalty','Keen Aesthetic Sense','Financial Wisdom'],
+        challenges:['Stubbornness','Possessiveness','Resistance to Change'] },
+      { name:'Gemini', symbol:'♊', dates:'May 21 – Jun 20', element:'Air', ruler:'Mercury', rulerRole:'Communication',
+        desc:'The celestial communicator. Witty, curious, and endlessly adaptable — the social butterfly of the zodiac.',
+        horoscope:'Your words carry extra weight today. A conversation could open doors you didn\'t know existed. Stay mentally flexible — the best insight comes from an unexpected source.',
+        love:6, career:8, health:7, luckyNum:5, luckyColor:'Yellow', luckyHour:'11 AM', luckyStone:'Agate',
+        traits:[55,50,95,40,90], bestMatch:'Aquarius', bestMatchSym:'♒', soulFriend:'Libra', soulFriendSym:'♎',
+        compat:[0,2,3,1,2,1,2,1,3,3,2,1],
+        strengths:['Master Communicator','Versatile Thinker','Quick Wit'],
+        challenges:['Inconsistency','Superficiality','Restless Mind'] },
+      { name:'Cancer', symbol:'♋', dates:'Jun 21 – Jul 22', element:'Water', ruler:'Moon', rulerRole:'Emotions & Intuition',
+        desc:'The nurturing protector. Deeply intuitive, fiercely loyal, and the emotional anchor of the zodiac.',
+        horoscope:'Your intuition is razor-sharp today. Pay attention to your dreams — they carry a message. Home life brings comfort; consider creating something beautiful in your personal space.',
+        love:9, career:6, health:7, luckyNum:2, luckyColor:'Silver', luckyHour:'9 PM', luckyStone:'Pearl',
+        traits:[50,55,70,85,65], bestMatch:'Scorpio', bestMatchSym:'♏', soulFriend:'Pisces', soulFriendSym:'♓',
+        compat:[0,1,2,3,0,2,1,2,3,1,0,3],
+        strengths:['Emotional Depth','Protective Instincts','Creative Imagination'],
+        challenges:['Moodiness','Over-sensitivity','Clinginess'] },
+      { name:'Leo', symbol:'♌', dates:'Jul 23 – Aug 22', element:'Fire', ruler:'Sun', rulerRole:'Vitality & Self-Expression',
+        desc:'The radiant king. Charismatic, generous, and born to shine — the spotlight finds them naturally.',
+        horoscope:'Your natural magnetism is at an all-time high. Use it to inspire others and rally support for a project you believe in. Romance is particularly favorable — a grand gesture will be well received.',
+        love:9, career:8, health:8, luckyNum:1, luckyColor:'Gold', luckyHour:'12 PM', luckyStone:'Ruby',
+        traits:[85,90,70,45,60], bestMatch:'Aries', bestMatchSym:'♈', soulFriend:'Sagittarius', soulFriendSym:'♐',
+        compat:[2,1,1,2,3,3,0,1,2,0,2,3],
+        strengths:['Infectious Confidence','Natural Leader','Big Heart'],
+        challenges:['Ego-driven','Stubborn','Over-dramatic'] },
+      { name:'Virgo', symbol:'♍', dates:'Aug 23 – Sep 22', element:'Earth', ruler:'Mercury', rulerRole:'Analysis & Detail',
+        desc:'The meticulous perfectionist. Analytical, practical, and driven by a desire to serve and improve.',
+        horoscope:'Your attention to detail is your superpower today. A careful review of your finances or a project will uncover hidden savings. In relationships, your thoughtful actions speak louder than words.',
+        love:6, career:9, health:7, luckyNum:5, luckyColor:'Navy', luckyHour:'5 AM', luckyStone:'Sapphire',
+        traits:[70,65,85,90,55], bestMatch:'Taurus', bestMatchSym:'♉', soulFriend:'Capricorn', soulFriendSym:'♑',
+        compat:[2,3,3,0,1,1,0,3,2,1,0,2],
+        strengths:['Meticulous','Reliable','Service-oriented'],
+        challenges:['Over-critical','Worry-prone','Perfectionist'] },
+      { name:'Libra', symbol:'♎', dates:'Sep 23 – Oct 22', element:'Air', ruler:'Venus', rulerRole:'Balance & Harmony',
+        desc:'The graceful diplomat. Charming, fair, and always seeking balance — the peacemaker of the zodiac.',
+        horoscope:'Social connections are highlighted today. A networking event or casual gathering could lead to a valuable partnership. In love, compromise is the key to a deeper bond.',
+        love:8, career:6, health:7, luckyNum:6, luckyColor:'Pink', luckyHour:'2 PM', luckyStone:'Opal',
+        traits:[45,50,80,55,90], bestMatch:'Gemini', bestMatchSym:'♊', soulFriend:'Aquarius', soulFriendSym:'♒',
+        compat:[1,2,3,2,0,2,1,2,1,3,0,2],
+        strengths:['Diplomatic','Socially Graceful','Aesthetically Driven'],
+        challenges:['Indecisive','People-pleasing','Avoids Conflict'] },
+      { name:'Scorpio', symbol:'♏', dates:'Oct 23 – Nov 21', element:'Water', ruler:'Pluto', rulerRole:'Transformation & Power',
+        desc:'The intense transformer. Passionate, mysterious, and unafraid to dive into the depths of life.',
+        horoscope:'A powerful emotional breakthrough is on the horizon. Old wounds may resurface, but facing them now will lead to profound healing. Trust your instincts in financial matters.',
+        love:9, career:8, health:6, luckyNum:9, luckyColor:'Crimson', luckyHour:'8 PM', luckyStone:'Topaz',
+        traits:[80,75,60,70,60], bestMatch:'Cancer', bestMatchSym:'♋', soulFriend:'Pisces', soulFriendSym:'♓',
+        compat:[0,2,3,3,1,1,1,3,0,0,2,2],
+        strengths:['Intuitive','Determined','Passionate'],
+        challenges:['Jealous','Secretive','Obsessive'] },
+      { name:'Sagittarius', symbol:'♐', dates:'Nov 22 – Dec 21', element:'Fire', ruler:'Jupiter', rulerRole:'Expansion & Wisdom',
+        desc:'The adventurous philosopher. Optimistic, freedom-loving, and always chasing the next horizon.',
+        horoscope:'Travel or higher education is calling. A spontaneous trip or a new course of study could expand your worldview. In love, honesty and freedom are the foundations of happiness.',
+        love:7, career:7, health:8, luckyNum:3, luckyColor:'Purple', luckyHour:'10 AM', luckyStone:'Turquoise',
+        traits:[70,65,90,50,55], bestMatch:'Aries', bestMatchSym:'♈', soulFriend:'Leo', soulFriendSym:'♌',
+        compat:[3,0,1,1,3,0,1,2,1,2,3,1],
+        strengths:['Optimistic','Intellectual','Adventurous'],
+        challenges:['Tactless','Impatient','Overconfident'] },
+      { name:'Capricorn', symbol:'♑', dates:'Dec 22 – Jan 19', element:'Earth', ruler:'Saturn', rulerRole:'Discipline & Structure',
+        desc:'The ambitious achiever. Disciplined, responsible, and built for long-term success.',
+        horoscope:'Your career takes center stage today. A new responsibility or promotion could be on the horizon. Stay focused and methodical. In personal life, make time for loved ones — they miss you.',
+        love:5, career:10, health:7, luckyNum:8, luckyColor:'Brown', luckyHour:'7 AM', luckyStone:'Garnet',
+        traits:[85,90,60,95,50], bestMatch:'Taurus', bestMatchSym:'♉', soulFriend:'Virgo', soulFriendSym:'♍',
+        compat:[1,3,2,0,1,0,2,1,0,3,2,2],
+        strengths:['Disciplined','Practical','Ambitious'],
+        challenges:['Pessimistic','Stubborn','Workaholic'] },
+      { name:'Aquarius', symbol:'♒', dates:'Jan 20 – Feb 18', element:'Air', ruler:'Uranus', rulerRole:'Innovation & Rebellion',
+        desc:'The visionary rebel. Original, independent, and ahead of their time — a true trailblazer of ideas.',
+        horoscope:'Your innovative thinking is in demand. A problem that has stumped others will yield to your unique perspective. Social causes and friendships bring fulfillment. In love, intellectual connection is paramount.',
+        love:7, career:8, health:7, luckyNum:4, luckyColor:'Blue', luckyHour:'4 PM', luckyStone:'Amethyst',
+        traits:[60,55,95,40,85], bestMatch:'Gemini', bestMatchSym:'♊', soulFriend:'Libra', soulFriendSym:'♎',
+        compat:[2,1,3,0,2,2,3,2,0,2,1,3],
+        strengths:['Innovative','Humanitarian','Intellectually Curious'],
+        challenges:['Detached','Unpredictable','Stubborn'] },
+      { name:'Pisces', symbol:'♓', dates:'Feb 19 – Mar 20', element:'Water', ruler:'Neptune', rulerRole:'Dreams & Spirituality',
+        desc:'The mystical dreamer. Empathetic, artistic, and deeply connected to the unseen realms.',
+        horoscope:'Your intuition is at its peak. Pay attention to your dreams and synchronicities — they guide you. Creative projects flourish. In relationships, emotional honesty creates deep intimacy.',
+        love:9, career:6, health:6, luckyNum:7, luckyColor:'Lavender', luckyHour:'9 PM', luckyStone:'Moonstone',
+        traits:[55,50,90,70,65], bestMatch:'Cancer', bestMatchSym:'♋', soulFriend:'Scorpio', soulFriendSym:'♏',
+        compat:[3,1,0,3,1,2,2,0,1,3,2,3],
+        strengths:['Empathetic','Artistic','Intuitive'],
+        challenges:['Escapist','Overwhelmed','Gullible'] }
+    ];
+
+    // ===== STATE =====
+    let currentSignIndex = 0; // Aries
+
+    // ===== DOM REFS =====
+    const $ = id => document.getElementById(id);
+    const heroSymbol = $('heroSymbol');
+    const heroDate = $('heroDate');
+    const heroName = $('heroName');
+    const heroDesc = $('heroDesc');
+    const horoscopeSymbol = $('horoscopeSymbol');
+    const horoscopeTitle = $('horoscopeTitle');
+    const horoscopeText = $('horoscopeText');
+    const loveScore = $('loveScore');
+    const careerScore = $('careerScore');
+    const healthScore = $('healthScore');
+    const luckyNum = $('luckyNum');
+    const luckyColor = $('luckyColor');
+    const luckyHour = $('luckyHour');
+    const luckyStone = $('luckyStone');
+    const bestMatch = $('bestMatch');
+    const bestMatchSymbol = $('bestMatchSymbol');
+    const soulFriend = $('soulFriend');
+    const soulFriendSymbol = $('soulFriendSymbol');
+    const compatGrid = $('compatGrid');
+    const zodiacScroll = $('zodiacScroll');
+    const strengthsList = $('strengthsList');
+    const challengesList = $('challengesList');
+    const ruler1 = $('ruler1');
+    const ruler1role = $('ruler1role');
+    const todayDate = $('todayDate');
+    const traitFills = document.querySelectorAll('.trait-bar-fill');
+    const traitLabels = [
+      document.getElementById('t1v'),
+      document.getElementById('t2v'),
+      document.getElementById('t3v'),
+      document.getElementById('t4v'),
+      document.getElementById('t5v')
+    ];
+
+    // ===== TOAST =====
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    // ===== SCROLL HELPERS =====
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ===== TAB SWITCH =====
+    function switchTab(btn, tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById('panel-' + tab).classList.remove('hidden');
+    }
+
+    // ===== UPDATE UI =====
+    function updateUI(index) {
+      const sign = zodiac[index];
+      currentSignIndex = index;
+
+      // Hero
+      heroSymbol.textContent = sign.symbol;
+      heroDate.textContent = sign.dates;
+      heroName.textContent = sign.name;
+      heroDesc.textContent = sign.desc;
+
+      // Horoscope
+      horoscopeSymbol.textContent = sign.symbol;
+      horoscopeTitle.textContent = sign.name + ' — Love & Career';
+      horoscopeText.textContent = sign.horoscope;
+      loveScore.textContent = sign.love + '/10';
+      careerScore.textContent = sign.career + '/10';
+      healthScore.textContent = sign.health + '/10';
+      luckyNum.textContent = sign.luckyNum;
+      luckyColor.textContent = sign.luckyColor;
+      luckyHour.textContent = sign.luckyHour;
+      luckyStone.textContent = sign.luckyStone;
+
+      // Compatibility
+      bestMatch.textContent = sign.bestMatch;
+      bestMatchSymbol.textContent = sign.bestMatchSym;
+      soulFriend.textContent = sign.soulFriend;
+      soulFriendSymbol.textContent = sign.soulFriendSym;
+
+      // Ruling planet
+      ruler1.textContent = sign.ruler;
+      ruler1role.textContent = sign.rulerRole;
+
+      // Traits bars
+      const vals = sign.traits;
+      traitFills.forEach((fill, i) => {
+        const w = vals[i] || 0;
+        fill.style.width = w + '%';
+        traitLabels[i].textContent = w + '%';
+      });
+
+      // Strengths & Challenges
+      strengthsList.innerHTML = sign.strengths.map(s =>
+        `<div class="flex items-start gap-3 bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
+          <span class="text-brand-gold text-sm mt-0.5">✦</span>
+          <div><p class="text-xs font-semibold mb-0.5">${s}</p></div>
+        </div>`
+      ).join('');
+      challengesList.innerHTML = sign.challenges.map(s =>
+        `<div class="flex items-start gap-3 bg-white/[0.03] rounded-xl p-3 border border-brand-red/10">
+          <span class="text-brand-red text-sm mt-0.5">△</span>
+          <div><p class="text-xs font-semibold mb-0.5">${s}</p></div>
+        </div>`
+      ).join('');
+
+      // Compatibility grid
+      renderCompatGrid(index);
+
+      // Active card in scroll
+      document.querySelectorAll('.sign-card').forEach((card, i) => {
+        card.classList.toggle('active', i === index);
+      });
+
+      // Today's date
+      const now = new Date();
+      todayDate.textContent = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+
+      // Update lucide icons
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // ===== RENDER COMPATIBILITY GRID =====
+    function renderCompatGrid(index) {
+      const sign = zodiac[index];
+      const compat = sign.compat; // array of 12 scores 0-3
+      compatGrid.innerHTML = zodiac.map((z, i) => {
+        const score = compat[i] || 0;
+        const hearts = '❤️'.repeat(score) + '🖤'.repeat(3 - score);
+        return `<div class="text-center bg-white/[0.03] border border-white/[0.06] rounded-xl p-2 transition hover:bg-white/[0.06] cursor-pointer" onclick="selectSign(${i})">
+          <div class="text-lg">${z.symbol}</div>
+          <div class="text-[10px] text-slate-400 truncate">${z.name}</div>
+          <div class="text-[10px] mt-1">${hearts}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ===== RENDER ZODIAC SCROLL =====
+    function renderZodiacScroll() {
+      zodiacScroll.innerHTML = zodiac.map((z, i) =>
+        `<div class="sign-card ${i === 0 ? 'active' : ''} w-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] p-3 text-center" onclick="selectSign(${i})">
+          <div class="text-xl">${z.symbol}</div>
+          <div class="text-[10px] text-slate-400 truncate">${z.name}</div>
+        </div>`
+      ).join('');
+    }
+
+    // ===== SELECT SIGN =====
+    function selectSign(index) {
+      updateUI(index);
+      // Scroll the selected card into view
+      const cards = document.querySelectorAll('.sign-card');
+      if (cards[index]) {
+        cards[index].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+      showToast(zodiac[index].name + ' selected');
+    }
+
+    // ===== REVEAL ON SCROLL (Intersection Observer) =====
+    function initRevealObserver() {
+      const els = document.querySelectorAll('.reveal-on-scroll');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.15 });
+      els.forEach(el => observer.observe(el));
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', function() {
+      renderZodiacScroll();
+      updateUI(0);
+      initRevealObserver();
+      // Lucide icons
+      if (window.lucide) lucide.createIcons();
+
+      // Search & Profile buttons
+      document.getElementById('searchBtn').addEventListener('click', () => showToast('Search coming soon!'));
+      document.getElementById('profileBtn').addEventListener('click', () => showToast('Profile coming soon!'));
+
+      // Update traits bars on first load after a small delay to allow animation
+      setTimeout(() => {
+        traitFills.forEach(fill => {
+          const w = fill.getAttribute('data-width') || '0%';
+          fill.style.width = w;
+        });
+      }, 300);
+    });
+
+    // Make functions globally accessible for onclick attributes
+    window.selectSign = selectSign;
+    window.switchTab = switchTab;
+    window.scrollToSection = scrollToSection;
+    window.scrollToTop = scrollToTop;
+    window.showToast = showToast;
+  </script>
+
+</body>
+</html>
