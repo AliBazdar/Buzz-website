@@ -2,54 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Buzz — Personal Website</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buzz Research Archive</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <!-- Header Section -->
-    <header>
-        <img src="img/banner.jpg" class="banner" alt="Website Banner">
-        <h1>Welcome to My Personal Website</h1>
-        <p>Digital archiving • Poetry analysis • AI research • Creative philosophy</p>
-    </header>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">Buzz Research Archive</div>
 
-    <!-- Navigation -->
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="projects.html">Projects</a>
-        <a href="contact.html">Contact</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+
+            <!-- Dropdown -->
+            <li class="dropdown">
+                <a href="#">Research ▼</a>
+                <ul class="dropdown-menu">
+                    <li><a href="articles.html">Articles</a></li>
+                    <li><a href="papers.html">Research Papers</a></li>
+                    <li><a href="datasets.html">Datasets</a></li>
+                    <li><a href="reviews.html">Literature Reviews</a></li>
+                    <li><a href="notes.html">Study Notes</a></li>
+                </ul>
+            </li>
+
+            <li><a href="project.html">Projects</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
     </nav>
 
-    <!-- Intro Section -->
-    <section class="intro">
-        <img src="img/profile.jpg" class="profile" alt="Profile Photo">
-        <h2>Hello, I'm Buzz</h2>
-        <p>I explore Persian poetry, AI cognition, emotional mapping, and Codex‑ready knowledge systems.</p>
-    </section>
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1>Welcome to the Buzz Research Archive</h1>
+        <p>A curated space for structured knowledge, research documents, and analytical exploration.</p>
+    </header>
 
-    <!-- Video Section -->
-    <section class="video">
-        <h2>Intro Video</h2>
-        <video controls width="600">
-            <source src="videos/intro.mp4" type="video/mp4">
-            Your browser does not support video playback.
-        </video>
-    </section>
+    <!-- Main Content -->
+    <section class="content">
+        <h2>Latest Additions</h2>
+        <p>Select a category from the Research menu to begin exploring articles, papers, datasets, and more.</p>
 
-    <!-- Downloads Section -->
-    <section class="downloads">
-        <h2>Downloads</h2>
-        <a href="downloads/your-file.pdf" download>Download My PDF</a>
+        <div class="cards">
+            <div class="card">
+                <h3>Featured Article</h3>
+                <p>Explore the latest analytical writing and conceptual studies.</p>
+                <a href="articles.html" class="btn">View Articles</a>
+            </div>
+
+            <div class="card">
+                <h3>Recent Paper</h3>
+                <p>Dive into formal research papers and structured academic work.</p>
+                <a href="papers.html" class="btn">View Papers</a>
+            </div>
+
+            <div class="card">
+                <h3>New Dataset</h3>
+                <p>Access curated datasets for quantitative and qualitative research.</p>
+                <a href="datasets.html" class="btn">View Datasets</a>
+            </div>
+        </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-        <p>© 2026 Buzz — All Rights Reserved</p>
+    <footer class="footer">
+        <p>© 2026 Buzz Research Archive — Structured Knowledge for Modern Inquiry</p>
     </footer>
+
+</body>
+</html>
+
 
 </body>
 </html>
