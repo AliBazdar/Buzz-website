@@ -1,4 +1,12 @@
 /* Cards */
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+    align-items: center;
+    justify-content: center;
+}
+
 .cards {
     display: flex;
     gap: 20px;
