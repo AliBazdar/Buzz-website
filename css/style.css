@@ -1,5 +1,10 @@
 /* Cards */
 /* Dropdown */
+/* Smooth theme transition */
+body {
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
 /* Default dark theme */
 body {
     background: #111;
