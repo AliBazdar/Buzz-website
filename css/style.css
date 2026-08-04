@@ -1,5 +1,28 @@
 /* Cards */
 /* Dropdown */
+/* Default dark theme */
+body {
+    background: #111;
+    color: #fff;
+}
+
+.navbar {
+    background: #222;
+    color: #fff;
+}
+
+.nav-links a {
+    color: #fff;
+}
+
+.dropdown-menu {
+    background: #333;
+}
+
+.dropdown-menu li a {
+    color: #fff;
+}
+
 /* Theme button */
 .theme-btn {
     background: none;
