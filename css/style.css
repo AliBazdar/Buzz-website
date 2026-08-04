@@ -1,4 +1,39 @@
 /* Cards */
+/* Dropdown */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none; /* Hide by default */
+    position: absolute;
+    background: #333;
+    list-style: none;
+    padding: 10px 0;
+    top: 100%; /* Align below the parent */
+    left: 0;
+    min-width: 180px;
+    border-radius: 4px;
+    z-index: 1000;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 10px 15px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.dropdown-menu li a:hover {
+    background: #444;
+}
+
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+
 .navbar {
     background: #222;
     color: #fff;
