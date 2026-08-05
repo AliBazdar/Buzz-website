@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Buzz Research Archive</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <button id="theme-toggle" class="theme-btn">🌓</button>
+    <!-- ===== NAVIGATION ===== -->
+    <nav class="navbar" aria-label="Main navigation">
+        <button id="theme-toggle" class="theme-btn" aria-label="Switch to light mode">🌙</button>
 
         <div class="logo">Buzz Research Archive</div>
 
         <ul class="nav-links">
-
             <!-- Research Dropdown -->
             <li class="dropdown">
-                <a href="#">Research ▼</a>
-                <ul class="dropdown-menu">
-                    <li><a href="Audit.html">Website Audit</a></li>
+                <a href="#" aria-haspopup="true" aria-expanded="false">
+                    Research <span aria-hidden="true">▼</span>
+                </a>
+                <ul class="dropdown-menu" aria-label="Research submenu">
+                    <li><a href="Audit.html">Audit Report</a></li>
                     <li><a href="articles.html">Articles</a></li>
                     <li><a href="papers.html">Research Papers</a></li>
                     <li><a href="datasets.html">Datasets</a></li>
@@ -30,61 +30,72 @@
                 </ul>
             </li>
 
-            <!-- Main Navigation -->
             <li><a href="index.html">Home</a></li>
             <li><a href="project.html">Projects</a></li>
             <li><a href="about.html">About</a></li>
             <li><a href="contact.html">Contact</a></li>
-
         </ul>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- ===== HERO ===== -->
     <header class="hero">
         <h1>Welcome to the Buzz Research Archive</h1>
         <p>A curated space for structured knowledge, research documents, and analytical exploration.</p>
     </header>
 
-    <!-- Main Content -->
-    <section class="content">
-        <h2>Latest Additions</h2>
-        <p>Select a category from the Research menu to begin exploring articles, papers, datasets, and more.</p>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main>
+        <section class="content">
+            <h2>Latest Additions</h2>
+            <p>Select a category from the Research menu to begin exploring articles, papers, datasets, and more.</p>
 
-        <div class="cards">
+            <div class="cards">
+                <article class="card">
+                    <h3>Featured Article</h3>
+                    <p>Explore the latest analytical writing and conceptual studies.</p>
+                    <a href="articles.html" class="btn">View Articles</a>
+                </article>
 
-            <div class="card">
-                <h3>Featured Article</h3>
-                <p>Explore the latest analytical writing and conceptual studies.</p>
-                <a href="articles.html" class="btn">View Articles</a>
+                <article class="card">
+                    <h3>Recent Paper</h3>
+                    <p>Dive into formal research papers and structured academic work.</p>
+                    <a href="papers.html" class="btn">View Papers</a>
+                </article>
+
+                <article class="card">
+                    <h3>New Dataset</h3>
+                    <p>Access curated datasets for quantitative and qualitative research.</p>
+                    <a href="datasets.html" class="btn">View Datasets</a>
+                </article>
             </div>
+        </section>
+    </main>
 
-            <div class="card">
-                <h3>Recent Paper</h3>
-                <p>Dive into formal research papers and structured academic work.</p>
-                <a href="papers.html" class="btn">View Papers</a>
-            </div>
-
-            <div class="card">
-                <h3>New Dataset</h3>
-                <p>Access curated datasets for quantitative and qualitative research.</p>
-                <a href="datasets.html" class="btn">View Datasets</a>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- Footer -->
+    <!-- ===== FOOTER ===== -->
     <footer class="footer">
-        <p>© 2026 Buzz Research Archive — Structured Knowledge for Modern Inquiry</p>
+        <p>&copy; 2026 Buzz Research Archive — Structured Knowledge for Modern Inquiry</p>
     </footer>
 
-    <!-- Theme Toggle Script -->
+    <!-- ===== THEME TOGGLE SCRIPT ===== -->
     <script>
-        const toggle = document.getElementById('theme-toggle');
-        toggle.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            toggle.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
-        });
+        (function() {
+            const toggle = document.getElementById('theme-toggle');
+
+            // Restore saved preference
+            const saved = localStorage.getItem('buzz-theme');
+            if (saved === 'light') {
+                document.body.classList.add('light-mode');
+                toggle.textContent = '☀️';
+                toggle.setAttribute('aria-label', 'Switch to dark mode');
+            }
+
+            toggle.addEventListener('click', function() {
+                const isLight = document.body.classList.toggle('light-mode');
+                this.textContent = isLight ? '☀️' : '🌙';
+                this.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+                localStorage.setItem('buzz-theme', isLight ? 'light' : 'dark');
+            });
+        })();
     </script>
 
 </body>
