@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared AI Chat Link Digital Footprint — Risk Assessment Report</title>
+    <style>
+        /* ── reset & base ── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #1A2B4C;
+            --orange: #E67E22;
+            --text: #333333;
+            --light-gray: #f5f5f5;
+            --border-gray: #cccccc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Cambria, "Times New Roman", serif;
+            color: var(--text);
+            background: #ffffff;
+            line-height: 1.5;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 25mm 20mm;
+            background: #fff;
+        }
+
+        /* ── headings ── */
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: var(--navy);
+            margin-top: 1.2em;
+            margin-bottom: 0.4em;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: 26px;
+            text-align: left;
+            border-bottom: 2px solid var(--navy);
+            padding-bottom: 6px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-top: 1.4em;
+        }
+
+        h3 {
+            font-size: 18px;
+            color: var(--orange);
+            margin-top: 1em;
+        }
+
+        h4 {
+            font-size: 16px;
+        }
+
+        /* ── paragraphs & lists ── */
+        p {
+            line-height: 1.6;
+            margin: 0.6em 0;
+        }
+
+        ul {
+            margin: 0.6em 0 0.6em 1.8em;
+            padding: 0;
+        }
+
+        ul li {
+            margin-bottom: 0.3em;
+            line-height: 1.5;
+        }
+
+        /* ── cover ── */
+        .cover {
+            text-align: center;
+        }
+
+        .cover-image {
+            display: block;
+            max-width: 180px;
+            height: auto;
+            margin: 0 auto 30px auto;
+            border: 2px solid var(--navy);
+            border-radius: 8px;
+            padding: 12px;
+            background: #fafafa;
+        }
+
+        .cover-image img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .cover h1 {
+            text-align: center;
+            border-bottom: none;
+            padding-bottom: 0;
+            font-size: 28px;
+        }
+
+        .cover .subtitle {
+            color: var(--orange);
+            font-size: 18px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .cover .meta {
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        /* ── blockquote ── */
+        blockquote {
+            margin: 1em 0;
+            padding: 0.7em 1.2em;
+            border-left: 4px solid var(--orange);
+            background: #fffaf3;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* ── tables ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.8em 0;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-gray);
+            padding: 6px 8px;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        th {
+            background: var(--navy);
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) td {
+            background: var(--light-gray);
+        }
+
+        .risk-high td {
+            background: #ffe4c4 !important;
+        }
+
+        .risk-critical td {
+            background: #ffb3b3 !important;
+        }
+
+        /* ── utilities ── */
+        .center {
+            text-align: center;
+        }
+
+        .section-break {
+            margin: 28px 0 20px 0;
+            border-top: 2px solid var(--navy);
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .mt-4 {
+            margin-top: 30px;
+        }
+
+        /* ── print ── */
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+            }
+            .page {
+                box-shadow: none;
+                margin: 0;
+                width: auto;
+                min-height: auto;
+                padding: 0;
+            }
+            .section-break {
+                border-top: 1px solid var(--border-gray);
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .cover-image {
+                border-color: #333;
+            }
+        }
+
+        /* ── responsive tweaks ── */
+        @media screen and (max-width: 800px) {
+            .page {
+                width: 100%;
+                padding: 20px 16px;
+                min-height: auto;
+            }
+            table {
+                font-size: 12px;
+            }
+            th,
+            td {
+                padding: 4px 6px;
+            }
+            .cover h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+
+        <!-- ═══ COVER PAGE ═══ -->
+        <div class="cover">
+
+            <!-- Cover image (from the original Blogger separator) -->
+            <div class="cover-image">
+                <img
+                src="https://blogger.googleusercontent.com/img/a/AVvXsEhXFsCWX4cXYU-pNfq9jRmgQTQAtucAinShHjCJSYAmOg0wKCJokNzeqIZ_1cfNjMveec_n6cAfOcOye3k9c7jdEMbkC0n_4YJIbOqdF8NxL-WxyRCjglgjP2tprcPme9pWBFgmoEBEGEJ8tc8MGKl4crRgvCRjMF2hrX3mQ91JAaXoHo-q7Lc0ok1rFBc"
+                alt="Report cover icon"
+                width="228"
+                height="213"
+                loading="lazy"
+                />
+            </div>
+
+            <h1>Shared AI Chat Link Digital Footprint</h1>
+            <div class="subtitle">
+                Persistence, Metadata Exposure, Indexing Risks, and Sanitization Protocols
+            </div>
+            <p class="meta">
+                @liB‑Ai<br />
+                August 5, 2026 — London, UK
+            </p>
+        </div>
+
+        <div class="section-break"></div>
+
+        <!-- ═══ EXECUTIVE SUMMARY ═══ -->
+        <h1>Executive Summary</h1>
+
+        <p>
+            Sharing an AI chat link creates a public web page that persists independently of the original
+            conversation and can outlive account‑level deletion of the source chat. Across the three platforms
+            audited—Google Gemini, OpenAI ChatGPT, and DeepSeek—the risk profiles differ significantly.
+        </p>
+
+        <p>
+            ChatGPT offers the most mature link management (centralized dashboard, bulk deletion, no personal
+            name exposed) but links persist indefinitely with no expiration and cannot recall copies imported
+            by other users.
+        </p>
+
+        <p>
+            Gemini provides public‑link management through Google Account settings and configurable auto‑delete
+            periods, but human‑reviewed chats are retained for up to three years regardless of user deletion
+            actions. DeepSeek presents the highest risk: shared links were indexed by Google in July 2026 due
+            to missing <code>noindex</code> tags, no centralized link dashboard existed initially, and all personal data is
+            stored in the People's Republic of China with no fixed retention period.
+        </p>
+
+        <blockquote>
+            “DeepSeek shared links were discoverable via <code>site:chat.deepseek.com/share</code> Google searches, exposing
+            work documents, financial analysis, medical questions, and personal conversations to anyone on the
+            internet—not a data breach, but a consequence of missing indexing controls combined with user‑created
+            public links.”
+        </blockquote>
+
+        <div class="page-break"></div>
+
+        <!-- ═══ PLATFORM‑BY‑PLATFORM AUDIT ═══ -->
+        <h1>Platform‑by‑Platform Audit</h1>
+
+        <!-- ─── Gemini ─── -->
+        <h2>Google Gemini</h2>
+
+        <h3>Shared‑Link Persistence</h3>
+        <p>
+            When a Gemini chat is shared, a public link is created that allows “anyone with the link” to view
+            the conversation. Links can be managed through the “Your Public Links” section in Google Account
+            settings. No documented expiration mechanism exists for public links in the sources reviewed, and
+            it is not documented whether deleting the source chat or auto‑delete periods affect public links.
+        </p>
+
+        <h3>Metadata Visible to Link Viewers</h3>
+        <p>
+            Google’s official documentation does not provide a detailed breakdown of what metadata is visible
+            to public link viewers. The guidance implies that full conversation content (prompts and responses)
+            is visible, while internal retention includes language, device type, location info, and feedback
+            for human‑reviewed chats.
+        </p>
+
+        <h3>Link Deletion Behavior</h3>
+        <p>
+            Public links can be managed and deleted through “Your Public Links” in Google Account settings.
+            Manual deletion of chats is available via the Gemini interface or via <code>myactivity.google.com</code>, and
+            Google’s backend deletion process generally takes around two months including a recovery period.
+        </p>
+
+        <h3>Internal (Unshared) Chat Retention</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Setting</th>
+                    <th>Retention Period</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Default auto‑delete (Gemini Apps Activity ON)</td>
+                    <td>18 months</td>
+                    <td>Gemini Apps Privacy Hub</td>
+                </tr>
+                <tr>
+                    <td>Configurable auto‑delete options</td>
+                    <td>3, 18, 36 months, or indefinite</td>
+                    <td>Gemini Apps Privacy Hub</td>
+                </tr>
+                <tr>
+                    <td>Keep Activity OFF</td>
+                    <td>Chats stored for up to 72 hours</td>
+                    <td>Google Support</td>
+                </tr>
+                <tr class="risk-high">
+                    <td>Human‑reviewed chats</td>
+                    <td>Up to 3 years (not deleted by user activity deletion)</td>
+                    <td>Gemini Apps Privacy Hub</td>
+                </tr>
+                <tr>
+                    <td>Usage frequency data</td>
+                    <td>Until Google Account deletion</td>
+                    <td>Gemini Apps Privacy Hub</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="risk-high" style="padding: 6px 10px; background:#ffe4c4; border-radius:4px;">
+            <strong>Critical gap:</strong> Even when users delete their Gemini Apps activity, chats that were
+            reviewed by human reviewers (along with language, device type, location info, and feedback) are
+            retained for up to three years and are not removed by activity deletion.
+        </p>
+
+        <div class="section-break"></div>
+
+        <!-- ─── ChatGPT ─── -->
+        <h2>OpenAI ChatGPT</h2>
+
+        <h3>Shared‑Link Persistence</h3>
+        <p>
+            ChatGPT shared links are created via the Share button and generate URLs at
+            <code>https://chatgpt.com/share/&lt;conversation‑ID&gt;</code>. There is no expiration‑date functionality currently
+            available for shared links. Shared links include a snapshot of the conversation up to the point
+            when the link is shared and do not auto‑update.
+        </p>
+
+        <h3>Metadata Visible to Link Viewers</h3>
+        <p>
+            OpenAI explicitly states that “shared links do not include the creator's name or any other personal
+            information.” The visible content includes the full conversation history (prompts and responses),
+            including any uploaded files or images that were part of the conversation.
+        </p>
+
+        <h3>Link Deletion Behavior</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Deletion Action</th>
+                    <th>Effect</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Delete individual shared link</td>
+                    <td>Link becomes inaccessible; source chat remains</td>
+                </tr>
+                <tr>
+                    <td>Delete original conversation</td>
+                    <td>Shared link is also deleted; content no longer accessible</td>
+                </tr>
+                <tr>
+                    <td>Delete account</td>
+                    <td>All shared links are deleted and no longer accessible</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="risk-critical" style="padding: 6px 10px; background:#ffb3b3; border-radius:4px;">
+            <strong>Critical limitation:</strong> If a viewer imported the conversation into their own chat
+            history, that copy is not deleted when the shared link, source conversation, or account is deleted.
+        </p>
+
+        <h3>Internal (Unshared) Chat Retention</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Chat Type</th>
+                    <th>Retention</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Standard chats</td>
+                    <td>Saved until manually deleted</td>
+                    <td>OpenAI Help Center</td>
+                </tr>
+                <tr>
+                    <td>Deleted chats</td>
+                    <td>Removed from account immediately; permanent deletion within 30 days</td>
+                    <td>OpenAI Help Center</td>
+                </tr>
+                <tr>
+                    <td>Temporary Chats</td>
+                    <td>Automatically deleted within 30 days</td>
+                    <td>OpenAI Help Center</td>
+                </tr>
+                <tr>
+                    <td>Archived chats</td>
+                    <td>Same retention as unarchived; remain in account</td>
+                    <td>OpenAI Help Center</td>
+                </tr>
+                <tr>
+                    <td>Library files</td>
+                    <td>Managed separately from chats</td>
+                    <td>OpenAI Help Center</td>
+                </tr>
+                <tr>
+                    <td>Enterprise file uploads</td>
+                    <td>Expire after 48 hours; backups may retain for up to 30 additional days</td>
+                    <td>OpenAI Help Center</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-break"></div>
+
+        <!-- ─── DeepSeek ─── -->
+        <h2>DeepSeek</h2>
+
+        <h3>Shared‑Link Persistence</h3>
+        <p>
+            DeepSeek’s share feature creates static snapshots of conversations. Shared links are static and do
+            not auto‑update if the user continues the chat. No documented expiration period exists, and shared
+            links are created at <code>chat.deepseek.com/share/</code> URLs.
+        </p>
+
+        <h3>Metadata Visible to Link Viewers</h3>
+        <p>
+            DeepSeek’s shared pages expose more metadata than the other two platforms: full prompts and
+            responses, filenames of uploaded documents, and timestamps via an <code>inserted_at</code> metadata field
+            visible through browser developer tools.
+        </p>
+
+        <h3>Link Deletion Behavior</h3>
+        <p>
+            DeepSeek’s link management has evolved from having no centralized dashboard to offering per‑link
+            deletion via Settings → Data → Shared Links → Manage. No bulk‑delete option is documented, and
+            there is no guarantee that deleting a shared link removes it from search engine caches or third‑party
+            copies.
+        </p>
+
+        <h3>Search Engine Indexing Incident (July 2026)</h3>
+        <p class="risk-critical" style="padding: 6px 10px; background:#ffb3b3; border-radius:4px;">
+            <strong>Critical:</strong> On July 21, 2026, Google indexed thousands of DeepSeek shared conversations, discoverable via
+            <code>site:chat.deepseek.com/share</code>. Exposed content included work documents, accounting reports,
+            cryptocurrency and gold‑market analysis, personal conversations, and medical questions, largely
+            due to missing <code>noindex</code> tags and inadequate indexing controls.
+        </p>
+
+        <h3>Internal (Unshared) Chat Retention</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>DeepSeek Policy</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Fixed retention period</td>
+                    <td>Not published; depends on purpose, sensitivity, legal requirements, and business interests</td>
+                    <td>Secondary analysis</td>
+                </tr>
+                <tr>
+                    <td>Data storage location</td>
+                    <td>People's Republic of China</td>
+                    <td>Secondary analysis</td>
+                </tr>
+                <tr>
+                    <td>Chat history deletion</td>
+                    <td>No guarantee of complete removal from backups, logs, or caches</td>
+                    <td>Secondary analysis</td>
+                </tr>
+                <tr>
+                    <td>Model training opt‑out</td>
+                    <td>Opt‑out does not delete previous chats, cached data, or logged data</td>
+                    <td>Secondary analysis</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="page-break"></div>
+
+        <!-- ═══ COMPARISON MATRIX ═══ -->
+        <h1>Comparison Matrix</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Dimension</th>
+                    <th>Google Gemini</th>
+                    <th>OpenAI ChatGPT</th>
+                    <th>DeepSeek</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Link persistence</td>
+                    <td>No documented expiration; management via “Your Public Links”</td>
+                    <td>No expiration; active until link or source chat deleted</td>
+                    <td>No documented expiration; static snapshot</td>
+                </tr>
+                <tr>
+                    <td>Link management dashboard</td>
+                    <td>“Your Public Links” in Google Account</td>
+                    <td>Settings → Data Controls → Shared links → Manage</td>
+                    <td>Per‑link management via Settings → Data → Shared Links → Manage (third‑party sources)</td>
+                </tr>
+                <tr>
+                    <td>Bulk link deletion</td>
+                    <td>Not documented</td>
+                    <td>Yes — delete all shared links</td>
+                    <td>Not documented</td>
+                </tr>
+                <tr>
+                    <td>Profile name visible</td>
+                    <td>Not documented</td>
+                    <td>Explicitly excluded</td>
+                    <td>Not documented</td>
+                </tr>
+                <tr>
+                    <td>Timestamps visible</td>
+                    <td>Not documented</td>
+                    <td>Not documented</td>
+                    <td>Yes — via <code>inserted_at</code> metadata</td>
+                </tr>
+                <tr>
+                    <td>Uploaded file names visible</td>
+                    <td>Not documented</td>
+                    <td>Visible if part of conversation</td>
+                    <td>Yes — filenames visible</td>
+                </tr>
+                <tr>
+                    <td>Search engine indexing risk</td>
+                    <td>No incident found</td>
+                    <td>No incident found</td>
+                    <td>Confirmed indexed by Google (July 2026)</td>
+                </tr>
+                <tr>
+                    <td>Internal chat default retention</td>
+                    <td>18 months (configurable)</td>
+                    <td>Until manual deletion</td>
+                    <td>No fixed period published</td>
+                </tr>
+                <tr>
+                    <td>Temporary/ephemeral mode</td>
+                    <td>Keep Activity OFF (72 hours)</td>
+                    <td>Temporary Chat (30‑day auto‑delete)</td>
+                    <td>None documented</td>
+                </tr>
+                <tr>
+                    <td>Human review retention</td>
+                    <td>Up to 3 years</td>
+                    <td>Not documented</td>
+                    <td>Not documented</td>
+                </tr>
+                <tr>
+                    <td>Data storage jurisdiction</td>
+                    <td>EU/Switzerland or global</td>
+                    <td>US‑based</td>
+                    <td>People's Republic of China</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-break"></div>
+
+        <!-- ═══ RISK SCORING ═══ -->
+        <h1>Risk Scoring</h1>
+
+        <h2>Gemini</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Risk Factor</th>
+                    <th>Likelihood (1–5)</th>
+                    <th>Impact (1–5)</th>
+                    <th>Risk Band</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Shared link remains active after chat auto‑deletion</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td>Moderate</td>
+                    <td>Auto‑delete may not affect public links</td>
+                </tr>
+                <tr class="risk-high">
+                    <td>Human‑reviewed data retained 3 years despite deletion</td>
+                    <td>5</td>
+                    <td>3</td>
+                    <td>High</td>
+                    <td>Confirmed by policy; not user‑controllable</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>ChatGPT</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Risk Factor</th>
+                    <th>Likelihood</th>
+                    <th>Impact</th>
+                    <th>Risk Band</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="risk-high">
+                    <td>No link expiration</td>
+                    <td>5</td>
+                    <td>3</td>
+                    <td>High</td>
+                    <td>No expiration functionality</td>
+                </tr>
+                <tr class="risk-critical">
+                    <td>Imported copies persist after all deletion</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>Critical</td>
+                    <td>No user remedy</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>DeepSeek</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Risk Factor</th>
+                    <th>Likelihood</th>
+                    <th>Impact</th>
+                    <th>Risk Band</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="risk-critical">
+                    <td>Search engine indexing of shared links</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>Critical</td>
+                    <td>Confirmed incident; no <code>noindex</code> tags</td>
+                </tr>
+                <tr class="risk-critical">
+                    <td>No fixed retention period</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>Critical</td>
+                    <td>Retention timelines not published</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="page-break"></div>
+
+        <!-- ═══ SANITIZATION CHECKLIST ═══ -->
+        <h1>Sanitization Checklist</h1>
+
+        <h2>Phase 1: Enumerate All Shared Links</h2>
+        <ul>
+            <li><strong>Gemini:</strong> Google Account → “Your Public Links”; cross‑reference Gemini activity.</li>
+            <li><strong>ChatGPT:</strong> Settings → Data Controls → Shared links → Manage.</li>
+            <li><strong>DeepSeek:</strong> Settings → Data → Shared Links → Manage; search <code>site:chat.deepseek.com/share</code>.</li>
+        </ul>
+
+        <h2>Phase 2: Revoke and Delete Public Links</h2>
+        <ul>
+            <li><strong>Gemini:</strong> Delete public links; delete source chats; remove Gemini activity.</li>
+            <li><strong>ChatGPT:</strong> Delete shared links; delete source chats; clear Library files.</li>
+            <li><strong>DeepSeek:</strong> Delete shared links; delete source chats; submit URL removal requests to search engines.</li>
+        </ul>
+
+        <h2>Phase 3: Harden Privacy Settings</h2>
+        <ul>
+            <li>Adjust auto‑delete periods.</li>
+            <li>Consider disabling activity/training for sensitive work.</li>
+            <li>Review third‑party access and security settings.</li>
+        </ul>
+
+        <h2>Phase 4: Audit Search Engine Exposure</h2>
+        <ul>
+            <li>Search <code>site:chatgpt.com/share</code> and <code>site:chat.deepseek.com/share</code>.</li>
+            <li>Search unique phrases and filenames from shared conversations.</li>
+            <li>Use removal tools (Google, Bing) for indexed links.</li>
+        </ul>
+
+        <h2>Phase 5: Ongoing Hygiene</h2>
+        <ul>
+            <li>Never share passwords, API keys, personal identifiers, medical or financial records.</li>
+            <li>Rotate exposed secrets immediately.</li>
+            <li>Review and delete shared links monthly.</li>
+            <li>Prefer redacted screenshots for sensitive but non‑interactive content.</li>
+        </ul>
+
+        <div class="section-break"></div>
+
+        <!-- ═══ EVIDENCE GAPS ═══ -->
+        <h1>Evidence Gaps and Verification Steps</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Gap</th>
+                    <th>Platform</th>
+                    <th>Recommended Verification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Whether Gemini public links are affected by auto‑delete periods</td>
+                    <td>Gemini</td>
+                    <td>Create a test chat, share it, set auto‑delete, and verify link behavior after the period.</td>
+                </tr>
+                <tr>
+                    <td>Whether ChatGPT shared links have <code>noindex</code> tags</td>
+                    <td>ChatGPT</td>
+                    <td>Inspect HTML source of a shared link page for <code>&lt;meta name="robots" content="noindex"&gt;</code>.</td>
+                </tr>
+                <tr>
+                    <td>Whether DeepSeek has added <code>noindex</code> tags post‑incident</td>
+                    <td>DeepSeek</td>
+                    <td>Inspect shared link HTML and <code>robots.txt</code> at <code>chat.deepseek.com/robots.txt</code>.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-break"></div>
+
+        <p class="center mt-4">
+            <strong>Prepared by @liB‑Ai</strong><br />
+            London, UK — August 5, 2026
+        </p>
+
+    </div>
+    <!-- end .page -->
+
+</body>
+</html>
