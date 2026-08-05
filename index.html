@@ -2,10 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+
+    <!-- SEO -->
+    <meta name="description" content="Buzz Research Archive — structured knowledge, research papers, datasets, and analytical exploration." />
+    <meta name="author" content="Buzz Research Archive" />
+
+    <!-- OpenGraph -->
+    <meta property="og:title" content="Buzz Research Archive" />
+    <meta property="og:description" content="Structured knowledge, research documents, datasets, and analytical exploration." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://alibazdar.github.io/" />
+
+    <!-- Security Headers (client‑side equivalents) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+
+    <!-- Mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Buzz Research Archive</title>
     <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
 
     <!-- ===== NAVIGATION ===== -->
@@ -21,7 +41,7 @@
                     Research <span aria-hidden="true">▼</span>
                 </a>
                 <ul class="dropdown-menu" aria-label="Research submenu">
-                    <li><a href="Audit.html">Audit Report</a></li>
+                    <li><a href="Website-audit.html">Website Audit</a></li>
                     <li><a href="articles.html">Articles</a></li>
                     <li><a href="papers.html">Research Papers</a></li>
                     <li><a href="datasets.html">Datasets</a></li>
@@ -44,30 +64,28 @@
     </header>
 
     <!-- ===== MAIN CONTENT ===== -->
-    <main>
-        <section class="content">
-            <h2>Latest Additions</h2>
-            <p>Select a category from the Research menu to begin exploring articles, papers, datasets, and more.</p>
+    <main class="content">
+        <h2>Latest Additions</h2>
+        <p>Select a category from the Research menu to begin exploring articles, papers, datasets, and more.</p>
 
-            <div class="cards">
-                <article class="card">
-                    <h3>Featured Article</h3>
-                    <p>Explore the latest analytical writing and conceptual studies.</p>
-                    <a href="articles.html" class="btn">View Articles</a>
-                </article>
+        <section class="cards">
+            <article class="card">
+                <h3>Featured Article</h3>
+                <p>Explore the latest analytical writing and conceptual studies.</p>
+                <a href="articles.html" class="btn">View Articles</a>
+            </article>
 
-                <article class="card">
-                    <h3>Recent Paper</h3>
-                    <p>Dive into formal research papers and structured academic work.</p>
-                    <a href="papers.html" class="btn">View Papers</a>
-                </article>
+            <article class="card">
+                <h3>Recent Paper</h3>
+                <p>Dive into formal research papers and structured academic work.</p>
+                <a href="papers.html" class="btn">View Papers</a>
+            </article>
 
-                <article class="card">
-                    <h3>New Dataset</h3>
-                    <p>Access curated datasets for quantitative and qualitative research.</p>
-                    <a href="datasets.html" class="btn">View Datasets</a>
-                </article>
-            </div>
+            <article class="card">
+                <h3>New Dataset</h3>
+                <p>Access curated datasets for quantitative and qualitative research.</p>
+                <a href="datasets.html" class="btn">View Datasets</a>
+            </article>
         </section>
     </main>
 
