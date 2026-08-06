@@ -1,4 +1,12 @@
 /* ===== Global ===== */
+body.dark {
+  background: #111;
+  color: #eee;
+}
+
+body.dark a {
+  color: #9cf;
+}
 
 body {
     transition: background-color 0.4s ease, color 0.4s ease;
