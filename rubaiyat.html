@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rubaiyat Archive | Buzz Codex</title>
+  <meta name="description" content="A curated archive of Rubaiyat, with authenticity notes, translations, and philosophical commentary.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Rubaiyat Archive | Buzz Codex">
+  <meta property="og:description" content="Curated Rubaiyat with commentary, variants, and comparative analysis.">
+  <meta property="og:type" content="website">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="rubaiyat-archive">
+
+  <header>
+    <nav class="site-nav">
+      <a href="../index.html" class="logo">Buzz Codex</a>
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="rubaiyat.html" aria-current="page">Rubaiyat Archive</a></li>
+        <li><a href="khayyam-analysis.html">Khayyam Analysis</a></li>
+        <li><a href="../Website-audit.html">Website Audit</a></li>
+      </ul>
+      <!-- Optional dark-mode toggle -->
+      <button id="theme-toggle" aria-label="Toggle dark mode">
+        <span aria-hidden="true">☾</span>
+      </button>
+    </nav>
+
+    <section class="hero">
+      <h1>Rubaiyat Archive</h1>
+      <p>A living Codex of quatrains, variants, and philosophical readings.</p>
+    </section>
+  </header>
+
+  <main>
+    <!-- Overview / methodology -->
+    <section id="overview">
+      <h2>Archive Overview</h2>
+      <p>
+        This archive collects Rubaiyat attributed to Omar Khayyam and related poets,
+        with notes on authenticity, transmission, and interpretive layers.
+      </p>
+      <p>
+        Each entry includes the original Persian text, transliteration, one or more translations,
+        and commentary on themes, imagery, and epistemic horizons.
+      </p>
+    </section>
+
+    <!-- Filters / taxonomy (optional, can be wired later with JS) -->
+    <section id="filters">
+      <h2>Browse by Category</h2>
+      <form class="rubaiyat-filters">
+        <label>
+          Theme:
+          <select name="theme">
+            <option value="all">All</option>
+            <option value="wine">Wine</option>
+            <option value="fate">Fate</option>
+            <option value="time">Time</option>
+            <option value="existence">Existence</option>
+          </select>
+        </label>
+        <label>
+          Authenticity:
+          <select name="authenticity">
+            <option value="all">All</option>
+            <option value="core">Core Khayyam</option>
+            <option value="disputed">Disputed</option>
+            <option value="later">Later additions</option>
+          </select>
+        </label>
+      </form>
+    </section>
+
+    <!-- Archive list -->
+    <section id="rubaiyat-list" aria-label="Rubaiyat entries">
+      <h2>Quatrain Entries</h2>
+
+      <article class="rubaiyat-entry" id="r-001">
+        <header>
+          <h3>Rubaiyat #001</h3>
+          <p class="meta">
+            <span class="authenticity">Core Khayyam</span> ·
+            <span class="theme">Time, Transience</span>
+          </p>
+        </header>
+
+        <section class="text-original">
+          <h4>Original Persian</h4>
+          <p>
+            <!-- Insert Persian text here -->
+          </p>
+        </section>
+
+        <section class="text-transliteration">
+          <h4>Transliteration</h4>
+          <p>
+            <!-- Insert transliteration here -->
+          </p>
+        </section>
+
+        <section class="text-translations">
+          <h4>Translations</h4>
+
+          <div class="translation">
+            <h5>Literal / scholarly</h5>
+            <p>
+              <!-- Insert literal translation -->
+            </p>
+          </div>
+
+          <div class="translation">
+            <h5>Poetic (FitzGerald-style)</h5>
+            <p>
+              <!-- Insert poetic rendering -->
+            </p>
+          </div>
+        </section>
+
+        <section class="commentary">
+          <h4>Commentary</h4>
+          <p>
+            <!-- Your analysis: imagery, epistemic horizon, philosophical tension, etc. -->
+          </p>
+        </section>
+      </article>
+
+      <!-- Duplicate <article> blocks for more entries (r-002, r-003, ...) -->
+    </section>
+
+    <!-- Comparative / meta section -->
+    <section id="comparisons">
+      <h2>Comparative Notes</h2>
+      <p>
+        This section collects cross-quatrain patterns: recurring metaphors, shifts in tone,
+        and differences between manuscript traditions or translators.
+      </p>
+      <ul>
+        <li><strong>Example:</strong> Wine as epistemic rupture vs. social transgression.</li>
+        <li><strong>Example:</strong> Time as cyclical vs. annihilating.</li>
+      </ul>
+    </section>
+
+    <!-- Technical / archival notes -->
+    <section id="technical-notes">
+      <h2>Archival & Versioning Notes</h2>
+      <p>
+        This Rubaiyat archive is maintained as Markdown source in the Buzz Codex,
+        then rendered to HTML for public access via GitHub Pages.
+      </p>
+      <p>
+        Each entry ID (e.g., <code>r-001</code>) maps to a corresponding Codex record,
+        enabling cross-linking, updates, and comparative analysis.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Buzz Codex · Rubaiyat Archive</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../assets/js/theme-toggle.js" defer></script>
+</body>
+</html>
