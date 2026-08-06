@@ -12,23 +12,22 @@
   <meta property="og:type" content="website">
 
   <!-- Styles -->
-   <link rel="stylesheet" href="css/style.css">
-  <!--
-  <link rel="stylesheet" href="../assets/css/style.css">
-  -->
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="rubaiyat-archive">
 
   <header>
     <nav class="site-nav">
-      <a href="../index.html" class="logo">Buzz Codex</a>
+      <a href="index.html" class="logo">Buzz Codex</a>
       <ul>
-        <li><a href="../index.html">Home</a></li>
+        <li><a href="index.html">Home</a></li>
         <li><a href="rubaiyat.html" aria-current="page">Rubaiyat Archive</a></li>
         <li><a href="khayyam-analysis.html">Khayyam Analysis</a></li>
-        <li><a href="../Website-audit.html">Website Audit</a></li>
+        <li><a href="Website-audit.html">Website Audit</a></li>
       </ul>
-      <!-- Optional dark-mode toggle -->
+
+      <!-- Dark mode button (inactive until JS is added) -->
       <button id="theme-toggle" aria-label="Toggle dark mode">
         <span aria-hidden="true">☾</span>
       </button>
@@ -41,7 +40,8 @@
   </header>
 
   <main>
-    <!-- Overview / methodology -->
+
+    <!-- Overview -->
     <section id="overview">
       <h2>Archive Overview</h2>
       <p>
@@ -54,7 +54,7 @@
       </p>
     </section>
 
-    <!-- Filters / taxonomy (optional, can be wired later with JS) -->
+    <!-- Filters -->
     <section id="filters">
       <h2>Browse by Category</h2>
       <form class="rubaiyat-filters">
@@ -68,6 +68,7 @@
             <option value="existence">Existence</option>
           </select>
         </label>
+
         <label>
           Authenticity:
           <select name="authenticity">
@@ -95,16 +96,12 @@
 
         <section class="text-original">
           <h4>Original Persian</h4>
-          <p>
-            <!-- Insert Persian text here -->
-          </p>
+          <p><!-- Insert Persian text here --></p>
         </section>
 
         <section class="text-transliteration">
           <h4>Transliteration</h4>
-          <p>
-            <!-- Insert transliteration here -->
-          </p>
+          <p><!-- Insert transliteration here --></p>
         </section>
 
         <section class="text-translations">
@@ -112,31 +109,24 @@
 
           <div class="translation">
             <h5>Literal / scholarly</h5>
-            <p>
-              <!-- Insert literal translation -->
-            </p>
+            <p><!-- Insert literal translation --></p>
           </div>
 
           <div class="translation">
             <h5>Poetic (FitzGerald-style)</h5>
-            <p>
-              <!-- Insert poetic rendering -->
-            </p>
+            <p><!-- Insert poetic rendering --></p>
           </div>
         </section>
 
         <section class="commentary">
           <h4>Commentary</h4>
-          <p>
-            <!-- Your analysis: imagery, epistemic horizon, philosophical tension, etc. -->
-          </p>
+          <p><!-- Insert commentary here --></p>
         </section>
       </article>
 
-      <!-- Duplicate <article> blocks for more entries (r-002, r-003, ...) -->
     </section>
 
-    <!-- Comparative / meta section -->
+    <!-- Comparative notes -->
     <section id="comparisons">
       <h2>Comparative Notes</h2>
       <p>
@@ -149,7 +139,7 @@
       </ul>
     </section>
 
-    <!-- Technical / archival notes -->
+    <!-- Technical notes -->
     <section id="technical-notes">
       <h2>Archival & Versioning Notes</h2>
       <p>
@@ -161,15 +151,12 @@
         enabling cross-linking, updates, and comparative analysis.
       </p>
     </section>
+
   </main>
 
   <footer>
     <p>&copy; 2026 Buzz Codex · Rubaiyat Archive</p>
   </footer>
-
-  
- <link rel="stylesheet" href="css/style.css">
-
 
 </body>
 </html>
