@@ -1,1 +1,294 @@
-notes.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rubaiyat Archive | Buzz Codex</title>
+    <meta name="description" content="A curated archive of Rubaiyat, with authenticity notes, translations, and philosophical commentary." />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Rubaiyat Archive | Buzz Codex" />
+    <meta property="og:description" content="Curated Rubaiyat with commentary, variants, and comparative analysis." />
+    <meta property="og:type" content="website" />
+
+    <!-- All styles embedded for zero external dependencies -->
+
+    <link rel="stylesheet" href="css/style2.css" />
+</head>
+
+<body class="rubaiyat-archive">
+
+    <!-- ===== HEADER / NAV ===== -->
+    <header>
+        <nav class="site-nav">
+            <a href="index.html" class="logo">Buzz Codex</a>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="rubaiyat.html" aria-current="page">Rubaiyat Archive</a></li>
+                <li><a href="analysis.html">Khayyam Analysis</a></li>
+                <li><a href="authors.html">Authors</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <button id="theme-toggle" aria-label="Toggle dark mode">
+                <span aria-hidden="true">☾</span>
+            </button>
+        </nav>
+
+        <section class="hero">
+            <h1>Rubaiyat Archive</h1>
+            <p>A living Codex of quatrains, variants, and philosophical readings.</p>
+        </section>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <main>
+
+        <!-- Overview -->
+        <section id="overview">
+            <h2>Archive Overview</h2>
+            <p>
+                This archive collects Rubaiyat attributed to Omar Khayyam and related poets,
+                with notes on authenticity, transmission, and interpretive layers.
+            </p>
+            <p>
+                Each entry includes the original Persian text, transliteration, one or more translations,
+                and commentary on themes, imagery, and epistemic horizons.
+            </p>
+        </section>
+
+        <!-- Filters -->
+        <section id="filters">
+            <h2>Browse by Category</h2>
+            <form class="rubaiyat-filters" id="filter-form">
+                <label>
+                    Theme:
+                    <select name="theme" id="filter-theme">
+                        <option value="all">All</option>
+                        <option value="wine">Wine</option>
+                        <option value="fate">Fate</option>
+                        <option value="time">Time</option>
+                        <option value="existence">Existence</option>
+                    </select>
+                </label>
+
+                <label>
+                    Authenticity:
+                    <select name="authenticity" id="filter-authenticity">
+                        <option value="all">All</option>
+                        <option value="core">Core Khayyam</option>
+                        <option value="disputed">Disputed</option>
+                        <option value="later">Later additions</option>
+                    </select>
+                </label>
+            </form>
+        </section>
+
+        <!-- Archive list -->
+        <section id="rubaiyat-list" aria-label="Rubaiyat entries" style="border-left-color: transparent; background: transparent; box-shadow: none; padding: 0;">
+            <h2 style="padding-left: 0.5rem;">Quatrain Entries</h2>
+
+            <!-- ===== ENTRY 1 (Core, Wine) ===== -->
+            <article class="rubaiyat-entry" id="r-001" data-theme="wine" data-authenticity="core">
+                <header>
+                    <h3>Rubaiyat #001</h3>
+                    <p class="meta">
+                        <span class="authenticity">Core Khayyam</span> ·
+                        <span class="theme">Wine, Existence</span>
+                    </p>
+                </header>
+
+                <section class="text-original">
+                    <h4>Original Persian (transliterated)</h4>
+                    <p>“Gar bar dil-e-man az may-e-golgun bari hast, / Khosh-tar ze jahan-e-kohan yek nafas-ast.”</p>
+                </section>
+
+                <section class="text-transliteration">
+                    <h4>Transliteration</h4>
+                    <p>Gar bar dil-e-man az may-e-golgun bari hast, Khosh-tar ze jahan-e-kohan yek nafas-ast.</p>
+                </section>
+
+                <section class="text-translations">
+                    <h4>Translations</h4>
+                    <div class="translation">
+                        <h5>Literal / scholarly</h5>
+                        <p>“If there is a trace of rose-wine upon my heart, it is sweeter than the whole ancient world — just one breath.”</p>
+                    </div>
+                    <div class="translation">
+                        <h5>Poetic (inspired by FitzGerald)</h5>
+                        <p>“One breath of ruby wine upon the soul / Outweighs the ages, makes the mortal whole.”</p>
+                    </div>
+                </section>
+
+                <section class="commentary">
+                    <h4>Commentary</h4>
+                    <p>Here, wine is not merely a drink but an epistemic key — a rupture of ordinary time that grants a taste of eternity. The “rose-wine” (golgun) evokes both sensory delight and mystical intoxication, collapsing the distance between the temporal and the eternal.</p>
+                </section>
+            </article>
+
+            <!-- ===== ENTRY 2 (Disputed, Fate/Time) ===== -->
+            <article class="rubaiyat-entry" id="r-002" data-theme="fate" data-authenticity="disputed">
+                <header>
+                    <h3>Rubaiyat #002</h3>
+                    <p class="meta">
+                        <span class="authenticity">Disputed</span> ·
+                        <span class="theme">Fate, Time</span>
+                    </p>
+                </header>
+
+                <section class="text-original">
+                    <h4>Original Persian (transliterated)</h4>
+                    <p>“Dar charkh ze bahr-e to nagofta, / Zin sang-e siah chand khar-ast?”</p>
+                </section>
+
+                <section class="text-transliteration">
+                    <h4>Transliteration</h4>
+                    <p>Dar charkh ze bahr-e to nagofta, Zin sang-e siah chand khar-ast?</p>
+                </section>
+
+                <section class="text-translations">
+                    <h4>Translations</h4>
+                    <div class="translation">
+                        <h5>Literal / scholarly</h5>
+                        <p>“What has the firmament ever said for your sake? How many burdens does this black stone carry?”</p>
+                    </div>
+                    <div class="translation">
+                        <h5>Poetic (inspired by FitzGerald)</h5>
+                        <p>“The sky, for all your tears, has naught to tell — / This dark millstone grinds both heaven and hell.”</p>
+                    </div>
+                </section>
+
+                <section class="commentary">
+                    <h4>Commentary</h4>
+                    <p>This quatrain is often debated. Some attribute it to Khayyam’s skeptical voice, while others place it in a later Sufi tradition. The “black stone” imagery suggests an indifferent cosmos — a theme that resonates with Khayyam’s fatalism but is expressed with a harshness unusual in his core corpus.</p>
+                </section>
+            </article>
+
+            <!-- ===== ENTRY 3 (Later, Time) ===== -->
+            <article class="rubaiyat-entry" id="r-003" data-theme="time" data-authenticity="later">
+                <header>
+                    <h3>Rubaiyat #003</h3>
+                    <p class="meta">
+                        <span class="authenticity">Later addition</span> ·
+                        <span class="theme">Time, Transience</span>
+                    </p>
+                </header>
+
+                <section class="text-original">
+                    <h4>Original Persian (transliterated)</h4>
+                    <p>“Dam-e az to mara chand ravad, / Tā chand ze in kuh-e-gahān bar-kesh?”</p>
+                </section>
+
+                <section class="text-transliteration">
+                    <h4>Transliteration</h4>
+                    <p>Dam-e az to mara chand ravad, Tā chand ze in kuh-e-gahān bar-kesh?</p>
+                </section>
+
+                <section class="text-translations">
+                    <h4>Translations</h4>
+                    <div class="translation">
+                        <h5>Literal / scholarly</h5>
+                        <p>“How many breaths are still mine from you? How long must I carry this mountain of time?”</p>
+                    </div>
+                    <div class="translation">
+                        <h5>Poetic rendering</h5>
+                        <p>“How many moments, love, remain for me? / This age-worn mountain crushes endlessly.”</p>
+                    </div>
+                </section>
+
+                <section class="commentary">
+                    <h4>Commentary</h4>
+                    <p>Widely considered a later interpolation, this quatrain amplifies Khayyam’s existential dread into a more theatrical lament. The “mountain of time” is a powerful metaphor, but the language lacks the precise, almost clinical irony of the authentic Khayyam.</p>
+                </section>
+            </article>
+
+        </section>
+
+        <!-- Comparative notes -->
+        <section id="comparisons">
+            <h2>Comparative Notes</h2>
+            <p>This section collects cross-quatrain patterns: recurring metaphors, shifts in tone, and differences between manuscript traditions or translators.</p>
+            <ul>
+                <li><strong>Wine as epistemic rupture</strong> — In the core corpus, wine dissolves the boundaries of self and world; in later additions, it becomes a more conventional symbol of escapism.</li>
+                <li><strong>Time as cyclical vs. annihilating</strong> — Authentic quatrains often treat time as a neutral, indifferent force; disputed versions tend to personify time as a destructive enemy.</li>
+                <li><strong>Translator’s lens</strong> — FitzGerald’s Romantic renderings amplify the melancholy, while modern scholarly translations (e.g., Arberry) emphasize Khayyam’s rationalist skepticism.</li>
+            </ul>
+        </section>
+
+        <!-- Technical notes -->
+        <section id="technical-notes">
+            <h2>Archival &amp; Versioning Notes</h2>
+            <p>
+                This Rubaiyat archive is maintained as Markdown source in the Buzz Codex,
+                then rendered to HTML for public access via GitHub Pages.
+            </p>
+            <p>
+                Each entry ID (e.g., <code>r-001</code>) maps to a corresponding Codex record,
+                enabling cross-linking, updates, and comparative analysis.
+            </p>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>&copy; 2026 Buzz Codex · Rubaiyat Archive</p>
+    </footer>
+
+    <!-- ===== JAVASCRIPT (Dark mode + Filters) ===== -->
+    <script>
+        (function() {
+            'use strict';
+
+            // --- Dark Mode Toggle ---
+            const toggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+
+            // load saved preference
+            const savedTheme = localStorage.getItem('buzz-theme');
+            if (savedTheme === 'dark') {
+                html.setAttribute('data-theme', 'dark');
+                toggle.innerHTML = '<span aria-hidden="true">☀</span>';
+            }
+
+            toggle.addEventListener('click', function() {
+                const isDark = html.getAttribute('data-theme') === 'dark';
+                if (isDark) {
+                    html.removeAttribute('data-theme');
+                    localStorage.setItem('buzz-theme', 'light');
+                    toggle.innerHTML = '<span aria-hidden="true">☾</span>';
+                } else {
+                    html.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('buzz-theme', 'dark');
+                    toggle.innerHTML = '<span aria-hidden="true">☀</span>';
+                }
+            });
+
+            // --- Filter Functionality ---
+            const themeSelect = document.getElementById('filter-theme');
+            const authSelect = document.getElementById('filter-authenticity');
+            const entries = document.querySelectorAll('.rubaiyat-entry');
+
+            function filterEntries() {
+                const theme = themeSelect.value;
+                const auth = authSelect.value;
+
+                entries.forEach(entry => {
+                    const entryTheme = entry.dataset.theme || '';
+                    const entryAuth = entry.dataset.authenticity || '';
+
+                    let show = true;
+                    if (theme !== 'all' && entryTheme !== theme) show = false;
+                    if (auth !== 'all' && entryAuth !== auth) show = false;
+
+                    entry.style.display = show ? 'block' : 'none';
+                });
+            }
+
+            themeSelect.addEventListener('change', filterEntries);
+            authSelect.addEventListener('change', filterEntries);
+
+        })();
+    </script>
+
+</body>
+</html>
