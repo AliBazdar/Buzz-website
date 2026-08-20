@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Write Prompt – Master AI Prompt Engineering</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --purple: #7C3AED;
+            --purple-light: #A78BFA;
+            --purple-dark: #5B21B6;
+            --coral: #F472B6;
+            --teal: #2DD4BF;
+            --gold: #FBBF24;
+            --green: #34D399;
+            --blue: #60A5FA;
+            --pink: #EC4899;
+            --dark: #0F0E17;
+            --dark-card: #1A1A2E;
+            --dark-surface: #16213E;
+            --text-light: #E2E8F0;
+            --text-muted: #94A3B8;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow-lg: 0 25px 60px rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== Reset & Base ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background: var(--purple);
+            color: #fff;
+        }
+
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--purple);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--purple-light);
+        }
+
+        /* ===== Container ===== */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            position: relative;
+            padding: 100px 0 80px;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, 0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(244, 114, 182, 0.18) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(45, 212, 191, 0.10) 0%, transparent 50%),
+                var(--dark);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(244, 114, 182, 0.06) 0%, transparent 50%);
+            animation: heroGlow 20s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes heroGlow {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(5%, -5%) scale(1.1);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--purple-light);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .hero-badge i {
+            font-size: 0.7rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 8vw, 5.2rem);
+            font-weight: 900;
+            line-height: 1.08;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff 0%, var(--purple-light) 40%, var(--coral) 70%, var(--teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--gold), var(--coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 36px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            animation: fadeInUp 1.2s ease;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat .number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--teal), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stat .label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* ===== Section Headers ===== */
+        .section-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .section-header .tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--purple-light);
+            background: rgba(124, 58, 237, 0.15);
+            padding: 4px 16px;
+            border-radius: 100px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 60%, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 560px;
+            margin: 12px auto 0;
+            font-size: 1.05rem;
+        }
+
+        /* ===== Roadmap Timeline ===== */
+        .roadmap {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 28px;
+            position: relative;
+        }
+
+        .timeline::before {
+            display: none;
+        }
+
+        .phase-card {
+            background: var(--dark-card);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .phase-card:nth-child(1)::before {
+            background: linear-gradient(90deg, var(--purple), var(--blue));
+        }
+        .phase-card:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--coral), var(--gold));
+        }
+        .phase-card:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--teal), var(--green));
+        }
+        .phase-card:nth-child(4)::before {
+            background: linear-gradient(90deg, var(--gold), var(--coral));
+        }
+
+        .phase-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(124, 58, 237, 0.3);
+            box-shadow: var(--shadow-md);
+        }
+
+        .phase-number {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--purple-light);
+            margin-bottom: 8px;
+        }
+
+        .phase-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .phase-card .phase-duration {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .phase-card .phase-duration i {
+            font-size: 0.65rem;
+        }
+
+        .phase-card p {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-bottom: 16px;
+        }
+
+        .phase-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phase-card ul li {
+            font-size: 0.88rem;
+            color: var(--text-light);
+            padding: 6px 0 6px 24px;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .phase-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .phase-card ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--purple-light);
+            font-weight: 700;
+        }
+
+        .phase-card .key-metaphor {
+            background: rgba(124, 58, 237, 0.10);
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .phase-card .key-metaphor strong {
+            color: var(--teal);
+            font-style: normal;
+        }
+
+        /* ===== CREATE Framework ===== */
+        .create-section {
+            padding: 80px 0;
+            background: radial-gradient(ellipse at 30% 40%, rgba(124, 58, 237, 0.06) 0%, transparent 60%);
+        }
+
+        .create-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .create-card {
+            background: var(--dark-card);
+            border-radius: var(--radius-md);
+            padding: 28px 20px 24px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .create-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(124, 58, 237, 0.3);
+            box-shadow: var(--shadow-md);
+        }
+
+        .create-card .icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            font-size: 1.4rem;
+            background: rgba(124, 58, 237, 0.15);
+            color: var(--purple-light);
+            transition: var(--transition);
+        }
+
+        .create-card:hover .icon {
+            background: rgba(124, 58, 237, 0.25);
+            transform: scale(1.1) rotate(-6deg);
+        }
+
+        .create-card .letter {
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--purple-light), var(--coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .create-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .create-card p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* ===== Advanced Techniques ===== */
+        .techniques {
+            padding: 80px 0;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
+        }
+
+        .tech-card {
+            background: var(--dark-card);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .tech-card:hover {
+            border-color: rgba(124, 58, 237, 0.25);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .tech-card .tech-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .tech-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .tech-card .tech-desc {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-bottom: 16px;
+        }
+
+        .tech-card .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: var(--text-light);
+            border-left: 3px solid var(--purple);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .tech-card .code-block .label-bad {
+            color: var(--coral);
+            font-weight: 600;
+        }
+
+        .tech-card .code-block .label-good {
+            color: var(--teal);
+            font-weight: 600;
+        }
+
+        .tech-card .code-block .highlight-purple {
+            color: var(--purple-light);
+        }
+
+        .tech-card .code-block .highlight-gold {
+            color: var(--gold);
+        }
+
+        .tech-card .code-block .highlight-teal {
+            color: var(--teal);
+        }
+
+        /* ===== Examples Section ===== */
+        .examples {
+            padding: 80px 0;
+            background: radial-gradient(ellipse at 70% 30%, rgba(244, 114, 182, 0.06) 0%, transparent 60%);
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 32px;
+        }
+
+        .example-card {
+            background: var(--dark-card);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .example-card:hover {
+            border-color: rgba(124, 58, 237, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .example-card .example-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .example-card .example-title .badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 12px;
+            border-radius: 100px;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-bad {
+            background: rgba(244, 114, 182, 0.2);
+            color: var(--coral);
+        }
+        .badge-good {
+            background: rgba(45, 212, 191, 0.2);
+            color: var(--teal);
+        }
+        .badge-info {
+            background: rgba(96, 165, 250, 0.2);
+            color: var(--blue);
+        }
+
+        .example-card .prompt-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: var(--text-light);
+            border-left: 3px solid var(--purple);
+            margin-bottom: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .example-card .prompt-box .arrow {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+
+        .example-card .prompt-box .good {
+            color: var(--teal);
+        }
+        .example-card .prompt-box .bad {
+            color: var(--coral);
+        }
+        .example-card .prompt-box .accent {
+            color: var(--gold);
+        }
+        .example-card .prompt-box .dim {
+            color: var(--text-muted);
+        }
+
+        .example-card .footnote {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: rgba(124, 58, 237, 0.06);
+            border-radius: var(--radius-sm);
+            border-left: 2px solid var(--purple-light);
+        }
+
+        .example-card .footnote i {
+            margin-right: 6px;
+            color: var(--purple-light);
+        }
+
+        /* ===== Chain-of-Thought Special ===== */
+        .cot-demo {
+            background: var(--dark-card);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            border: 1px solid var(--glass-border);
+            margin-top: 40px;
+        }
+
+        .cot-demo .cot-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .cot-demo .cot-step:last-child {
+            border-bottom: none;
+        }
+
+        .cot-demo .cot-step .step-num {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 50%;
+            background: rgba(124, 58, 237, 0.2);
+            color: var(--purple-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .cot-demo .cot-step .step-text {
+            font-size: 0.92rem;
+            color: var(--text-light);
+        }
+
+        .cot-demo .cot-step .step-text .highlight {
+            color: var(--teal);
+            font-weight: 600;
+        }
+
+        .cot-demo .cot-result {
+            margin-top: 16px;
+            padding: 14px 18px;
+            background: rgba(45, 212, 191, 0.08);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(45, 212, 191, 0.15);
+            font-weight: 600;
+            color: var(--teal);
+        }
+
+        /* ===== Footer / CTA ===== */
+        .footer-cta {
+            padding: 60px 0 40px;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .footer-cta p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-cta .heart {
+            color: var(--coral);
+        }
+
+        /* ===== Animations ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 992px) {
+            .hero {
+                padding: 70px 0 60px;
+            }
+            .hero-stats {
+                gap: 28px;
+            }
+            .timeline {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+            .examples-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .hero p {
+                font-size: 0.95rem;
+            }
+            .hero-stats {
+                gap: 20px;
+            }
+            .hero-stat .number {
+                font-size: 1.5rem;
+            }
+            .phase-card {
+                padding: 24px 18px;
+            }
+            .create-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+            .create-card {
+                padding: 20px 14px;
+            }
+            .create-card .icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.1rem;
+            }
+            .tech-card {
+                padding: 24px 18px;
+            }
+            .example-card {
+                padding: 24px 18px;
+            }
+            .section-header h2 {
+                font-size: 1.6rem;
+            }
+            .cot-demo {
+                padding: 24px 18px;
+            }
+            .cot-demo .cot-step .step-text {
+                font-size: 0.85rem;
+            }
+            .container {
+                padding: 0 16px;
+            }
+            .examples-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .hero-stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .create-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .timeline {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HERO ===== -->
+    <header class="hero" id="top">
+        <div class="container hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-sparkles"></i> Prompt Engineering 101
+            </div>
+            <h1>
+                How to Write<br>
+                <span class="highlight">Prompts</span> That Actually Work
+            </h1>
+            <p>
+                A complete visual roadmap for beginners — from mental models to advanced
+                techniques like Chain-of-Thought and Few-Shot prompting.
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="number">4</span>
+                    <span class="label">Learning Phases</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="number">6</span>
+                    <span class="label">CREATE Elements</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="number">3</span>
+                    <span class="label">Key Techniques</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="number">6</span>
+                    <span class="label">Weeks to Mastery</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== ROADMAP ===== -->
+    <section class="roadmap" id="roadmap">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="tag"><i class="fas fa-route"></i> Your Journey</span>
+                <h2>The 4‑Phase Roadmap</h2>
+                <p>From complete novice to confident prompt engineer in six weeks.</p>
+            </div>
+
+            <div class="timeline">
+                <!-- Phase 1 -->
+                <div class="phase-card animate-on-scroll">
+                    <div class="phase-number">Phase 1 · Week 1</div>
+                    <h3>🧠 Demystifying AI</h3>
+                    <div class="phase-duration"><i class="far fa-clock"></i> Mental Models &amp; Foundations</div>
+                    <p>Understand how LLMs work without the math — think of AI as an <strong>eager assistant with amnesia</strong>.</p>
+                    <ul>
+                        <li>Probabilistic text prediction</li>
+                        <li>Context &amp; instruction importance</li>
+                        <li>Recognizing hallucinations</li>
+                    </ul>
+                    <div class="key-metaphor">
+                        💡 <strong>Key Metaphor:</strong> “Not a search engine, not a human mind — a well‑read, eager assistant who needs clear context for every task.”
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="phase-card animate-on-scroll">
+                    <div class="phase-number">Phase 2 · Weeks 2–3</div>
+                    <h3>📐 Anatomy of a Great Prompt</h3>
+                    <div class="phase-duration"><i class="far fa-clock"></i> The CREATE Framework</div>
+                    <p>A structured approach so you stop guessing and start crafting.</p>
+                    <ul>
+                        <li><strong>C</strong>ontext — background situation</li>
+                        <li><strong>R</strong>ole — persona for the AI</li>
+                        <li><strong>E</strong>xplicit Instructions — exact tasks</li>
+                        <li><strong>A</strong>udience — who is this for?</li>
+                        <li><strong>T</strong>one — professional, casual, etc.</li>
+                        <li><strong>E</strong>xamples / Output Format</li>
+                    </ul>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="phase-card animate-on-scroll">
+                    <div class="phase-number">Phase 3 · Weeks 4–5</div>
+                    <h3>⚡ Advanced Techniques</h3>
+                    <div class="phase-duration"><i class="far fa-clock"></i> Optimization Strategies</div>
+                    <p>Move beyond basic Q&amp;A with proven methods.</p>
+                    <ul>
+                        <li>Few‑Shot Prompting (examples)</li>
+                        <li>Chain‑of‑Thought (step‑by‑step)</li>
+                        <li>Constraint Setting (do / don’t)</li>
+                    </ul>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="phase-card animate-on-scroll">
+                    <div class="phase-number">Phase 4 · Week 6</div>
+                    <h3>🚀 Practical Applications</h3>
+                    <div class="phase-duration"><i class="far fa-clock"></i> Capstone Project</div>
+                    <p>Apply everything to real‑world workflows.</p>
+                    <ul>
+                        <li>Summarize research papers</li>
+                        <li>Draft emails &amp; brainstorm</li>
+                        <li>Write code &amp; more</li>
+                    </ul>
+                    <div class="key-metaphor" style="border-color:rgba(251,191,36,0.2);background:rgba(251,191,36,0.06);">
+                        🎯 <strong>Capstone:</strong> Build your own “Prompt Library” or multi‑step chain for a personal or professional use case.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CREATE FRAMEWORK ===== -->
+    <section class="create-section" id="create">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="tag"><i class="fas fa-pen-fancy"></i> The Framework</span>
+                <h2>CREATE in Action</h2>
+                <p>Six essential elements to structure every prompt you write.</p>
+            </div>
+
+            <div class="create-grid">
+                <div class="create-card animate-on-scroll">
+                    <div class="icon"><span class="letter">C</span></div>
+                    <h4>Context</h4>
+                    <p>Who is the AI &amp; what’s the background?</p>
+                </div>
+                <div class="create-card animate-on-scroll">
+                    <div class="icon"><span class="letter">R</span></div>
+                    <h4>Role</h4>
+                    <p>What persona should the AI adopt?</p>
+                </div>
+                <div class="create-card animate-on-scroll">
+                    <div class="icon"><span class="letter">E</span></div>
+                    <h4>Explicit Instructions</h4>
+                    <p>What exact steps or tasks?</p>
+                </div>
+                <div class="create-card animate-on-scroll">
+                    <div class="icon"><span class="letter">A</span></div>
+                    <h4>Audience</h4>
+                    <p>Who is the final output for?</p>
+                </div>
+                <div class="create-card animate-on-scroll">
+                    <div class="icon"><span class="letter">T</span></div>
+                    <h4>Tone</h4>
+                    <p>Professional, casual, academic…</p>
+                </div>
+                <div class="create-card animate-on-scroll">
+                    <div class="icon"><span class="letter">E</span></div>
+                    <h4>Examples / Format</h4>
+                    <p>Bullets, table, JSON, etc.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ADVANCED TECHNIQUES ===== -->
+    <section class="techniques" id="techniques">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="tag"><i class="fas fa-rocket"></i> Level Up</span>
+                <h2>Advanced Techniques</h2>
+                <p>Optimize your prompts with these proven strategies.</p>
+            </div>
+
+            <div class="tech-grid">
+                <!-- Few-Shot -->
+                <div class="tech-card animate-on-scroll">
+                    <span class="tech-icon">📚</span>
+                    <h3>Few‑Shot Prompting</h3>
+                    <p class="tech-desc">Provide examples of desired inputs and outputs to guide the AI.</p>
+                    <div class="code-block">
+                        <span class="label-good">▶ Example:</span><br>
+                        <span class="dim">Input:</span> "Your app is trash and logged me out."<br>
+                        <span class="highlight-teal">→</span> <span class="highlight-teal">Output:</span> "We are very sorry for the frustration…"<br><br>
+                        <span class="dim">Now rewrite:</span> "I hate waiting two days for a reply!"
+                    </div>
+                </div>
+
+                <!-- Chain-of-Thought -->
+                <div class="tech-card animate-on-scroll">
+                    <span class="tech-icon">🧩</span>
+                    <h3>Chain‑of‑Thought (CoT)</h3>
+                    <p class="tech-desc">Instruct the AI to “think step‑by‑step” for better logic &amp; accuracy.</p>
+                    <div class="code-block">
+                        <span class="label-good">▶ Prompt:</span><br>
+                        "Calculate the total cost of 6 apples at $2 each, with a 10% discount over $10. <span class="highlight-gold">Think step‑by‑step</span> before giving the final answer."
+                    </div>
+                </div>
+
+                <!-- Constraint Setting -->
+                <div class="tech-card animate-on-scroll">
+                    <span class="tech-icon">🚧</span>
+                    <h3>Constraint Setting</h3>
+                    <p class="tech-desc">Explicitly tell the AI what <strong>not</strong> to do.</p>
+                    <div class="code-block">
+                        <span class="label-good">▶ Example:</span><br>
+                        "Summarize this article in 3 bullet points. <span class="highlight-purple">Do not use jargon.</span> <span class="highlight-purple">Keep it under 200 words.</span>"
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== EXAMPLES ===== -->
+    <section class="examples" id="examples">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="tag"><i class="fas fa-code"></i> Live Examples</span>
+                <h2>From Vague to Vivid</h2>
+                <p>See the difference a structured prompt makes.</p>
+            </div>
+
+            <div class="examples-grid">
+                <!-- Example 1: Bad vs Good -->
+                <div class="example-card animate-on-scroll">
+                    <div class="example-title">
+                        <span>✏️ Email Rewrite</span>
+                        <span class="badge badge-bad">Before</span>
+                        <span class="badge badge-good">After</span>
+                    </div>
+                    <div class="prompt-box">
+                        <span class="bad">❌ Bad:</span> "Write an email about the meeting."<br>
+                        <span class="dim" style="font-size:0.75rem;">— Lacks context, audience, tone, details.</span>
+                        <br><br>
+                        <span class="good">✅ Good (CREATE):</span><br>
+                        "Act as a <span class="accent">project manager</span>. Write a <span class="accent">polite, concise</span> follow‑up email to <span class="accent">client Sarah</span> summarizing our Tuesday sync. Highlight <span class="accent">3 action items</span>: (1) budget approval by Friday, (2) final asset delivery Monday, (3) schedule next review. Use <span class="accent">bullet points</span> and maintain an <span class="accent">encouraging tone</span>."
+                    </div>
+                    <div class="footnote">
+                        <i class="fas fa-check-circle" style="color:var(--teal);"></i> Structured prompts give the AI everything it needs — no guessing.
+                    </div>
+                </div>
+
+                <!-- Example 2: Chain-of-Thought -->
+                <div class="example-card animate-on-scroll">
+                    <div class="example-title">
+                        <span>🧮 Math with CoT</span>
+                        <span class="badge badge-info">Step‑by‑Step</span>
+                    </div>
+                    <div class="prompt-box">
+                        <span class="bad">❌ Without CoT:</span><br>
+                        "If a store sells apples for $2 each, but offers 10% off over $10, and John buys 6 apples, how much does he pay?"<br>
+                        <span class="dim" style="font-size:0.75rem;">— LLMs may rush and make arithmetic errors.</span>
+                        <br><br>
+                        <span class="good">✅ With CoT:</span><br>
+                        "Calculate the total cost of 6 apples at $2 each, with a 10% discount over $10. <span class="highlight-gold">Think step‑by‑step</span> before providing the final answer."
+                    </div>
+                    <div class="footnote">
+                        <i class="fas fa-brain" style="color:var(--gold);"></i> Forcing intermediate steps drastically reduces calculation errors.
+                    </div>
+                </div>
+
+                <!-- Example 3: Few-Shot -->
+                <div class="example-card animate-on-scroll">
+                    <div class="example-title">
+                        <span>🎯 Tone Control</span>
+                        <span class="badge badge-info">Few‑Shot</span>
+                    </div>
+                    <div class="prompt-box">
+                        <span class="good">📌 Prompt:</span><br>
+                        "Rewrite the following customer feedback into a <span class="accent">polite, professional</span> support response. Follow the style of these examples:<br><br>
+                        <span class="dim">Example 1 — Input:</span> 'Your app is trash and logged me out.'<br>
+                        <span class="dim">→ Output:</span> 'We are very sorry for the frustration…'<br><br>
+                        <span class="highlight-gold">Now rewrite this input:</span><br>
+                        'I hate waiting two days for a reply!'"
+                    </div>
+                    <div class="footnote">
+                        <i class="fas fa-magic" style="color:var(--purple-light);"></i> Examples teach the AI the desired tone and structure.
+                    </div>
+                </div>
+            </div>
+
+            <!-- CoT Detailed Demo -->
+            <div class="cot-demo animate-on-scroll">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                    <span style="font-size:1.4rem;">🧠</span>
+                    <h3 style="font-size:1.1rem;font-weight:700;">Chain‑of‑Thought in Action</h3>
+                    <span style="font-size:0.7rem;background:rgba(45,212,191,0.15);color:var(--teal);padding:2px 14px;border-radius:100px;font-weight:600;">Step‑by‑Step</span>
+                </div>
+                <div class="cot-step">
+                    <span class="step-num">1</span>
+                    <span class="step-text">John buys <span class="highlight">6 apples</span> at <span class="highlight">$2 each</span> → subtotal = 6 × 2 = <span class="highlight">$12</span></span>
+                </div>
+                <div class="cot-step">
+                    <span class="step-num">2</span>
+                    <span class="step-text">Subtotal <span class="highlight">$12</span> is <span class="highlight">over $10</span>, so a <span class="highlight">10% discount</span> applies.</span>
+                </div>
+                <div class="cot-step">
+                    <span class="step-num">3</span>
+                    <span class="step-text">Discount amount = 10% of $12 = <span class="highlight">$1.20</span></span>
+                </div>
+                <div class="cot-step">
+                    <span class="step-num">4</span>
+                    <span class="step-text">Final cost = $12 − $1.20 = <span class="highlight">$10.80</span></span>
+                </div>
+                <div class="cot-result">
+                    ✅ Final Answer: John pays <strong>$10.80</strong> for 6 apples after the discount.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer-cta">
+        <div class="container">
+            <p style="font-size:0.85rem;">
+                Built with <span class="heart">❤️</span> for prompt engineers of all levels.
+                <br>
+                <span style="color:var(--text-muted);font-size:0.75rem;">
+                    <i class="fas fa-robot"></i> Master the art of talking to AI.
+                </span>
+            </p>
+            <div style="margin-top:16px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;font-size:0.8rem;color:var(--text-muted);">
+                <span><i class="fas fa-layer-group"></i> CREATE Framework</span>
+                <span><i class="fas fa-arrow-right"></i> 4 Phases</span>
+                <span><i class="fas fa-star"></i> 3 Techniques</span>
+                <span><i class="fas fa-gem"></i> 6 Weeks</span>
+            </div>
+            <div style="margin-top:20px;border-top:1px solid var(--glass-border);padding-top:20px;font-size:0.7rem;color:var(--text-muted);">
+                <i class="fas fa-graduation-cap"></i>Copyright@LIB-AI - Based on the comprehensive Prompt Engineering curriculum for novices.
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== Intersection Observer ===== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.12,
+                rootMargin: '0px 0px -30px 0px'
+            });
+
+            elements.forEach(el => observer.observe(el));
+
+            // Also check any that might already be visible on load
+            setTimeout(() => {
+                elements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight * 0.85) {
+                        el.classList.add('visible');
+                    }
+                });
+            }, 200);
+        });
+    </script>
+
+</body>
+</html>
