@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8" />
 
-    <!-- SEO -->
-    <meta name="description" content="Buzz Research Archive — structured knowledge, research papers, datasets, and analytical exploration." />
+    <!-- SEO & Metadata -->
+    <title>Buzz Research Archive — Structured Knowledge & Research</title>
+    <meta name="title" content="Buzz Research Archive — Structured Knowledge & Research">
+    <meta name="description" content="Buzz Research Archive — A curated space for structured knowledge, research papers, datasets, and analytical exploration." />
     <meta name="author" content="Buzz Research Archive" />
+    <meta name="keywords" content="buzz research, research papers, datasets, analytical exploration, structured knowledge" />
 
-    <!-- OpenGraph -->
-    <meta property="og:title" content="Buzz Research Archive" />
-    <meta property="og:description" content="Structured knowledge, research documents, datasets, and analytical exploration." />
+    <!-- OpenGraph / Social -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://alibazdar.github.io/" />
+    <meta property="og:url" content="https://alibazdar.github.io/Buzz-website/" />
+    <meta property="og:title" content="Buzz Research Archive — Structured Knowledge & Research" />
+    <meta property="og:description" content="Structured knowledge, research documents, datasets, and analytical exploration." />
+    <meta property="og:image" content="https://alibazdar.github.io/Buzz-website/assets/og-image.jpg" />
 
-    <!-- Security Headers (client‑side equivalents) -->
+    <!-- Security Headers (Client-Side Equivalents) -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
@@ -22,12 +26,10 @@
     <!-- Mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Buzz Research Archive</title>
     <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
-
 
     <!-- ===== NAVIGATION ===== -->
     <nav class="navbar" aria-label="Main navigation">
@@ -41,11 +43,9 @@
                 <a href="#" aria-haspopup="true" aria-expanded="false">
                     Research <span aria-hidden="true">▼</span>
                 </a>
-                <a href="rubaiyat.html">Rubaiyat Archive</a>
-
                 <ul class="dropdown-menu" aria-label="Research submenu">
+                    <li><a href="rubaiyat.html">Rubaiyat Archive</a></li>
                     <li><a href="Website-audit.html">Website Audit</a></li>
-                   
                     <li><a href="articles.html">Articles</a></li>
                     <li><a href="papers.html">Research Papers</a></li>
                     <li><a href="datasets.html">Datasets</a></li>
@@ -57,24 +57,24 @@
             <li><a href="index.html">Home</a></li>
             <li><a href="project.html">Projects</a></li>
             <li><a href="about.html">Medical Check</a></li>
-            
-
             <li><a href="contact.html">Contact</a></li>
         </ul>
     </nav>
 
     <!-- ===== HERO ===== -->
     <header class="hero">
-        <h1>Welcome to the Buzz Research Archive</h1>
+        <h1>Buzz Research Archive</h1>
         <p>A curated space for structured knowledge, research documents, and analytical exploration.</p>
     </header>
 
     <!-- ===== MAIN CONTENT ===== -->
     <main class="content">
-        <h2>Latest Additions</h2>
-        <p>Select a category from the Research menu to begin exploring articles, papers, datasets, and more.</p>
+        <section>
+            <h2>Latest Additions & Overview</h2>
+            <p>Select a category from the Research menu to begin exploring articles, papers, datasets, and more.</p>
+        </section>
 
-        <section class="cards">
+        <section class="cards" aria-label="Featured Content">
             <article class="card">
                 <h3>Featured Article</h3>
                 <p>Explore the latest analytical writing and conceptual studies.</p>
@@ -121,6 +121,5 @@
             });
         })();
     </script>
-<script src="js/theme-toggle.js" defer></script>
 </body>
 </html>
