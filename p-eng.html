@@ -1,0 +1,1565 @@
+
+<html data-theme="dark" lang="en">
+<head>
+<meta charset="UTF-8"></meta>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
+<title>Prompt Engineering Dashboard</title>
+<style>
+/* ===== CSS Variables & Themes ===== */
+:root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --card: #1c2333;
+    --card-hover: #232e42;
+    --border: #2a3a50;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --primary: #00d68f;
+    --primary-dim: rgba(0,214,143,0.12);
+    --accent: #ffb547;
+    --accent-dim: rgba(255,181,71,0.12);
+    --danger: #ff6b6b;
+    --danger-dim: rgba(255,107,107,0.12);
+    --info: #58a6ff;
+    --info-dim: rgba(88,166,255,0.12);
+    --sidebar-w: 240px;
+    --topbar-h: 64px;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+    --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="light"] {
+    --bg: #f0f2f5;
+    --bg2: #ffffff;
+    --card: #ffffff;
+    --card-hover: #f5f7fa;
+    --border: #d0d7de;
+    --text: #1f2328;
+    --text2: #656d76;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    --primary-dim: rgba(0,180,120,0.1);
+    --accent-dim: rgba(200,140,20,0.1);
+    --danger-dim: rgba(220,60,60,0.08);
+    --info-dim: rgba(50,120,220,0.08);
+}
+
+/* ===== Reset & Base ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--primary);text-decoration:none}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px}
+h1,h2,h3,h4{line-height:1.3;font-weight:700;letter-spacing:-0.02em}
+h1{font-size:clamp(1.8rem,4vw,2.4rem)}
+h2{font-size:clamp(1.3rem,3vw,1.7rem)}
+h3{font-size:1.1rem}
+img{max-width:100%;display:block}
+ul,ol{padding-left:1.4em}
+li{margin-bottom:0.3em}
+code{background:var(--primary-dim);color:var(--primary);padding:0.15em 0.4em;border-radius:4px;font-size:0.88em;font-family:'Cascadia Code','Fira Code',monospace}
+pre{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto;font-size:0.88em;line-height:1.7}
+pre code{background:none;padding:0;color:var(--text)}
+textarea,input,select{font-family:inherit;font-size:0.95rem}
+button{cursor:pointer;font-family:inherit;border:none;background:none;color:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text2)}
+
+/* ===== Background Blobs ===== */
+.bg-blob{position:fixed;border-radius:50%;filter:blur(100px);opacity:0.06;pointer-events:none;z-index:0}
+.bg-blob-1{width:500px;height:500px;background:var(--primary);top:-100px;right:-100px;animation:blobFloat 25s ease-in-out infinite}
+.bg-blob-2{width:400px;height:400px;background:var(--accent);bottom:-80px;left:-80px;animation:blobFloat 30s ease-in-out infinite reverse}
+.bg-blob-3{width:300px;height:300px;background:var(--info);top:50%;left:40%;animation:blobFloat 20s ease-in-out infinite 5s}
+@keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(30px,-40px) scale(1.05)}50%{transform:translate(-20px,30px) scale(0.95)}75%{transform:translate(40px,20px) scale(1.02)}}
+
+/* ===== Toast ===== */
+.toast-container{position:fixed;top:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:var(--radius-sm);box-shadow:var(--shadow);font-size:0.9rem;transform:translateX(120%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:8px;max-width:320px}
+.toast.show{transform:translateX(0)}
+.toast-icon{width:18px;height:18px;flex-shrink:0}
+.toast.success .toast-icon{color:var(--primary)}
+.toast.info .toast-icon{color:var(--info)}
+
+/* ===== Sidebar ===== */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--bg2);border-right:1px solid var(--border);z-index:100;display:flex;flex-direction:column;transition:transform var(--transition)}
+.sidebar-logo{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-logo svg{width:28px;height:28px;color:var(--primary);flex-shrink:0}
+.sidebar-logo span{font-weight:800;font-size:1.05rem;color:var(--text);letter-spacing:-0.03em}
+.sidebar nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.nav-link{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius-sm);color:var(--text2);font-size:0.9rem;font-weight:500;transition:all var(--transition);position:relative}
+.nav-link:hover{background:var(--primary-dim);color:var(--text)}
+.nav-link.active{background:var(--primary-dim);color:var(--primary)}
+.nav-link.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--primary);border-radius:0 3px 3px 0}
+.nav-link svg{width:20px;height:20px;flex-shrink:0}
+.sidebar-footer{padding:16px 12px;border-top:1px solid var(--border)}
+.theme-btn{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-sm);color:var(--text2);font-size:0.9rem;width:100%;transition:all var(--transition)}
+.theme-btn:hover{background:var(--accent-dim);color:var(--accent)}
+.theme-btn svg{width:20px;height:20px}
+
+/* ===== Main Content ===== */
+.main-content{margin-left:var(--sidebar-w);min-height:100vh;position:relative;z-index:1}
+.top-bar{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;padding:0 32px;backdrop-filter:blur(12px);background:color-mix(in srgb, var(--bg) 85%, transparent)}
+.top-bar-title{font-weight:700;font-size:1.1rem}
+.progress-wrapper{display:flex;align-items:center;gap:12px}
+.progress-bar-outer{width:160px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;transition:width 0.5s ease;width:0%}
+.progress-text{font-size:0.78rem;color:var(--text2);font-weight:600;min-width:36px}
+.hamburger{display:none;padding:8px;color:var(--text)}
+
+/* ===== Sections ===== */
+.section{padding:32px;max-width:960px;margin:0 auto;display:none;animation:fadeUp 0.4s ease}
+.section.active{display:block}
+.section-header{margin-bottom:32px}
+.section-header p{color:var(--text2);margin-top:8px;font-size:0.95rem;max-width:640px}
+.section-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+.badge-green{background:var(--primary-dim);color:var(--primary)}
+.badge-amber{background:var(--accent-dim);color:var(--accent)}
+.badge-blue{background:var(--info-dim);color:var(--info)}
+.badge-red{background:var(--danger-dim);color:var(--danger)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== Cards ===== */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:all var(--transition)}
+.card:hover{border-color:color-mix(in srgb, var(--border) 50%, var(--primary));box-shadow:var(--shadow)}
+.card-grid{display:grid;gap:16px}
+.card-grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card-grid-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card-title{font-weight:700;font-size:1rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card-title .icon{width:20px;height:20px;flex-shrink:0}
+
+/* ===== Buttons ===== */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius-sm);font-weight:600;font-size:0.88rem;transition:all var(--transition);border:1px solid transparent}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--primary);color:#0d1117}
+.btn-primary:hover{background:#00f0a0;box-shadow:0 0 20px rgba(0,214,143,0.3)}
+.btn-secondary{background:transparent;border-color:var(--border);color:var(--text)}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-dim)}
+.btn-accent{background:var(--accent);color:#1a1000}
+.btn-accent:hover{background:#ffc55c;box-shadow:0 0 20px rgba(255,181,71,0.3)}
+.btn-danger{background:var(--danger-dim);color:var(--danger);border-color:transparent}
+.btn-danger:hover{background:var(--danger);color:#fff}
+.btn-sm{padding:6px 14px;font-size:0.82rem}
+.btn-group{display:flex;flex-wrap:wrap;gap:8px}
+.btn svg{width:16px;height:16px}
+
+/* ===== Timeline ===== */
+.timeline{position:relative;padding-left:36px}
+.timeline::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;margin-bottom:28px}
+.timeline-item:last-child{margin-bottom:0}
+.timeline-dot{position:absolute;left:-36px;top:4px;width:28px;height:28px;border-radius:50%;background:var(--bg);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;z-index:2;transition:all var(--transition)}
+.timeline-dot .dot-inner{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all var(--transition)}
+.timeline-item.visited .timeline-dot{border-color:var(--primary)}
+.timeline-item.visited .dot-inner{background:var(--primary)}
+.timeline-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all var(--transition)}
+.timeline-card:hover{border-color:color-mix(in srgb, var(--border) 50%, var(--primary))}
+.timeline-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer;user-select:none;gap:12px}
+.timeline-header:hover{background:var(--card-hover)}
+.timeline-header-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.timeline-phase{font-weight:700;font-size:0.95rem;white-space:nowrap}
+.timeline-week{font-size:0.78rem;color:var(--text2);background:var(--bg);padding:2px 10px;border-radius:12px;white-space:nowrap}
+.timeline-chevron{width:20px;height:20px;color:var(--text2);transition:transform var(--transition);flex-shrink:0}
+.timeline-item.open .timeline-chevron{transform:rotate(180deg)}
+.timeline-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+.timeline-item.open .timeline-body{max-height:1200px}
+.timeline-content{padding:0 20px 20px;color:var(--text2);font-size:0.92rem;line-height:1.75}
+.timeline-content strong{color:var(--text);font-weight:600}
+.timeline-content ul{margin:8px 0}
+.topic-tag{display:inline-block;background:var(--primary-dim);color:var(--primary);padding:3px 10px;border-radius:12px;font-size:0.78rem;font-weight:600;margin:3px 4px 3px 0}
+
+/* ===== CREATE Framework Visual ===== */
+.create-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.create-letter{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden}
+.create-letter:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow)}
+.create-letter.active{border-color:var(--primary);background:var(--primary-dim)}
+.create-letter .letter{font-size:2rem;font-weight:900;color:var(--primary);line-height:1}
+.create-letter .label{font-size:0.82rem;font-weight:600;margin-top:6px;color:var(--text2);transition:color var(--transition)}
+.create-letter.active .label{color:var(--primary)}
+.create-letter .detail{font-size:0.8rem;color:var(--text2);margin-top:6px;display:none;line-height:1.5}
+.create-letter.active .detail{display:block}
+.create-letter::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--primary);transform:scaleX(0);transition:transform var(--transition);transform-origin:left}
+.create-letter:hover::after,.create-letter.active::after{transform:scaleX(1)}
+
+/* ===== Tabs ===== */
+.tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--border);overflow-x:auto;padding-bottom:0}
+.tab-btn{padding:12px 20px;font-weight:600;font-size:0.88rem;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all var(--transition);white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab-panel{display:none;animation:fadeUp 0.3s ease}
+.tab-panel.active{display:block}
+
+/* ===== Example Cards ===== */
+.example-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:24px;transition:all var(--transition)}
+.example-card:hover{box-shadow:var(--shadow)}
+.example-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.example-title{font-weight:700;font-size:0.95rem}
+.example-compare{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.example-side{padding:20px}
+.example-side.bad{background:var(--danger-dim);border-right:1px solid var(--border)}
+.example-side.good{background:var(--primary-dim)}
+.example-label{font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.example-label.bad-label{color:var(--danger)}
+.example-label.good-label{color:var(--primary)}
+.example-text{font-size:0.88rem;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.example-analysis{padding:16px 20px;border-top:1px solid var(--border);background:var(--bg2);max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+.example-card.analysis-open .example-analysis{max-height:400px}
+.example-analysis p{font-size:0.88rem;color:var(--text2);line-height:1.7}
+.example-analysis strong{color:var(--accent)}
+
+/* ===== Prompt Builder ===== */
+.builder-form{display:grid;gap:16px;margin-bottom:24px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:0.82rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em}
+.form-input,.form-textarea,.form-select{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text);transition:border-color var(--transition);width:100%}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px var(--primary-dim)}
+.form-textarea{resize:vertical;min-height:70px;font-family:inherit}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.generated-output{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;display:none}
+.generated-output.visible{display:block;animation:fadeUp 0.3s ease}
+.generated-output pre{background:none;border:none;padding:0;white-space:pre-wrap;word-break:break-word}
+.preset-btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+
+/* ===== Prompt Library ===== */
+.library-grid{display:grid;gap:12px;margin-top:20px}
+.library-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;position:relative}
+.library-item-text{font-size:0.85rem;line-height:1.6;color:var(--text2);margin-bottom:10px;white-space:pre-wrap;word-break:break-word;max-height:80px;overflow:hidden}
+.library-item-meta{display:flex;align-items:center;justify-content:space-between}
+.library-item-date{font-size:0.75rem;color:var(--text2)}
+.library-item-actions{display:flex;gap:6px}
+.library-empty{text-align:center;padding:40px;color:var(--text2);font-size:0.9rem}
+
+/* ===== Quiz ===== */
+.quiz-progress-bar{display:flex;gap:4px;margin-bottom:24px}
+.quiz-step{flex:1;height:4px;border-radius:2px;background:var(--border);transition:background var(--transition)}
+.quiz-step.done{background:var(--primary)}
+.quiz-step.current{background:var(--accent)}
+.question-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.question-number{font-size:0.78rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px}
+.question-text{font-size:1.05rem;font-weight:600;margin-bottom:20px;line-height:1.6}
+.options-list{display:flex;flex-direction:column;gap:10px}
+.option-btn{text-align:left;padding:14px 18px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:0.92rem;transition:all var(--transition);display:flex;align-items:center;gap:12px}
+.option-btn:hover:not(.selected):not(.correct):not(.wrong){border-color:var(--primary);background:var(--primary-dim)}
+.option-btn.selected{border-color:var(--info);background:var(--info-dim)}
+.option-btn.correct{border-color:var(--primary);background:var(--primary-dim);color:var(--primary)}
+.option-btn.wrong{border-color:var(--danger);background:var(--danger-dim);color:var(--danger)}
+.option-letter{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.82rem;flex-shrink:0;transition:all var(--transition)}
+.option-btn.selected .option-letter{border-color:var(--info);background:var(--info);color:#fff}
+.option-btn.correct .option-letter{border-color:var(--primary);background:var(--primary);color:#0d1117}
+.option-btn.wrong .option-letter{border-color:var(--danger);background:var(--danger);color:#fff}
+.quiz-nav{display:flex;justify-content:space-between;margin-top:24px}
+.quiz-results{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:40px;text-align:center;display:none}
+.quiz-results.visible{display:block;animation:fadeUp 0.4s ease}
+.score-circle{width:120px;height:120px;border-radius:50%;border:6px solid var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 20px}
+.score-num{font-size:2.2rem;font-weight:900;color:var(--primary);line-height:1}
+.score-label{font-size:0.75rem;color:var(--text2);font-weight:600}
+.result-message{font-size:1.1rem;font-weight:600;margin-bottom:8px}
+.result-sub{color:var(--text2);font-size:0.9rem;margin-bottom:24px}
+
+/* ===== Technique Demo ===== */
+.technique-demo{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;margin-top:16px}
+.technique-demo pre{margin-top:12px}
+
+/* ===== Mobile Nav ===== */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:100;padding:6px 0 env(safe-area-inset-bottom,6px)}
+.mobile-nav-inner{display:flex;justify-content:space-around}
+.mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;color:var(--text2);font-size:0.65rem;font-weight:600;transition:color var(--transition);border-radius:8px;min-width:48px}
+.mobile-nav-btn svg{width:22px;height:22px}
+.mobile-nav-btn.active{color:var(--primary)}
+.mobile-nav-btn:hover{color:var(--text)}
+
+/* ===== Scroll to Top ===== */
+.scroll-top{position:fixed;bottom:24px;right:24px;width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text2);z-index:90;opacity:0;transform:translateY(12px);transition:all var(--transition);pointer-events:none}
+.scroll-top.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.scroll-top:hover{background:var(--primary);color:#0d1117;border-color:var(--primary)}
+
+/* ===== Overlay ===== */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99}
+.sidebar-overlay.visible{display:block}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.open{transform:translateX(0)}
+    .main-content{margin-left:0}
+    .mobile-nav{display:block}
+    .section{padding:24px 16px;padding-bottom:100px}
+    .top-bar{padding:0 16px}
+    .create-grid{grid-template-columns:repeat(2,1fr)}
+    .example-compare{grid-template-columns:1fr}
+    .example-side.bad{border-right:none;border-bottom:1px solid var(--border)}
+    .form-row{grid-template-columns:1fr}
+    .hamburger{display:flex}
+}
+@media(max-width:480px){
+    .create-grid{grid-template-columns:1fr 1fr}
+    .create-letter{padding:14px 10px}
+    .create-letter .letter{font-size:1.5rem}
+    .tabs{gap:0}
+    .tab-btn{padding:10px 14px;font-size:0.82rem}
+    .progress-bar-outer{width:100px}
+}
+
+/* ===== Reduced Motion ===== */
+@media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+    .bg-blob{display:none}
+}
+
+/* ===== Misc ===== */
+.mt-16{margin-top:16px}.mt-24{margin-top:24px}.mb-16{margin-bottom:16px}.mb-24{margin-bottom:24px}
+.text-muted{color:var(--text2)}
+.text-sm{font-size:0.85rem}
+.divider{height:1px;background:var(--border);margin:24px 0}
+.highlight-box{background:var(--accent-dim);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:0.9rem;color:var(--text);margin:16px 0}
+.highlight-box strong{color:var(--accent)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+</head>
+<body>
+
+<!-- Background Blobs -->
+<div aria-hidden="true" class="bg-blob bg-blob-1"></div>
+<div aria-hidden="true" class="bg-blob bg-blob-2"></div>
+<div aria-hidden="true" class="bg-blob bg-blob-3"></div>
+
+<!-- Toast Container -->
+<div aria-live="polite" class="toast-container" id="toastContainer"></div>
+
+<!-- Sidebar Overlay (mobile) -->
+<div aria-hidden="true" class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside aria-label="Main navigation" class="sidebar" id="sidebar" role="navigation">
+    <div class="sidebar-logo">
+        <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"><path d="M2 17l10 5 10-5"><path d="M2 12l10 5 10-5"></path></path></path></svg>
+        <span>PromptLab</span>
+    </div>
+    <nav>
+        <a aria-selected="true" class="nav-link active" data-section="roadmap" href="#roadmap" role="tab">
+            <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"><polyline points="12 6 12 12 16 14"></polyline></circle></svg>
+            Roadmap
+        </a>
+        <a aria-selected="false" class="nav-link" data-section="create" href="#create" role="tab">
+            <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><rect height="7" width="7" x="3" y="3"><rect height="7" width="7" x="14" y="3"><rect height="7" width="7" x="3" y="14"><rect height="7" width="7" x="14" y="14"></rect></rect></rect></rect></svg>
+            CREATE Framework
+        </a>
+        <a aria-selected="false" class="nav-link" data-section="techniques" href="#techniques" role="tab">
+            <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 18h6"><path d="M10 22h4"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path></path></path></svg>
+            Techniques
+        </a>
+        <a aria-selected="false" class="nav-link" data-section="examples" href="#examples" role="tab">
+            <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><rect height="14" rx="2" width="20" x="2" y="3"><line x1="8" x2="16" y1="21" y2="21"><line x1="12" x2="12" y1="17" y2="21"></line></line></rect></svg>
+            Examples
+        </a>
+        <a aria-selected="false" class="nav-link" data-section="practice" href="#practice" role="tab">
+            <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 20h9"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></path></svg>
+            Practice
+        </a>
+        <a aria-selected="false" class="nav-link" data-section="quiz" href="#quiz" role="tab">
+            <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 11l3 3L22 4"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></path></svg>
+            Quiz
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <button aria-label="Toggle theme" class="theme-btn" id="themeToggle">
+            <svg fill="none" id="themeIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><circle cx="12" cy="12" r="5"><line x1="12" x2="12" y1="1" y2="3"><line x1="12" x2="12" y1="21" y2="23"><line x1="4.22" x2="5.64" y1="4.22" y2="5.64"><line x1="18.36" x2="19.78" y1="18.36" y2="19.78"><line x1="1" x2="3" y1="12" y2="12"><line x1="21" x2="23" y1="12" y2="12"><line x1="4.22" x2="5.64" y1="19.78" y2="18.36"><line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line></line></line></line></line></line></line></line></circle></svg>
+            <span id="themeLabel">Light Mode</span>
+        </button>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content" id="mainContent">
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div style="align-items: center; display: flex; gap: 12px;">
+            <button aria-label="Open menu" class="hamburger" id="hamburgerBtn">
+                <svg fill="none" height="24" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24" width="24"><line x1="3" x2="21" y1="6" y2="6"><line x1="3" x2="21" y1="12" y2="12"><line x1="3" x2="21" y1="18" y2="18"></line></line></line></svg>
+            </button>
+            <span class="top-bar-title" id="topBarTitle">Roadmap</span>
+        </div>
+        <div class="progress-wrapper">
+            <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" class="progress-bar-outer" id="progressBarOuter" role="progressbar">
+                <div class="progress-bar-inner" id="progressBarInner"></div>
+            </div>
+            <span class="progress-text" id="progressText">0%</span>
+        </div>
+    </header>
+
+    <!-- ===== SECTION: Roadmap ===== -->
+    <section aria-label="Prompt Engineering Roadmap" class="section active" id="sec-roadmap">
+        <div class="section-header">
+            <span class="section-badge badge-green">Part 1</span>
+            <h1>The Prompt Engineering Roadmap</h1>
+            <p>A structured 6-week journey from complete beginner to competent, creative prompt engineer. Click each phase to explore.</p>
+        </div>
+
+        <div class="timeline" role="list">
+            <!-- Phase 1 -->
+            <div class="timeline-item" role="listitem">
+                <div class="timeline-dot"><div class="dot-inner"></div></div>
+                <div class="timeline-card">
+                    <div aria-expanded="false" class="timeline-header" onclick="toggleTimeline(this)" onkeydown="if(event.key==='Enter')toggleTimeline(this)" role="button" tabindex="0">
+                        <div class="timeline-header-left">
+                            <span class="timeline-phase">Phase 1: Demystifying AI</span>
+                            <span class="timeline-week">Week 1</span>
+                        </div>
+                        <svg class="timeline-chevron" fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="timeline-body">
+                        <div class="timeline-content">
+                            <p><strong>Core Concept:</strong> Understand how Large Language Models (LLMs) work without complex math.</p>
+                            <div class="highlight-box mt-16">
+                                <strong>Key Metaphor:</strong> Treat the AI not as a search engine or a human mind, but as an <strong>extremely well-read, highly eager assistant with amnesia</strong> who needs clear instructions and context for every new task.
+                            </div>
+                            <p class="mt-16"><strong>Key Topics:</strong></p>
+                            <ul>
+                                <li><strong>Probabilistic text prediction</strong> — think of it as autocomplete on steroids.</li>
+                                <li><strong>The importance of context and instructions</strong> — the AI has no memory between conversations unless you provide it.</li>
+                                <li><strong>Recognizing hallucinations and limitations</strong> — the AI can sound confident while being wrong.</li>
+                            </ul>
+                            <div class="mt-16">
+                                <span class="topic-tag">Mental Models</span>
+                                <span class="topic-tag">LLM Basics</span>
+                                <span class="topic-tag">Hallucinations</span>
+                                <span class="topic-tag">Context Window</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2 -->
+            <div class="timeline-item" role="listitem">
+                <div class="timeline-dot"><div class="dot-inner"></div></div>
+                <div class="timeline-card">
+                    <div aria-expanded="false" class="timeline-header" onclick="toggleTimeline(this)" onkeydown="if(event.key==='Enter')toggleTimeline(this)" role="button" tabindex="0">
+                        <div class="timeline-header-left">
+                            <span class="timeline-phase">Phase 2: The CREATE Framework</span>
+                            <span class="timeline-week">Weeks 2–3</span>
+                        </div>
+                        <svg class="timeline-chevron" fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="timeline-body">
+                        <div class="timeline-content">
+                            <p><strong>Core Concept:</strong> A structured approach to writing prompts so you stop guessing and start engineering.</p>
+                            <p class="mt-16">The CREATE framework gives you six elements to include in every prompt:</p>
+                            <ul>
+                                <li><strong>Context</strong> — Who is the AI, and what is the background situation?</li>
+                                <li><strong>Role</strong> — What persona should the AI adopt?</li>
+                                <li><strong>Explicit Instructions</strong> — What exact steps or tasks need to be performed?</li>
+                                <li><strong>Audience</strong> — Who is the final output for?</li>
+                                <li><strong>Tone</strong> — Professional, casual, academic, or persuasive?</li>
+                                <li><strong>Examples / Output Format</strong> — What should the response look like?</li>
+                            </ul>
+                            <p class="mt-16 text-muted text-sm">Navigate to the "CREATE Framework" section for an interactive deep-dive.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3 -->
+            <div class="timeline-item" role="listitem">
+                <div class="timeline-dot"><div class="dot-inner"></div></div>
+                <div class="timeline-card">
+                    <div aria-expanded="false" class="timeline-header" onclick="toggleTimeline(this)" onkeydown="if(event.key==='Enter')toggleTimeline(this)" role="button" tabindex="0">
+                        <div class="timeline-header-left">
+                            <span class="timeline-phase">Phase 3: Advanced Techniques</span>
+                            <span class="timeline-week">Weeks 4–5</span>
+                        </div>
+                        <svg class="timeline-chevron" fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="timeline-body">
+                        <div class="timeline-content">
+                            <p><strong>Core Concept:</strong> Move beyond basic Q&amp;A to prompt optimization strategies.</p>
+                            <ul>
+                                <li><strong>Few-Shot Prompting</strong> — Provide a few examples of desired inputs and outputs to set a pattern.</li>
+                                <li><strong>Chain-of-Thought (CoT) Prompting</strong> — Instruct the AI to "think step-by-step" before answering to improve logic and accuracy.</li>
+                                <li><strong>Constraint Setting</strong> — Explicitly tell the AI what <em>not</em> to do (e.g., "Do not use jargon," "Keep it under 200 words").</li>
+                            </ul>
+                            <div class="mt-16">
+                                <span class="topic-tag">Few-Shot</span>
+                                <span class="topic-tag">Chain-of-Thought</span>
+                                <span class="topic-tag">Constraints</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 4 -->
+            <div class="timeline-item" role="listitem">
+                <div class="timeline-dot"><div class="dot-inner"></div></div>
+                <div class="timeline-card">
+                    <div aria-expanded="false" class="timeline-header" onclick="toggleTimeline(this)" onkeydown="if(event.key==='Enter')toggleTimeline(this)" role="button" tabindex="0">
+                        <div class="timeline-header-left">
+                            <span class="timeline-phase">Phase 4: Applications &amp; Capstone</span>
+                            <span class="timeline-week">Week 6</span>
+                        </div>
+                        <svg class="timeline-chevron" fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="timeline-body">
+                        <div class="timeline-content">
+                            <p><strong>Core Concept:</strong> Apply prompt engineering to real-world workflows.</p>
+                            <p class="mt-16"><strong>Practical Applications:</strong></p>
+                            <ul>
+                                <li>Summarizing research papers</li>
+                                <li>Drafting professional emails</li>
+                                <li>Brainstorming and ideation</li>
+                                <li>Writing and debugging code</li>
+                                <li>Creating educational content</li>
+                            </ul>
+                            <div class="highlight-box mt-16">
+                                <strong>Capstone Project:</strong> Build a "Prompt Library" — a personal collection of refined, tested prompts for your specific professional or personal use cases. Use the Practice section to start building yours now.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION: CREATE Framework ===== -->
+    <section aria-label="CREATE Framework" class="section" id="sec-create">
+        <div class="section-header">
+            <span class="section-badge badge-amber">Framework</span>
+            <h1>The CREATE Framework</h1>
+            <p>Click each letter to learn about that element. Together, they form a complete, professional prompt.</p>
+        </div>
+
+        <div class="create-grid" role="list">
+            <div class="create-letter" onclick="toggleCreate(this)" onkeydown="if(event.key==='Enter')toggleCreate(this)" role="listitem" tabindex="0">
+                <div class="letter">C</div>
+                <div class="label">Context</div>
+                <div class="detail">Provide the background situation. What is happening? What has led to this request? The AI has no memory — you must set the scene every time.</div>
+            </div>
+            <div class="create-letter" onclick="toggleCreate(this)" onkeydown="if(event.key==='Enter')toggleCreate(this)" role="listitem" tabindex="0">
+                <div class="letter">R</div>
+                <div class="label">Role</div>
+                <div class="detail">Assign a persona. "Act as a senior data scientist" or "You are a kindergarten teacher." This shapes vocabulary, depth, and perspective.</div>
+            </div>
+            <div class="create-letter" onclick="toggleCreate(this)" onkeydown="if(event.key==='Enter')toggleCreate(this)" role="listitem" tabindex="0">
+                <div class="letter">E</div>
+                <div class="label">Explicit Instructions</div>
+                <div class="detail">Be precise about what to do. List steps. Number them. Ambiguity is the enemy of good output.</div>
+            </div>
+            <div class="create-letter" onclick="toggleCreate(this)" onkeydown="if(event.key==='Enter')toggleCreate(this)" role="listitem" tabindex="0">
+                <div class="letter">A</div>
+                <div class="label">Audience</div>
+                <div class="detail">Who will read the final output? A CEO needs different language than a 5-year-old. Specify the reader.</div>
+            </div>
+            <div class="create-letter" onclick="toggleCreate(this)" onkeydown="if(event.key==='Enter')toggleCreate(this)" role="listitem" tabindex="0">
+                <div class="letter">T</div>
+                <div class="label">Tone</div>
+                <div class="detail">Set the emotional register: professional, friendly, urgent, academic, humorous, persuasive, neutral.</div>
+            </div>
+            <div class="create-letter" onclick="toggleCreate(this)" onkeydown="if(event.key==='Enter')toggleCreate(this)" role="listitem" tabindex="0">
+                <div class="letter">E</div>
+                <div class="label">Examples / Format</div>
+                <div class="detail">Show what good output looks like. Specify format: bullet points, table, JSON, essay, numbered list, email.</div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <strong>Tip:</strong> You don't always need all six elements for simple tasks, but for important or complex prompts, running through the CREATE checklist dramatically improves results.
+        </div>
+    </section>
+
+    <!-- ===== SECTION: Techniques ===== -->
+    <section aria-label="Advanced Techniques" class="section" id="sec-techniques">
+        <div class="section-header">
+            <span class="section-badge badge-blue">Techniques</span>
+            <h1>Advanced Techniques for Beginners</h1>
+            <p>Three powerful strategies that elevate your prompts from basic to professional.</p>
+        </div>
+
+        <div class="tabs" role="tablist">
+            <button aria-controls="panel-fewshot" aria-selected="true" class="tab-btn active" onclick="switchTab(this,'fewshot')" role="tab">Few-Shot Prompting</button>
+            <button aria-controls="panel-cot" aria-selected="false" class="tab-btn" onclick="switchTab(this,'cot')" role="tab">Chain-of-Thought</button>
+            <button aria-controls="panel-constraints" aria-selected="false" class="tab-btn" onclick="switchTab(this,'constraints')" role="tab">Constraint Setting</button>
+        </div>
+
+        <!-- Few-Shot Panel -->
+        <div class="tab-panel active" id="panel-fewshot" role="tabpanel">
+            <div class="card">
+                <div class="card-title">
+                    <svg class="icon" fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" style="color: var(--primary);" viewbox="0 0 24 24"><rect height="18" rx="2" width="18" x="3" y="3"><line x1="3" x2="21" y1="9" y2="9"><line x1="9" x2="9" y1="21" y2="9"></line></line></rect></svg>
+                    What is Few-Shot Prompting?
+                </div>
+                <p class="text-muted text-sm">Instead of just describing what you want, you provide the AI with example input-output pairs so it can recognize the pattern and replicate it.</p>
+                <div class="technique-demo">
+                    <strong class="text-sm">Sample Prompt:</strong>
+                    <pre><code>Classify the sentiment of each review as Positive, Negative, or Neutral.
+
+Review: "The food was amazing and the service was fast."
+Sentiment: Positive
+
+Review: "Terrible experience, waited 45 minutes for cold food."
+Sentiment: Negative
+
+Review: "It was okay, nothing special but not bad either."
+Sentiment: Neutral
+
+Review: "Absolutely loved the new update, works perfectly now!"
+Sentiment:</code></pre>
+                    <div class="btn-group mt-16">
+                        <button class="btn btn-secondary btn-sm" onclick="copyText(this.closest('.technique-demo').querySelector('code').textContent)">Copy Prompt</button>
+                    </div>
+                </div>
+                <p class="text-sm text-muted mt-16"><strong>Why it works:</strong> The examples teach the AI the exact classification pattern, format, and granularity you expect — far more reliable than just saying "classify the sentiment."</p>
+            </div>
+        </div>
+
+        <!-- Chain-of-Thought Panel -->
+        <div class="tab-panel" id="panel-cot" role="tabpanel">
+            <div class="card">
+                <div class="card-title">
+                    <svg class="icon" fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" style="color: var(--accent);" viewbox="0 0 24 24"><polyline points="9 11 12 14 22 4"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></polyline></svg>
+                    What is Chain-of-Thought Prompting?
+                </div>
+                <p class="text-muted text-sm">By asking the AI to reason step-by-step before giving a final answer, you dramatically reduce errors in logic, math, and multi-step reasoning.</p>
+                <div class="technique-demo">
+                    <strong class="text-sm">Without CoT (risky):</strong>
+                    <pre><code>If a store sells apples for $2 each, but offers a 10% discount on purchases over $10, and John buys 6 apples, how much does he pay?</code></pre>
+                    <strong class="text-sm" style="display: block; margin-top: 12px;">With CoT (reliable):</strong>
+                    <pre><code>Calculate the total cost of 6 apples priced at $2 each, keeping in mind there is a 10% discount for purchases over $10. Think step-by-step before providing the final answer.</code></pre>
+                    <div class="btn-group mt-16">
+                        <button class="btn btn-secondary btn-sm" onclick="copyText(this.closest('.technique-demo').querySelectorAll('pre')[1].textContent.replace('With CoT (reliable):','').trim())">Copy CoT Version</button>
+                    </div>
+                </div>
+                <div class="highlight-box mt-16">
+                    <strong>Expected CoT output:</strong> Step 1: 6 apples x $2 = $12. Step 2: $12 &gt; $10, so discount applies. Step 3: 10% of $12 = $1.20. Step 4: $12 - $1.20 = <strong>$10.80</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- Constraints Panel -->
+        <div class="tab-panel" id="panel-constraints" role="tabpanel">
+            <div class="card">
+                <div class="card-title">
+                    <svg class="icon" fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" style="color: var(--danger);" viewbox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    What is Constraint Setting?
+                </div>
+                <p class="text-muted text-sm">Explicitly telling the AI what <strong>not</strong> to do is often more powerful than telling it what to do. Constraints prevent unwanted behaviors.</p>
+                <div class="technique-demo">
+                    <strong class="text-sm">Powerful constraint phrases:</strong>
+                    <ul style="color: var(--text2); font-size: 0.88rem; margin-top: 8px;">
+                        <li>"Do not use technical jargon. Explain as if to a 12-year-old."</li>
+                        <li>"Keep the response under 200 words."</li>
+                        <li>"Do not include an introduction or conclusion. Start directly with the answer."</li>
+                        <li>"Only use information from the provided text. Do not add external knowledge."</li>
+                        <li>"Do not use bullet points. Write in paragraph form."</li>
+                        <li>"Respond in exactly 3 sentences."</li>
+                    </ul>
+                </div>
+                <p class="text-sm text-muted mt-16"><strong>Pro tip:</strong> Combine constraints with CREATE. The more specific your boundaries, the less the AI has to guess, and the more consistent your outputs become.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION: Examples ===== -->
+    <section aria-label="Concrete Examples" class="section" id="sec-examples">
+        <div class="section-header">
+            <span class="section-badge badge-red">Part 2</span>
+            <h1>Concrete Examples</h1>
+            <p>See the transformation from vague, ineffective prompts to structured, high-quality ones. Click "Show Analysis" to understand why.</p>
+        </div>
+
+        <!-- Example 1 -->
+        <div class="example-card" id="ex1">
+            <div class="example-header">
+                <span class="example-title">Example 1: The Rewrite Technique</span>
+                <button class="btn btn-secondary btn-sm" onclick="toggleAnalysis('ex1')">Show Analysis</button>
+            </div>
+            <div class="example-compare">
+                <div class="example-side bad">
+                    <div class="example-label bad-label">
+                        <svg fill="none" height="14" stroke-width="2.5" stroke="currentColor" viewbox="0 0 24 24" width="14"><line x1="18" x2="6" y1="6" y2="18"><line x1="6" x2="18" y1="6" y2="18"></line></line></svg>
+                        Bad Prompt
+                    </div>
+                    <div class="example-text">Write an email about the meeting.</div>
+                </div>
+                <div class="example-side good">
+                    <div class="example-label good-label">
+                        <svg fill="none" height="14" stroke-width="2.5" stroke="currentColor" viewbox="0 0 24 24" width="14"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Good Prompt
+                    </div>
+                    <div class="example-text" id="goodPrompt1">Act as a project manager. Write a polite, concise follow-up email to a client named Sarah summarizing our Tuesday sync. Highlight three action items: (1) budget approval by Friday, (2) final asset delivery next Monday, and (3) scheduling our next review. Use bullet points for the action items and maintain an encouraging tone.</div>
+                    <button class="btn btn-secondary btn-sm mt-16" onclick="copyText(document.getElementById('goodPrompt1').textContent)">Copy</button>
+                </div>
+            </div>
+            <div class="example-analysis">
+                <p><strong>Problem with the bad prompt:</strong> It lacks context (what meeting?), audience (who is it to?), tone (formal? casual?), and specific details (what happened?). The AI has to guess everything, leading to generic output.</p>
+                <p class="mt-16"><strong>Why the good prompt works:</strong> It uses CREATE — <strong>Role</strong> (project manager), <strong>Audience</strong> (client Sarah), <strong>Explicit Instructions</strong> (summarize + 3 action items), <strong>Tone</strong> (polite, encouraging), and <strong>Format</strong> (bullet points). Every element is specified.</p>
+            </div>
+        </div>
+
+        <!-- Example 2 -->
+        <div class="example-card" id="ex2">
+            <div class="example-header">
+                <span class="example-title">Example 2: Chain-of-Thought for Math</span>
+                <button class="btn btn-secondary btn-sm" onclick="toggleAnalysis('ex2')">Show Analysis</button>
+            </div>
+            <div class="example-compare">
+                <div class="example-side bad">
+                    <div class="example-label bad-label">
+                        <svg fill="none" height="14" stroke-width="2.5" stroke="currentColor" viewbox="0 0 24 24" width="14"><line x1="18" x2="6" y1="6" y2="18"><line x1="6" x2="18" y1="6" y2="18"></line></line></svg>
+                        Without CoT
+                    </div>
+                    <div class="example-text">If a store sells apples for $2 each, but offers a 10% discount on purchases over $10, and John buys 6 apples, how much does he pay?</div>
+                </div>
+                <div class="example-side good">
+                    <div class="example-label good-label">
+                        <svg fill="none" height="14" stroke-width="2.5" stroke="currentColor" viewbox="0 0 24 24" width="14"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        With CoT
+                    </div>
+                    <div class="example-text" id="goodPrompt2">Calculate the total cost of 6 apples priced at $2 each, keeping in mind there is a 10% discount for purchases over $10. Think step-by-step before providing the final answer.</div>
+                    <button class="btn btn-secondary btn-sm mt-16" onclick="copyText(document.getElementById('goodPrompt2').textContent)">Copy</button>
+                </div>
+            </div>
+            <div class="example-analysis">
+                <p><strong>Problem without CoT:</strong> LLMs can rush math and make arithmetic errors when they jump straight to the answer, especially with multi-step calculations involving conditions (the discount threshold).</p>
+                <p class="mt-16"><strong>Why CoT works:</strong> Forcing the model to lay out its intermediate steps (multiply, check threshold, calculate discount, subtract) drastically reduces calculation errors. Each step is simple enough to be accurate.</p>
+            </div>
+        </div>
+
+        <!-- Example 3 -->
+        <div class="example-card" id="ex3">
+            <div class="example-header">
+                <span class="example-title">Example 3: Few-Shot for Tone Control</span>
+                <button class="btn btn-secondary btn-sm" onclick="toggleAnalysis('ex3')">Show Analysis</button>
+            </div>
+            <div class="example-compare">
+                <div class="example-side bad">
+                    <div class="example-label bad-label">
+                        <svg fill="none" height="14" stroke-width="2.5" stroke="currentColor" viewbox="0 0 24 24" width="14"><line x1="18" x2="6" y1="6" y2="18"><line x1="6" x2="18" y1="6" y2="18"></line></line></svg>
+                        Vague Request
+                    </div>
+                    <div class="example-text">Rewrite this customer complaint into a nice response: "Your app is trash and logged me out."</div>
+                </div>
+                <div class="example-side good">
+                    <div class="example-label good-label">
+                        <svg fill="none" height="14" stroke-width="2.5" stroke="currentColor" viewbox="0 0 24 24" width="14"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Few-Shot Prompt
+                    </div>
+                    <div class="example-text" id="goodPrompt3">Rewrite the following customer feedback into a polite, professional support response. Follow the style of these examples:
+
+Example 1:
+Input: "Your app is trash and logged me out."
+Output: "We are very sorry for the frustration you experienced with the login issue. Let's look into this right away to get you back in."
+
+Example 2:
+Input: "I've been waiting 3 days for my refund and no one responds!"
+Output: "We sincerely apologize for the delay in processing your refund. This is not the experience we want for you, and we are escalating this immediately to ensure a resolution within 24 hours."
+
+Now rewrite this:
+Input: "Your product broke after one week, this is ridiculous!"</div>
+                    <button class="btn btn-secondary btn-sm mt-16" onclick="copyText(document.getElementById('goodPrompt3').textContent)">Copy</button>
+                </div>
+            </div>
+            <div class="example-analysis">
+                <p><strong>Problem with the vague request:</strong> "Nice" is subjective. The AI might be too casual, too formal, or miss the empathetic tone you actually want.</p>
+                <p class="mt-16"><strong>Why few-shot works:</strong> The two examples teach the AI the exact tone (apologetic, empathetic, action-oriented), structure (acknowledge, apologize, act), and level of formality. The third input gets transformed following the same pattern consistently.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION: Practice ===== -->
+    <section aria-label="Practice Prompt Builder" class="section" id="sec-practice">
+        <div class="section-header">
+            <span class="section-badge badge-green">Hands-On</span>
+            <h1>Prompt Builder</h1>
+            <p>Use the CREATE framework to build structured prompts. Try a preset or fill in the fields yourself.</p>
+        </div>
+
+        <div class="preset-btns">
+            <span class="text-sm text-muted" style="align-self: center; margin-right: 4px;">Presets:</span>
+            <button class="btn btn-secondary btn-sm" onclick="loadPreset('email')">Email Draft</button>
+            <button class="btn btn-secondary btn-sm" onclick="loadPreset('blog')">Blog Post Outline</button>
+            <button class="btn btn-secondary btn-sm" onclick="loadPreset('code')">Code Explanation</button>
+        </div>
+
+        <div class="card">
+            <div class="builder-form" id="builderForm">
+                <div class="form-group">
+                    <label class="form-label" for="bContext">Context</label>
+                    <textarea class="form-textarea" id="bContext" placeholder="e.g., We just had a quarterly planning meeting with the marketing team..." rows="2"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bRole">Role</label>
+                        <input class="form-input" id="bRole" placeholder="e.g., Senior marketing strategist" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bAudience">Audience</label>
+                        <input class="form-input" id="bAudience" placeholder="e.g., VP of Marketing" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="bInstructions">Explicit Instructions</label>
+                    <textarea class="form-textarea" id="bInstructions" placeholder="e.g., Write a summary of the meeting, highlight 3 key decisions, and list next steps with owners and deadlines..." rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bTone">Tone</label>
+                        <select class="form-select" id="bTone">
+                            <option value="">Select tone...</option>
+                            <option value="professional">Professional</option>
+                            <option value="friendly">Friendly</option>
+                            <option value="academic">Academic</option>
+                            <option value="casual">Casual</option>
+                            <option value="persuasive">Persuasive</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="humorous">Humorous</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bFormat">Output Format</label>
+                        <select class="form-select" id="bFormat">
+                            <option value="">Select format...</option>
+                            <option value="bullet points">Bullet Points</option>
+                            <option value="numbered list">Numbered List</option>
+                            <option value="paragraphs">Paragraphs</option>
+                            <option value="table">Table</option>
+                            <option value="email">Email</option>
+                            <option value="JSON">JSON</option>
+                            <option value="code block">Code Block</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generatePrompt()">
+                        <svg fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" style="height: 16px; width: 16px;" viewbox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        Generate Prompt
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetBuilder()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="generated-output" id="generatedOutput">
+            <div style="align-items: center; display: flex; justify-content: space-between; margin-bottom: 12px;">
+                <strong class="text-sm">Your Generated Prompt</strong>
+                <div class="btn-group">
+                    <button class="btn btn-secondary btn-sm" onclick="copyGenerated()">Copy</button>
+                    <button class="btn btn-accent btn-sm" onclick="saveToLibrary()">Save to Library</button>
+                </div>
+            </div>
+            <pre><code id="generatedText"></code></pre>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Your Prompt Library</h2>
+        <p class="text-sm text-muted mb-16">Saved prompts are stored locally in your browser. Export them anytime.</p>
+        <div id="libraryContainer">
+            <div class="library-empty" id="libraryEmpty">Your library is empty. Generate and save a prompt above to get started.</div>
+            <div class="library-grid" id="libraryGrid"></div>
+        </div>
+        <div class="btn-group mt-16" id="libraryActions" style="display: none;">
+            <button class="btn btn-secondary btn-sm" onclick="exportLibrary()">
+                <svg fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" style="height: 16px; width: 16px;" viewbox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"><polyline points="7 10 12 15 17 10"><line x1="12" x2="12" y1="15" y2="3"></line></polyline></path></svg>
+                Export All
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="clearLibrary()">Clear Library</button>
+        </div>
+    </section>
+
+    <!-- ===== SECTION: Quiz ===== -->
+    <section aria-label="Knowledge Quiz" class="section" id="sec-quiz">
+        <div class="section-header">
+            <span class="section-badge badge-amber">Test Yourself</span>
+            <h1>Prompt Engineering Quiz</h1>
+            <p>Test your understanding of the concepts covered. Your best score is saved locally.</p>
+        </div>
+
+        <div id="quizActive">
+            <div class="quiz-progress-bar" id="quizProgressBar" role="progressbar"></div>
+            <div class="question-card" id="questionCard">
+                <div class="question-number" id="questionNumber">Question 1 of 6</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options-list" id="optionsList"></div>
+                <div class="quiz-nav">
+                    <button class="btn btn-secondary btn-sm" disabled="" id="quizPrev" onclick="quizNav(-1)">Previous</button>
+                    <button class="btn btn-primary btn-sm" id="quizNext" onclick="quizNav(1)">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-results" id="quizResults">
+            <div class="score-circle">
+                <span class="score-num" id="scoreNum">0</span>
+                <span class="score-label">out of 6</span>
+            </div>
+            <div class="result-message" id="resultMessage"></div>
+            <div class="result-sub" id="resultSub"></div>
+            <div class="btn-group" style="justify-content: center;">
+                <button class="btn btn-primary" onclick="resetQuiz()">Try Again</button>
+                <button class="btn btn-secondary" onclick="navigateTo('roadmap')">Review Content</button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Mobile Bottom Nav -->
+<nav aria-label="Mobile navigation" class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-inner">
+        <button aria-label="Roadmap" class="mobile-nav-btn active" data-section="roadmap" onclick="navigateTo('roadmap')">
+            <svg fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"><polyline points="12 6 12 12 16 14"></polyline></circle></svg>
+            Roadmap
+        </button>
+        <button aria-label="CREATE Framework" class="mobile-nav-btn" data-section="create" onclick="navigateTo('create')">
+            <svg fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><rect height="7" width="7" x="3" y="3"><rect height="7" width="7" x="14" y="3"><rect height="7" width="7" x="3" y="14"><rect height="7" width="7" x="14" y="14"></rect></rect></rect></rect></svg>
+            CREATE
+        </button>
+        <button aria-label="Techniques" class="mobile-nav-btn" data-section="techniques" onclick="navigateTo('techniques')">
+            <svg fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 18h6"><path d="M10 22h4"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path></path></path></svg>
+            Techniques
+        </button>
+        <button aria-label="Examples" class="mobile-nav-btn" data-section="examples" onclick="navigateTo('examples')">
+            <svg fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><rect height="14" rx="2" width="20" x="2" y="3"><line x1="8" x2="16" y1="21" y2="21"><line x1="12" x2="12" y1="17" y2="21"></line></line></rect></svg>
+            Examples
+        </button>
+        <button aria-label="Practice" class="mobile-nav-btn" data-section="practice" onclick="navigateTo('practice')">
+            <svg fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 20h9"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></path></svg>
+            Practice
+        </button>
+        <button aria-label="Quiz" class="mobile-nav-btn" data-section="quiz" onclick="navigateTo('quiz')">
+            <svg fill="none" stroke-linecap="round" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 11l3 3L22 4"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></path></svg>
+            Quiz
+        </button>
+    </div>
+</nav>
+
+<!-- Scroll to Top -->
+<button aria-label="Scroll to top" class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg fill="none" height="20" stroke-linecap="round" stroke-width="2.5" stroke="currentColor" viewbox="0 0 24 24" width="20"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
+
+<script>
+/* ===== State ===== */
+const STATE = {
+    currentSection: 'roadmap',
+    visitedSections: new Set(),
+    quizIndex: 0,
+    quizAnswers: [],
+    quizSubmitted: false
+};
+
+/* ===== Quiz Data ===== */
+const QUIZ_DATA = [
+    {
+        q: "What is the best mental model for understanding how an LLM works?",
+        opts: ["A search engine that retrieves information", "A human mind with reasoning capabilities", "An extremely well-read assistant with amnesia", "A database that stores facts"],
+        answer: 2
+    },
+    {
+        q: "What does the letter 'R' stand for in the CREATE framework?",
+        opts: ["Response", "Role", "Result", "Reference"],
+        answer: 1
+    },
+    {
+        q: "What is Few-Shot prompting?",
+        opts: ["Asking the AI to respond in very few words", "Providing example input-output pairs to set a pattern", "Using short, minimal prompts to save tokens", "Testing the AI with a small number of questions"],
+        answer: 1
+    },
+    {
+        q: "Why does Chain-of-Thought prompting improve accuracy on math problems?",
+        opts: ["It makes the AI respond more slowly", "It forces the AI to show intermediate reasoning steps", "It uses simpler vocabulary the AI understands better", "It reduces the total number of tokens generated"],
+        answer: 1
+    },
+    {
+        q: "What is a 'hallucination' in the context of AI?",
+        opts: ["A visual effect in AI-generated images", "The AI generating false or fabricated information confidently", "A system crash caused by overload", "When the AI repeats the same phrase endlessly"],
+        answer: 1
+    },
+    {
+        q: "Which CREATE element specifies who will read the final output?",
+        opts: ["Context", "Role", "Audience", "Tone"],
+        answer: 2
+    }
+];
+
+/* ===== Preset Data ===== */
+const PRESETS = {
+    email: {
+        context: "We had a project kickoff meeting yesterday with the client. They seemed enthusiastic but had concerns about the timeline. The dev team confirmed the MVP can be ready in 8 weeks if scope is locked.",
+        role: "Project Manager",
+        audience: "The client's CTO",
+        instructions: "Write a follow-up email that (1) thanks them for the meeting, (2) addresses the timeline concern with the 8-week MVP plan, (3) requests scope sign-off by end of week, and (4) proposes a weekly 15-minute standup.",
+        tone: "professional",
+        format: "email"
+    },
+    blog: {
+        context: "I'm launching a blog post about the benefits of prompt engineering for non-technical professionals. The target keyword is 'prompt engineering for beginners.'",
+        role: "Content marketing writer specializing in tech education",
+        audience: "Managers, educators, and entrepreneurs with no coding background",
+        instructions: "Create a detailed blog post outline with: a compelling headline, a hook for the introduction, 5 main sections with sub-points, and a conclusion with a call-to-action.",
+        tone: "friendly",
+        format: "bullet points"
+    },
+    code: {
+        context: "A junior developer is confused about this Python function that uses list comprehension and a lambda to filter and transform data. They understand basic loops but not functional-style Python.",
+        role: "Patient senior Python developer and mentor",
+        audience: "Junior developer with 3 months of Python experience",
+        instructions: "Explain what this code does step by step: result = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(1, 21)))). Break down each function call, explain the flow of data, then show an equivalent version using for loops for comparison.",
+        tone: "friendly",
+        format: "paragraphs"
+    }
+};
+
+/* ===== Navigation ===== */
+const SECTION_TITLES = {
+    roadmap: 'Roadmap',
+    create: 'CREATE Framework',
+    techniques: 'Advanced Techniques',
+    examples: 'Concrete Examples',
+    practice: 'Prompt Builder',
+    quiz: 'Knowledge Quiz'
+};
+
+function navigateTo(sectionId) {
+    /* Update state */
+    STATE.currentSection = sectionId;
+    STATE.visitedSections.add(sectionId);
+    saveProgress();
+
+    /* Update sections */
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    var target = document.getElementById('sec-' + sectionId);
+    if (target) target.classList.add('active');
+
+    /* Update sidebar */
+    document.querySelectorAll('.nav-link').forEach(function(l) {
+        l.classList.remove('active');
+        l.setAttribute('aria-selected', 'false');
+        if (l.dataset.section === sectionId) {
+            l.classList.add('active');
+            l.setAttribute('aria-selected', 'true');
+        }
+    });
+
+    /* Update mobile nav */
+    document.querySelectorAll('.mobile-nav-btn').forEach(function(b) {
+        b.classList.remove('active');
+        if (b.dataset.section === sectionId) b.classList.add('active');
+    });
+
+    /* Update top bar title */
+    document.getElementById('topBarTitle').textContent = SECTION_TITLES[sectionId] || sectionId;
+
+    /* Update progress */
+    updateProgress();
+
+    /* Mark timeline items */
+    if (sectionId === 'roadmap') {
+        document.querySelectorAll('.timeline-item').forEach(function(item) {
+            if (item.classList.contains('open')) {
+                item.classList.add('visited');
+            }
+        });
+    }
+
+    /* Close mobile sidebar */
+    closeSidebar();
+
+    /* Scroll to top */
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ===== Progress ===== */
+function updateProgress() {
+    var total = 6;
+    var visited = STATE.visitedSections.size;
+    var pct = Math.round((visited / total) * 100);
+    document.getElementById('progressBarInner').style.width = pct + '%';
+    document.getElementById('progressText').textContent = pct + '%';
+    document.getElementById('progressBarOuter').setAttribute('aria-valuenow', pct);
+}
+
+function saveProgress() {
+    try {
+        localStorage.setItem('promptlab_visited', JSON.stringify(Array.from(STATE.visitedSections)));
+    } catch(e) { /* silent fail */ }
+}
+
+function loadProgress() {
+    try {
+        var data = localStorage.getItem('promptlab_visited');
+        if (data) {
+            var arr = JSON.parse(data);
+            arr.forEach(function(s) { STATE.visitedSections.add(s); });
+        }
+    } catch(e) { /* silent fail */ }
+}
+
+/* ===== Timeline Accordion ===== */
+function toggleTimeline(header) {
+    var item = header.closest('.timeline-item');
+    var isOpen = item.classList.contains('open');
+
+    /* Close all */
+    document.querySelectorAll('.timeline-item').forEach(function(i) { i.classList.remove('open'); });
+
+    if (!isOpen) {
+        item.classList.add('open');
+        item.classList.add('visited');
+        header.setAttribute('aria-expanded', 'true');
+    } else {
+        header.setAttribute('aria-expanded', 'false');
+    }
+    saveProgress();
+    updateProgress();
+}
+
+/* ===== CREATE Framework Toggle ===== */
+function toggleCreate(el) {
+    var wasActive = el.classList.contains('active');
+    /* Allow multiple open */
+    if (wasActive) {
+        el.classList.remove('active');
+    } else {
+        el.classList.add('active');
+    }
+}
+
+/* ===== Tabs ===== */
+function switchTab(btn, panelId) {
+    var parent = btn.closest('.section');
+    parent.querySelectorAll('.tab-btn').forEach(function(t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+    });
+    parent.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    document.getElementById('panel-' + panelId).classList.add('active');
+}
+
+/* ===== Example Analysis Toggle ===== */
+function toggleAnalysis(cardId) {
+    var card = document.getElementById(cardId);
+    var isOpen = card.classList.contains('analysis-open');
+    card.classList.toggle('analysis-open');
+    var btn = card.querySelector('.example-header .btn');
+    btn.textContent = isOpen ? 'Show Analysis' : 'Hide Analysis';
+}
+
+/* ===== Copy ===== */
+function copyText(text) {
+    navigator.clipboard.writeText(text.trim()).then(function() {
+        showToast('Copied to clipboard', 'success');
+    }).catch(function() {
+        /* Fallback */
+        var ta = document.createElement('textarea');
+        ta.value = text.trim();
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Copied to clipboard', 'success');
+    });
+}
+
+function copyGenerated() {
+    var text = document.getElementById('generatedText').textContent;
+    copyText(text);
+}
+
+/* ===== Toast ===== */
+function showToast(msg, type) {
+    type = type || 'info';
+    var container = document.getElementById('toastContainer');
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    var iconSvg = type === 'success'
+        ? '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+        : '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+    toast.innerHTML = iconSvg + '<span>' + msg + '</span>';
+    container.appendChild(toast);
+    requestAnimationFrame(function() {
+        requestAnimationFrame(function() { toast.classList.add('show'); });
+    });
+    setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() { toast.remove(); }, 350);
+    }, 2500);
+}
+
+/* ===== Prompt Builder ===== */
+function generatePrompt() {
+    var c = document.getElementById('bContext').value.trim();
+    var r = document.getElementById('bRole').value.trim();
+    var e = document.getElementById('bInstructions').value.trim();
+    var a = document.getElementById('bAudience').value.trim();
+    var t = document.getElementById('bTone').value;
+    var f = document.getElementById('bFormat').value;
+
+    var parts = [];
+    if (r) parts.push('Role: ' + r);
+    if (c) parts.push('Context: ' + c);
+    if (e) parts.push('Task: ' + e);
+    if (a) parts.push('Audience: ' + a);
+    if (t) parts.push('Tone: ' + t);
+    if (f) parts.push('Format: ' + f);
+
+    if (parts.length === 0) {
+        showToast('Fill in at least one field to generate a prompt', 'info');
+        return;
+    }
+
+    var prompt = parts.join('\n');
+    document.getElementById('generatedText').textContent = prompt;
+    document.getElementById('generatedOutput').classList.add('visible');
+    showToast('Prompt generated', 'success');
+}
+
+function resetBuilder() {
+    document.getElementById('bContext').value = '';
+    document.getElementById('bRole').value = '';
+    document.getElementById('bInstructions').value = '';
+    document.getElementById('bAudience').value = '';
+    document.getElementById('bTone').value = '';
+    document.getElementById('bFormat').value = '';
+    document.getElementById('generatedOutput').classList.remove('visible');
+    showToast('Builder reset', 'info');
+}
+
+function loadPreset(key) {
+    var p = PRESETS[key];
+    if (!p) return;
+    document.getElementById('bContext').value = p.context;
+    document.getElementById('bRole').value = p.role;
+    document.getElementById('bInstructions').value = p.instructions;
+    document.getElementById('bAudience').value = p.audience;
+    document.getElementById('bTone').value = p.tone;
+    document.getElementById('bFormat').value = p.format;
+    document.getElementById('generatedOutput').classList.remove('visible');
+    showToast('Preset loaded: ' + key, 'success');
+}
+
+/* ===== Prompt Library ===== */
+function getLibrary() {
+    try {
+        var data = localStorage.getItem('promptlab_library');
+        return data ? JSON.parse(data) : [];
+    } catch(e) { return []; }
+}
+
+function setLibrary(lib) {
+    try {
+        localStorage.setItem('promptlab_library', JSON.stringify(lib));
+    } catch(e) { /* silent fail */ }
+}
+
+function saveToLibrary() {
+    var text = document.getElementById('generatedText').textContent.trim();
+    if (!text) return;
+    var lib = getLibrary();
+    lib.push({ text: text, date: new Date().toISOString() });
+    setLibrary(lib);
+    renderLibrary();
+    showToast('Saved to library', 'success');
+}
+
+function deleteFromLibrary(index) {
+    var lib = getLibrary();
+    lib.splice(index, 1);
+    setLibrary(lib);
+    renderLibrary();
+    showToast('Removed from library', 'info');
+}
+
+function copyFromLibrary(index) {
+    var lib = getLibrary();
+    if (lib[index]) copyText(lib[index].text);
+}
+
+function clearLibrary() {
+    setLibrary([]);
+    renderLibrary();
+    showToast('Library cleared', 'info');
+}
+
+function exportLibrary() {
+    var lib = getLibrary();
+    if (lib.length === 0) {
+        showToast('Library is empty', 'info');
+        return;
+    }
+    var output = '# Prompt Library\n# Exported: ' + new Date().toLocaleString() + '\n\n';
+    lib.forEach(function(item, i) {
+        output += '--- Prompt ' + (i + 1) + ' ---\n';
+        output += 'Date: ' + new Date(item.date).toLocaleDateString() + '\n';
+        output += item.text + '\n\n';
+    });
+    var blob = new Blob([output], { type: 'text/plain' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'prompt-library.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Library exported', 'success');
+}
+
+function renderLibrary() {
+    var lib = getLibrary();
+    var grid = document.getElementById('libraryGrid');
+    var empty = document.getElementById('libraryEmpty');
+    var actions = document.getElementById('libraryActions');
+
+    grid.innerHTML = '';
+    if (lib.length === 0) {
+        empty.style.display = 'block';
+        actions.style.display = 'none';
+        return;
+    }
+    empty.style.display = 'none';
+    actions.style.display = 'flex';
+
+    lib.forEach(function(item, i) {
+        var div = document.createElement('div');
+        div.className = 'library-item';
+        var dateStr = new Date(item.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+        div.innerHTML = '<div class="library-item-text">' + escapeHtml(item.text) + '</div>' +
+            '<div class="library-item-meta">' +
+            '<span class="library-item-date">' + dateStr + '</span>' +
+            '<div class="library-item-actions">' +
+            '<button class="btn btn-secondary btn-sm" onclick="copyFromLibrary(' + i + ')">Copy</button>' +
+            '<button class="btn btn-danger btn-sm" onclick="deleteFromLibrary(' + i + ')">Delete</button>' +
+            '</div></div>';
+        grid.appendChild(div);
+    });
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+/* ===== Quiz ===== */
+function initQuiz() {
+    STATE.quizIndex = 0;
+    STATE.quizAnswers = new Array(QUIZ_DATA.length).fill(-1);
+    STATE.quizSubmitted = false;
+    document.getElementById('quizActive').style.display = 'block';
+    document.getElementById('quizResults').classList.remove('visible');
+    renderQuizProgress();
+    renderQuestion();
+}
+
+function renderQuizProgress() {
+    var bar = document.getElementById('quizProgressBar');
+    bar.innerHTML = '';
+    for (var i = 0; i < QUIZ_DATA.length; i++) {
+        var step = document.createElement('div');
+        step.className = 'quiz-step';
+        if (i < STATE.quizIndex) step.classList.add('done');
+        if (i === STATE.quizIndex && !STATE.quizSubmitted) step.classList.add('current');
+        bar.appendChild(step);
+    }
+}
+
+function renderQuestion() {
+    var q = QUIZ_DATA[STATE.quizIndex];
+    document.getElementById('questionNumber').textContent = 'Question ' + (STATE.quizIndex + 1) + ' of ' + QUIZ_DATA.length;
+    document.getElementById('questionText').textContent = q.q;
+
+    var list = document.getElementById('optionsList');
+    list.innerHTML = '';
+    var letters = ['A', 'B', 'C', 'D'];
+    q.opts.forEach(function(opt, i) {
+        var btn = document.createElement('button');
+        btn.className = 'option-btn';
+        if (STATE.quizAnswers[STATE.quizIndex] === i) btn.classList.add('selected');
+        btn.innerHTML = '<span class="option-letter">' + letters[i] + '</span><span>' + escapeHtml(opt) + '</span>';
+        btn.onclick = function() { selectOption(i); };
+        list.appendChild(btn);
+    });
+
+    /* Nav buttons */
+    document.getElementById('quizPrev').disabled = STATE.quizIndex === 0;
+    var nextBtn = document.getElementById('quizNext');
+    if (STATE.quizIndex === QUIZ_DATA.length - 1) {
+        nextBtn.textContent = 'Submit';
+    } else {
+        nextBtn.textContent = 'Next';
+    }
+}
+
+function selectOption(index) {
+    if (STATE.quizSubmitted) return;
+    STATE.quizAnswers[STATE.quizIndex] = index;
+    renderQuestion();
+}
+
+function quizNav(dir) {
+    if (STATE.quizSubmitted) return;
+
+    if (dir === 1 && STATE.quizIndex === QUIZ_DATA.length - 1) {
+        /* Submit */
+        var unanswered = STATE.quizAnswers.filter(function(a) { return a === -1; }).length;
+        if (unanswered > 0) {
+            showToast(unanswered + ' question(s) unanswered', 'info');
+            return;
+        }
+        submitQuiz();
+        return;
+    }
+
+    STATE.quizIndex = Math.max(0, Math.min(QUIZ_DATA.length - 1, STATE.quizIndex + dir));
+    renderQuizProgress();
+    renderQuestion();
+}
+
+function submitQuiz() {
+    STATE.quizSubmitted = true;
+    var score = 0;
+    QUIZ_DATA.forEach(function(q, i) {
+        if (STATE.quizAnswers[i] === q.answer) score++;
+    });
+
+    /* Show correct/wrong on options */
+    var q = QUIZ_DATA[STATE.quizIndex];
+    var btns = document.querySelectorAll('#optionsList .option-btn');
+    btns.forEach(function(btn, i) {
+        btn.onclick = null;
+        btn.classList.remove('selected');
+        if (i === q.answer) {
+            btn.classList.add('correct');
+        } else if (STATE.quizAnswers[STATE.quizIndex] === i) {
+            btn.classList.add('wrong');
+        }
+    });
+
+    /* Show all results */
+    document.getElementById('quizActive').style.display = 'none';
+    var results = document.getElementById('quizResults');
+    results.classList.add('visible');
+    document.getElementById('scoreNum').textContent = score;
+
+    /* Save best score */
+    try {
+        var best = parseInt(localStorage.getItem('promptlab_best') || '0', 10);
+        if (score > best) {
+            localStorage.setItem('promptlab_best', score.toString());
+            document.getElementById('resultSub').textContent = 'New best score! Previous best: ' + best + '/' + QUIZ_DATA.length;
+        } else {
+            document.getElementById('resultSub').textContent = 'Your best: ' + best + '/' + QUIZ_DATA.length;
+        }
+    } catch(e) {
+        document.getElementById('resultSub').textContent = '';
+    }
+
+    if (score === QUIZ_DATA.length) {
+        document.getElementById('resultMessage').textContent = 'Perfect Score!';
+    } else if (score >= QUIZ_DATA.length * 0.7) {
+        document.getElementById('resultMessage').textContent = 'Great Job!';
+    } else if (score >= QUIZ_DATA.length * 0.4) {
+        document.getElementById('resultMessage').textContent = 'Good Effort!';
+    } else {
+        document.getElementById('resultMessage').textContent = 'Keep Learning!';
+    }
+}
+
+function resetQuiz() {
+    initQuiz();
+}
+
+/* ===== Theme Toggle ===== */
+function toggleTheme() {
+    var html = document.documentElement;
+    var isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('themeLabel').textContent = isDark ? 'Dark Mode' : 'Light Mode';
+
+    /* Update sun/moon icon */
+    var icon = document.getElementById('themeIcon');
+    if (isDark) {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    } else {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    }
+
+    try { localStorage.setItem('promptlab_theme', isDark ? 'light' : 'dark'); } catch(e) {}
+}
+
+function loadTheme() {
+    try {
+        var saved = localStorage.getItem('promptlab_theme');
+        if (saved) {
+            document.documentElement.setAttribute('data-theme', saved);
+            if (saved === 'light') {
+                document.getElementById('themeLabel').textContent = 'Dark Mode';
+                document.getElementById('themeIcon').innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+            }
+        }
+    } catch(e) {}
+}
+
+/* ===== Sidebar Mobile ===== */
+function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('visible');
+    document.body.style.overflow = '';
+}
+
+/* ===== Scroll to Top Button ===== */
+function handleScroll() {
+    var btn = document.getElementById('scrollTopBtn');
+    if (window.scrollY > 300) {
+        btn.classList.add('visible');
+    } else {
+        btn.classList.remove('visible');
+    }
+}
+
+/* ===== Init ===== */
+function init() {
+    loadTheme();
+    loadProgress();
+    updateProgress();
+    renderLibrary();
+    initQuiz();
+
+    /* Theme toggle */
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+    /* Hamburger */
+    document.getElementById('hamburgerBtn').addEventListener('click', openSidebar);
+    document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+
+    /* Sidebar nav links */
+    document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            navigateTo(this.dataset.section);
+        });
+    });
+
+    /* Scroll listener */
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    /* Keyboard: close sidebar with Escape */
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeSidebar();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
