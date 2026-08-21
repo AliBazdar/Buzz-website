@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi973MiSl7U4EZEhRaPz_wQRzZrt5CcI7vUkW1bzI_uS4sUWMF21R5hKdThZVu9vQ9cDrKwhyoUveqPumdkhpUrcNF2mBgBc0xxjd8-RMRH7wzyM14GMastHBZ7hyMSejx9-qh5tmHJ1EKp1jmLB9G3ZOhHpPOcht6rzqCFRFHVQIKE0lby3uchLKeNPvM/s263/image.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" height="200" data-original-height="263" data-original-width="259" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi973MiSl7U4EZEhRaPz_wQRzZrt5CcI7vUkW1bzI_uS4sUWMF21R5hKdThZVu9vQ9cDrKwhyoUveqPumdkhpUrcNF2mBgBc0xxjd8-RMRH7wzyM14GMastHBZ7hyMSejx9-qh5tmHJ1EKp1jmLB9G3ZOhHpPOcht6rzqCFRFHVQIKE0lby3uchLKeNPvM/s200/image.png"/></a></div>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Cognitive Operators Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-primary:#0a0e1a;--bg-secondary:#0f1424;--bg-card:rgba(255,255,255,0.03);--bg-card-hover:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.18);
+  --text-primary:#e2e8f0;--text-secondary:#94a3b8;--text-muted:#64748b;
+  --accent:#6366f1;--accent-2:#ec4899;--accent-glow:rgba(99,102,241,0.4);
+  --cat-elimination:#ef4444;--cat-critical:#f59e0b;--cat-improvement:#10b981;
+  --cat-reasoning:#3b82f6;--cat-compression:#8b5cf6;--cat-expansion:#ec4899;--cat-technical:#14b8a6;
+  --shadow-md:0 8px 24px rgba(0,0,0,0.4);--shadow-lg:0 16px 48px rgba(0,0,0,0.5);
+  --radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:24px;
+}
+[data-theme="light"]{
+  --bg-primary:#f8fafc;--bg-secondary:#ffffff;--bg-card:rgba(0,0,0,0.025);--bg-card-hover:rgba(0,0,0,0.05);
+  --border:rgba(0,0,0,0.08);--border-strong:rgba(0,0,0,0.18);
+  --text-primary:#0f172a;--text-secondary:#475569;--text-muted:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
+.bg-gradient{position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at 15% 20%,rgba(99,102,241,.18),transparent 50%),radial-gradient(circle at 85% 75%,rgba(236,72,153,.14),transparent 50%),radial-gradient(circle at 50% 50%,rgba(20,184,166,.08),transparent 60%);pointer-events:none;transition:opacity .3s}
+[data-theme="light"] .bg-gradient{background:radial-gradient(circle at 15% 20%,rgba(99,102,241,.12),transparent 50%),radial-gradient(circle at 85% 75%,rgba(236,72,153,.1),transparent 50%)}
+.bg-grid{position:fixed;inset:0;z-index:-1;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%)}
+[data-theme="light"] .bg-grid{background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px)}
+
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1rem 1.5rem}
+[data-theme="light"] header{background:rgba(248,250,252,.8)}
+.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}
+.logo{display:flex;align-items:center;gap:.75rem;font-weight:800;font-size:1.15rem}
+.logo-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#ec4899);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 4px 16px rgba(99,102,241,.4);animation:logo-pulse 4s ease-in-out infinite}
+@keyframes logo-pulse{0%,100%{box-shadow:0 4px 16px rgba(99,102,241,.4)}50%{box-shadow:0 4px 24px rgba(236,72,153,.5)}}
+.logo-text{background:linear-gradient(135deg,#818cf8,#f472b6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.header-actions{display:flex;align-items:center;gap:.75rem}
+.search-box{position:relative}
+.search-box input{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:.625rem 1rem .625rem 2.5rem;color:var(--text-primary);font-family:inherit;font-size:.875rem;width:260px;transition:all .2s}
+.search-box input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);width:300px}
+.search-box svg{position:absolute;left:.875rem;top:50%;transform:translateY(-50%);width:16px;height:16px;opacity:.5}
+.theme-toggle{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;width:42px;height:42px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .2s;color:var(--text-primary)}
+.theme-toggle:hover{background:var(--bg-card-hover);transform:scale(1.05) rotate(15deg)}
+
+main{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
+
+.hero{text-align:center;padding:2.5rem 0 2rem}
+.hero h1{font-size:clamp(1.9rem,5vw,3.5rem);font-weight:900;line-height:1.1;margin-bottom:1rem;letter-spacing:-.02em}
+.gradient-text{background:linear-gradient(135deg,#818cf8,#f472b6,#34d399,#fbbf24);background-size:300% 300%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gradient-shift 10s ease infinite}
+@keyframes gradient-shift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hero p{color:var(--text-secondary);font-size:1.05rem;max-width:680px;margin:0 auto 2rem}
+.hero-stats{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-value{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,#818cf8,#f472b6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.stat-label{color:var(--text-secondary);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;margin-top:.25rem;font-weight:600}
+
+section{margin-bottom:3.5rem;animation:fadeUp .6s ease backwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.section-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.section-title{font-size:1.5rem;font-weight:800;display:flex;align-items:center;gap:.6rem;letter-spacing:-.01em}
+.section-title .icon{font-size:1.6rem}
+.section-subtitle{color:var(--text-secondary);font-size:.875rem;margin-top:.25rem}
+
+.category-filter{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.filter-chip{padding:.5rem 1rem;border-radius:100px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;font-size:.8125rem;font-weight:600;transition:all .2s;display:flex;align-items:center;gap:.5rem;font-family:inherit}
+.filter-chip:hover{border-color:var(--border-strong);color:var(--text-primary);transform:translateY(-1px)}
+.filter-chip.active{background:var(--cat-color);border-color:transparent;color:#fff;box-shadow:0 4px 12px color-mix(in srgb,var(--cat-color) 40%,transparent)}
+.filter-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--cat-color)}
+.filter-chip.active .dot{background:#fff}
+
+.operator-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.operator-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;animation:fadeUp .5s ease backwards}
+.operator-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--cat-color);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.operator-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,color-mix(in srgb,var(--cat-color) 12%,transparent),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.operator-card:hover{background:var(--bg-card-hover);border-color:var(--cat-color);transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.3)}
+.operator-card:hover::before{transform:scaleX(1)}
+.operator-card:hover::after{opacity:1}
+.operator-card.selected{border-color:var(--cat-color);background:color-mix(in srgb,var(--cat-color) 8%,var(--bg-card));box-shadow:0 0 0 1px var(--cat-color),0 8px 24px color-mix(in srgb,var(--cat-color) 25%,transparent)}
+.operator-card.selected::before{transform:scaleX(1)}
+.operator-card.selected .check-mark{opacity:1;transform:scale(1)}
+.op-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.6rem;gap:.5rem}
+.op-name{font-weight:700;font-size:1.05rem;font-family:'JetBrains Mono',monospace;color:var(--cat-color);letter-spacing:-.01em}
+.op-category{font-size:.625rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);padding:.2rem .5rem;background:color-mix(in srgb,var(--cat-color) 15%,transparent);border-radius:6px;font-weight:700;white-space:nowrap}
+.op-def{color:var(--text-secondary);font-size:.8125rem;margin-bottom:.75rem;line-height:1.5}
+.op-func{font-size:.6875rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.04em}
+.op-strength{display:flex;align-items:center;gap:.5rem;font-size:.6875rem;color:var(--text-muted);font-weight:600}
+.strength-bar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.strength-fill{height:100%;background:linear-gradient(90deg,var(--cat-color),color-mix(in srgb,var(--cat-color) 60%,#fff));border-radius:3px;transition:width .6s ease}
+.check-mark{position:absolute;top:.75rem;right:.75rem;width:22px;height:22px;border-radius:50%;background:var(--cat-color);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;opacity:0;transform:scale(0);transition:all .2s}
+.op-tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%) translateY(8px);background:var(--bg-secondary);border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:.875rem;width:280px;font-size:.75rem;color:var(--text-secondary);opacity:0;pointer-events:none;transition:all .2s;z-index:20;box-shadow:var(--shadow-md);text-align:left}
+.operator-card:hover .op-tooltip{opacity:1;transform:translateX(-50%) translateY(-8px)}
+.op-tooltip div{margin-bottom:.4rem}
+.op-tooltip strong{color:var(--cat-color);font-weight:700}
+.op-tooltip .example{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text-primary);background:var(--bg-card);padding:.4rem .5rem;border-radius:6px;margin-top:.2rem}
+
+.lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media (max-width:900px){.lab-grid{grid-template-columns:1fr}}
+.panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.panel-title{font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;font-size:1rem}
+.prompt-input{width:100%;min-height:130px;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-md);padding:.9rem;color:var(--text-primary);font-family:inherit;font-size:.9rem;resize:vertical;transition:border-color .2s;line-height:1.5}
+.prompt-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.selected-ops{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;min-height:48px;padding:.5rem;background:var(--bg-primary);border:1px dashed var(--border);border-radius:var(--radius-md);align-items:center}
+.selected-op-chip{display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:color-mix(in srgb,var(--cat-color) 15%,transparent);border:1px solid var(--cat-color);border-radius:100px;font-size:.75rem;font-weight:700;color:var(--cat-color);cursor:pointer;transition:all .2s;font-family:'JetBrains Mono',monospace}
+.selected-op-chip:hover{transform:translateY(-1px);box-shadow:0 4px 8px color-mix(in srgb,var(--cat-color) 30%,transparent)}
+.selected-op-chip .remove{opacity:.7;font-size:.875rem;line-height:1}
+.selected-op-chip:hover .remove{opacity:1}
+.empty-state{color:var(--text-muted);font-size:.8125rem;font-style:italic;padding:.25rem .5rem}
+
+.intensity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem}
+.slider-item{background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-md);padding:.875rem}
+.slider-label{display:flex;justify-content:space-between;align-items:center;font-size:.8125rem;font-weight:600;margin-bottom:.6rem;gap:.5rem}
+.slider-label .label-left{display:flex;align-items:center;gap:.4rem}
+.slider-value{font-size:.625rem;padding:.15rem .5rem;background:var(--accent);color:#fff;border-radius:100px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;transition:background .2s}
+.slider-value.extreme{background:linear-gradient(135deg,#ef4444,#ec4899)}
+.slider-value.high{background:linear-gradient(135deg,#f59e0b,#ef4444)}
+.slider-value.medium{background:var(--accent)}
+.slider-value.low{background:var(--text-muted)}
+.slider{width:100%;height:6px;-webkit-appearance:none;appearance:none;background:var(--border);border-radius:3px;outline:none}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 0 3px rgba(99,102,241,.2);transition:transform .2s}
+.slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;border:none}
+
+.combination-engine{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-top:1.25rem}
+.combo-flow{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;padding:1rem;background:var(--bg-primary);border-radius:var(--radius-md);border:1px solid var(--border);min-height:60px}
+.combo-op{padding:.4rem .8rem;background:color-mix(in srgb,var(--cat-color) 15%,transparent);border:1px solid var(--cat-color);border-radius:var(--radius-sm);font-family:'JetBrains Mono',monospace;font-size:.8125rem;font-weight:700;color:var(--cat-color)}
+.combo-plus{color:var(--text-muted);font-weight:700;font-size:.875rem}
+.combo-arrow{display:flex;flex-direction:column;align-items:center;margin:.75rem 0 .5rem;color:var(--text-muted);font-size:1.5rem}
+.combo-result{padding:1rem 1.25rem;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(236,72,153,.12));border:1px solid var(--accent);border-radius:var(--radius-md);font-weight:700;display:flex;align-items:center;gap:.6rem;font-size:1rem}
+.combo-result .strategy-icon{font-size:1.3rem}
+
+.output-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-top:1.25rem}
+.output-section{margin-bottom:1rem}
+.output-label{font-size:.6875rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:700;margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem}
+.output-content{background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-md);padding:.9rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.65;white-space:pre-wrap;color:var(--text-primary);max-height:280px;overflow-y:auto}
+.output-content.strategy{font-family:'Inter',sans-serif;font-size:.875rem;white-space:normal}
+.output-content.empty{color:var(--text-muted);font-style:italic;font-family:'Inter',sans-serif}
+.btn-group{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+.btn{padding:.625rem 1.1rem;border-radius:var(--radius-md);border:none;font-family:inherit;font-size:.8125rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+.btn-primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 12px rgba(99,102,241,.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(99,102,241,.45)}
+.btn-secondary{background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary)}
+.btn-secondary:hover{background:var(--bg-card-hover);border-color:var(--border-strong)}
+.btn-success{background:linear-gradient(135deg,#10b981,#14b8a6);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,.3)}
+
+.recipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.recipe-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.recipe-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--recipe-color),transparent 60%);opacity:.06;pointer-events:none}
+.recipe-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--recipe-color)}
+.recipe-card:hover{transform:translateY(-3px);border-color:var(--recipe-color);box-shadow:0 12px 28px rgba(0,0,0,.3)}
+.recipe-name{font-weight:800;font-size:1.1rem;margin-bottom:.4rem;color:var(--recipe-color);display:flex;align-items:center;gap:.5rem}
+.recipe-desc{color:var(--text-secondary);font-size:.8125rem;margin-bottom:.75rem;line-height:1.5}
+.recipe-ops{display:flex;flex-wrap:wrap;gap:.3rem}
+.recipe-op{padding:.2rem .55rem;background:var(--bg-primary);border:1px solid var(--border);border-radius:100px;font-size:.65rem;font-weight:700;color:var(--text-secondary);font-family:'JetBrains Mono',monospace}
+
+.rsi-section{background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(236,72,153,.08));border:1px solid var(--accent);border-radius:var(--radius-xl);padding:1.75rem;position:relative;overflow:hidden}
+.rsi-section::before{content:'';position:absolute;top:-30%;right:-15%;width:400px;height:400px;background:radial-gradient(circle,rgba(99,102,241,.18),transparent 70%);pointer-events:none;animation:rotate 20s linear infinite}
+@keyframes rotate{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.rsi-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;position:relative;z-index:1}
+.rsi-title{font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.rsi-badge{padding:.25rem .65rem;background:linear-gradient(135deg,#6366f1,#ec4899);color:#fff;border-radius:100px;font-size:.625rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.rsi-controls{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.iteration-selector{display:flex;gap:.3rem;background:var(--bg-card);padding:.25rem;border-radius:10px;border:1px solid var(--border)}
+.iter-btn{width:36px;height:32px;border-radius:7px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;font-weight:700;font-size:.8125rem;transition:all .2s;font-family:inherit}
+.iter-btn.active{background:var(--accent);color:#fff}
+.iter-btn:hover:not(.active){background:var(--bg-card-hover)}
+.rsi-flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.4rem;padding:1.5rem 1rem;background:var(--bg-primary);border-radius:var(--radius-lg);border:1px solid var(--border);position:relative;z-index:1}
+.rsi-step{display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.75rem .9rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);min-width:90px;transition:all .3s}
+.rsi-step.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 20%,var(--bg-card));transform:scale(1.08);box-shadow:0 0 24px var(--accent-glow)}
+.rsi-step.completed{border-color:#10b981;background:color-mix(in srgb,#10b981 12%,var(--bg-card))}
+.rsi-step-icon{font-size:1.4rem}
+.rsi-step-label{font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.rsi-arrow{color:var(--text-muted);font-size:1.1rem}
+.rsi-loop{text-align:center;margin-top:1rem;padding:.75rem;background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:var(--radius-md);font-weight:700;color:var(--accent);position:relative;z-index:1}
+.rsi-progress{margin-top:1rem;position:relative;z-index:1}
+.rsi-progress-bar{height:8px;background:var(--bg-primary);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.rsi-progress-fill{height:100%;background:linear-gradient(90deg,#6366f1,#ec4899,#10b981);border-radius:4px;width:0;transition:width .3s}
+.rsi-status{text-align:center;margin-top:.6rem;font-size:.8125rem;color:var(--text-secondary);font-weight:600}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-secondary);border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:.875rem 1.5rem;box-shadow:var(--shadow-lg);z-index:1000;opacity:0;transition:all .3s;display:flex;align-items:center;gap:.5rem;font-weight:600;font-size:.875rem}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-color:#10b981;color:#10b981}
+.toast.error{border-color:#ef4444;color:#ef4444}
+
+footer{text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:.8125rem;border-top:1px solid var(--border);margin-top:2rem}
+
+@media (max-width:768px){
+  main{padding:1.5rem 1rem}
+  .search-box input{width:160px}
+  .search-box input:focus{width:200px}
+  .hero-stats{gap:1.5rem}
+  .stat-value{font-size:1.6rem}
+  .rsi-step{min-width:70px;padding:.5rem}
+  .rsi-step-label{font-size:.625rem}
+  .rsi-step-icon{font-size:1.1rem}
+  .header-content{gap:.75rem}
+  .logo{font-size:1rem}
+  .logo-icon{width:36px;height:36px}
+}
+
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg-primary)}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+
+.operator-card:nth-child(1){animation-delay:.02s}.operator-card:nth-child(2){animation-delay:.04s}.operator-card:nth-child(3){animation-delay:.06s}.operator-card:nth-child(4){animation-delay:.08s}.operator-card:nth-child(5){animation-delay:.1s}.operator-card:nth-child(6){animation-delay:.12s}.operator-card:nth-child(7){animation-delay:.14s}.operator-card:nth-child(8){animation-delay:.16s}.operator-card:nth-child(9){animation-delay:.18s}
+</style>
+</head>
+<body data-theme="dark">
+<div class="bg-gradient"></div>
+<div class="bg-grid"></div>
+
+<header>
+  <div class="header-content">
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <span class="logo-text">Cognitive Operators</span>
+    </div>
+    <div class="header-actions">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="searchInput" placeholder="Search operators..." aria-label="Search operators">
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Master <span class="gradient-text">Cognitive Operators</span><br>for Advanced AI Prompting</h1>
+    <p>A comprehensive library of prompt-sensitive operators that influence how AI models structure, refine, and deliver responses. Combine, experiment, and elevate your prompts.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-value" id="totalOps">41</div><div class="stat-label">Operators</div></div>
+      <div class="stat"><div class="stat-value">7</div><div class="stat-label">Categories</div></div>
+      <div class="stat"><div class="stat-value">5</div><div class="stat-label">Recipes</div></div>
+      <div class="stat"><div class="stat-value">∞</div><div class="stat-label">Combinations</div></div>
+    </div>
+  </div>
+
+  <section id="library">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title"><span class="icon">📚</span> Operator Library</h2>
+        <p class="section-subtitle">Click cards to add operators to your prompt. Hover for full details.</p>
+      </div>
+    </div>
+    <div class="category-filter" id="categoryFilter"></div>
+    <div class="operator-grid" id="operatorGrid"></div>
+  </section>
+
+  <section id="laboratory">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title"><span class="icon">🧪</span> Prompt Laboratory</h2>
+        <p class="section-subtitle">Compose your enhanced prompt with cognitive operators and intensity controls.</p>
+      </div>
+    </div>
+    <div class="lab-grid">
+      <div class="panel">
+        <h3 class="panel-title">✍️ Input & Selected Operators</h3>
+        <textarea class="prompt-input" id="promptInput" placeholder="Enter your original prompt here...&#10;&#10;Example: Analyse the impact of remote work on team productivity and collaboration."></textarea>
+        <div style="margin-top:1rem;">
+          <div class="output-label">Selected Operators</div>
+          <div class="selected-ops" id="selectedOps">
+            <span class="empty-state">No operators selected. Click cards above to add.</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 class="panel-title">🎛️ Cognitive Intensity Controls</h3>
+        <div class="intensity-grid" id="intensityGrid"></div>
+      </div>
+    </div>
+
+    <div class="combination-engine">
+      <h3 class="panel-title">🔗 Operator Combination Engine</h3>
+      <div class="combo-flow" id="comboFlow">
+        <span class="empty-state">Select operators to visualise the cognitive strategy</span>
+      </div>
+      <div class="combo-arrow" id="comboArrow" style="display:none;">↓</div>
+      <div class="combo-result" id="comboResult" style="display:none;"></div>
+    </div>
+
+    <div class="output-panel">
+      <h3 class="panel-title">📤 Enhanced Prompt Output</h3>
+      <div class="output-section">
+        <div class="output-label">📝 Original Prompt</div>
+        <div class="output-content empty" id="originalOutput">— No input yet —</div>
+      </div>
+      <div class="output-section">
+        <div class="output-label">🎯 Cognitive Strategy</div>
+        <div class="output-content strategy empty" id="strategyOutput">— Select operators to generate strategy —</div>
+      </div>
+      <div class="output-section">
+        <div class="output-label">⚡ Enhanced Prompt</div>
+        <div class="output-content empty" id="enhancedOutput">Enter a prompt and select operators to generate an enhanced prompt...</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="generateBtn">⚡ Generate Prompt</button>
+        <button class="btn btn-success" id="copyBtn">📋 Copy Prompt</button>
+        <button class="btn btn-secondary" id="resetBtn">↻ Reset All</button>
+        <button class="btn btn-secondary" id="exportBtn">⬇ Export .txt</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="recipes">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title"><span class="icon">🍳</span> Pre-Built Prompt Recipes</h2>
+        <p class="section-subtitle">Click a recipe to instantly load a curated operator combination.</p>
+      </div>
+    </div>
+    <div class="recipe-grid" id="recipeGrid"></div>
+  </section>
+
+  <section id="rsi">
+    <div class="rsi-section">
+      <div class="rsi-header">
+        <div>
+          <h2 class="rsi-title">🔄 Recursive Self-Improvement Mode <span class="rsi-badge">Advanced</span></h2>
+          <p class="section-subtitle">Multi-pass refinement workflow for maximum prompt quality.</p>
+        </div>
+        <div class="rsi-controls">
+          <span style="font-size:.8125rem;font-weight:700;">Iterations:</span>
+          <div class="iteration-selector" id="iterSelector">
+            <button class="iter-btn" data-iter="1">1</button>
+            <button class="iter-btn active" data-iter="3">3</button>
+            <button class="iter-btn" data-iter="5">5</button>
+            <button class="iter-btn" data-iter="10">10</button>
+          </div>
+          <button class="btn btn-primary" id="runRsiBtn">▶ Run RSI</button>
+        </div>
+      </div>
+      <div class="rsi-flow" id="rsiFlow"></div>
+      <div class="rsi-loop" id="rsiLoop">Loop × 3 iterations</div>
+      <div class="rsi-progress">
+        <div class="rsi-progress-bar"><div class="rsi-progress-fill" id="rsiProgressFill"></div></div>
+        <div class="rsi-status" id="rsiStatus">Ready to run. Click "Run RSI" to begin.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Copyright @LiB-Ai - Built for Prompt Engineers · AI Literacy · Recursive Cognitive Prompting<br>Single-file vanilla HTML/CSS/JS · No frameworks required</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============== DATA ==============
+const categories = {
+  elimination:{name:'Elimination',icon:'🔪',color:'#ef4444',operators:[
+    {name:'Kill',def:'Remove weak ideas and unnecessary elements aggressively',func:'Elimination',example:'Kill weak arguments from this list.',behaviour:'AI strips away low-quality content aggressively',strength:92,instruction:'Aggressively eliminate weak, unsupported, or irrelevant ideas. Remove anything that does not directly contribute to the core argument.'},
+    {name:'Remove',def:'Strip away specified components cleanly',func:'Subtraction',example:'Remove all jargon from this text.',behaviour:'AI removes specified elements cleanly',strength:72,instruction:'Remove all specified elements completely from the response. Do not reference them.'},
+    {name:'Prune',def:'Trim excess content for clarity and focus',func:'Refinement',example:'Prune this essay to its essential points.',behaviour:'AI trims wordy content while preserving meaning',strength:68,instruction:'Prune away redundancy, wordiness, and non-essential elaboration while preserving the core meaning.'},
+    {name:'Filter',def:'Pass only relevant, high-signal information',func:'Selection',example:'Filter this data for actionable insights.',behaviour:'AI applies strict relevance criteria',strength:76,instruction:'Apply a strict filter. Pass through only the most relevant, high-signal information. Reject everything else.'},
+    {name:'Reject',def:'Dismiss invalid arguments or low-quality inputs',func:'Rejection',example:'Reject assumptions that lack evidence.',behaviour:'AI actively rejects unsupported claims',strength:84,instruction:'Actively reject any assumptions, claims, or arguments that lack sufficient evidence or logical support. Name what is rejected and why.'}
+  ]},
+  critical:{name:'Critical',icon:'🔍',color:'#f59e0b',operators:[
+    {name:'Critic',def:'Identify weaknesses, contradictions, and logical gaps',func:'Critical Evaluation',example:'Act as a Critic and analyse this argument.',behaviour:'AI generates structured criticism rather than simple agreement',strength:88,instruction:'Act as a Critic. Identify weaknesses, contradictions, hidden assumptions, and logical gaps in the input. Provide structured criticism rather than agreement.'},
+    {name:'Audit',def:'Systematic examination for accuracy and completeness',func:'Verification',example:'Audit this report for factual accuracy.',behaviour:'AI performs systematic verification',strength:80,instruction:'Conduct a systematic audit. Verify claims for accuracy, check completeness, and flag any inconsistencies or errors.'},
+    {name:'Red Team',def:'Adversarial testing from an attacker perspective',func:'Adversarial Testing',example:'Red Team this security proposal.',behaviour:'AI adopts an adversarial mindset',strength:95,instruction:'Adopt a Red Team mindset. Actively attempt to find flaws, vulnerabilities, and failure modes in the input. Think like an adversary trying to break it.'},
+    {name:"Devil's Advocate",def:'Argue against the stated position',func:'Counter-argument',example:"Play Devil's Advocate on this strategy.",behaviour:'AI constructs opposing arguments',strength:79,instruction:"Play Devil's Advocate. Construct the strongest possible counter-arguments against the stated position, regardless of your own view."},
+    {name:'Stress Test',def:'Push arguments to their breaking point',func:'Robustness Testing',example:'Stress Test this business model.',behaviour:'AI tests limits and edge cases',strength:86,instruction:'Stress test the input. Push it to extreme conditions, edge cases, and breaking points to identify where the logic fails.'},
+    {name:'Steelman',def:'Construct the strongest possible version of an argument',func:'Argument Strengthening',example:'Steelman the opposing view.',behaviour:'AI strengthens opposing arguments fairly',strength:83,instruction:'Steelman the argument. Construct the strongest, most charitable version of the position — stronger even than its original proponent would.'}
+  ]},
+  improvement:{name:'Improvement',icon:'🔄',color:'#10b981',operators:[
+    {name:'Iterate',def:'Repeat the process for progressive refinement',func:'Iterative Refinement',example:'Iterate on this draft three times.',behaviour:'AI applies multiple improvement passes',strength:85,instruction:'Iterate on the response. Apply multiple passes of refinement, each building on the previous version to progressively improve quality.'},
+    {name:'Recursive',def:'Self-referential loops feeding output back as input',func:'Recursion',example:'Apply recursive refinement.',behaviour:'AI creates self-improving loops',strength:93,instruction:'Apply recursive refinement. Feed each output back as input for the next pass, allowing the response to self-improve over multiple cycles.'},
+    {name:'Refine',def:'Polish and improve quality of output',func:'Polish',example:'Refine this paragraph for clarity.',behaviour:'AI improves clarity and quality',strength:71,instruction:'Refine the response. Improve clarity, precision, word choice, and overall quality without changing the underlying meaning.'},
+    {name:'Optimise',def:'Maximise efficiency and effectiveness',func:'Optimisation',example:'Optimise this workflow.',behaviour:'AI seeks optimal configurations',strength:78,instruction:'Optimise the response for maximum effectiveness. Identify the most efficient structure, prioritisation, and presentation.'},
+    {name:'Self-Correct',def:'Identify and fix own errors automatically',func:'Auto-correction',example:'Self-correct any errors in this analysis.',behaviour:'AI audits and fixes its own output',strength:89,instruction:'Self-correct. Review your own response for errors, biases, or weaknesses, and revise them before delivering the final output.'}
+  ]},
+  reasoning:{name:'Reasoning',icon:'🧠',color:'#3b82f6',operators:[
+    {name:'ELI5',def:'Explain using simple language a 5-year-old understands',func:'Simplification',example:'ELI5: How does blockchain work?',behaviour:'AI uses analogies and simple vocabulary',strength:62,instruction:"Explain this Like I'm 5 years old. Use simple words, relatable analogies, and avoid jargon completely."},
+    {name:'First Principles',def:'Reason from fundamental truths, not analogies',func:'Fundamental Reasoning',example:'Analyse this from First Principles.',behaviour:'AI decomposes to basic truths',strength:91,instruction:'Reason from First Principles. Decompose the problem to its most fundamental truths, then build upward from there rather than reasoning by analogy.'},
+    {name:'Socratic',def:'Use guided questioning to expose assumptions',func:'Questioning',example:'Apply Socratic questioning to this claim.',behaviour:'AI uses probing questions',strength:81,instruction:'Apply the Socratic method. Use probing, sequential questions to expose assumptions, clarify meaning, and lead toward insight.'},
+    {name:'Bayesian',def:'Reason using probability updates from evidence',func:'Probabilistic Reasoning',example:'Assess this Bayesian-style.',behaviour:'AI updates beliefs based on evidence',strength:87,instruction:'Reason in Bayesian terms. Express prior beliefs, then update them based on the evidence provided, presenting posterior conclusions with confidence levels.'},
+    {name:'Counterfactual',def:'Explore what-if scenarios and alternative paths',func:'Counterfactual Analysis',example:'Counterfactual: what if X had not happened?',behaviour:'AI explores alternative realities',strength:77,instruction:'Engage in counterfactual reasoning. Explore alternative scenarios, "what if" paths, and consider how different conditions would change outcomes.'},
+    {name:'Decompose',def:'Break complex problems into manageable parts',func:'Decomposition',example:'Decompose this problem into sub-problems.',behaviour:'AI structures problems hierarchically',strength:74,instruction:'Decompose the problem. Break it down into smaller, independently solvable sub-problems, then address each in turn.'},
+    {name:'Meta',def:'Reason about the reasoning process itself',func:'Meta-cognition',example:'Think meta about your approach.',behaviour:'AI reflects on its own process',strength:90,instruction:'Engage in meta-reasoning. Reflect on the reasoning process itself, the assumptions behind your approach, and the structure of your thinking.'}
+  ]},
+  compression:{name:'Compression',icon:'📦',color:'#8b5cf6',operators:[
+    {name:'TL;DR',def:'Provide a concise summary at the top',func:'Summary',example:'Add a TL;DR at the start.',behaviour:'AI leads with a brief summary',strength:58,instruction:'Begin with a TL;DR — a single concise paragraph (2-3 sentences) summarising the entire response.'},
+    {name:'80/20',def:'Focus on the 20% of factors producing 80% of impact',func:'Pareto Prioritisation',example:'Apply the 80/20 rule.',behaviour:'AI prioritises high-impact factors',strength:82,instruction:'Apply the 80/20 (Pareto) principle. Identify and focus on the 20% of factors that produce 80% of the impact. Deprioritise the rest.'},
+    {name:'Executive Summary',def:'High-level overview for decision-makers',func:'Executive Summary',example:'Provide an executive summary.',behaviour:'AI structures for executive reading',strength:70,instruction:'Provide an Executive Summary. Structure the key points for a senior decision-maker who needs the bottom line quickly.'},
+    {name:'Key Takeaways',def:'Distil main points into a list',func:'Distillation',example:'List the key takeaways.',behaviour:'AI outputs a clean bulleted list',strength:66,instruction:'End with a Key Takeaways section — a clean bulleted list of the 3-5 most important points.'},
+    {name:'One-Liner',def:'Compress to a single memorable sentence',func:'Compression',example:'Give me a one-liner.',behaviour:'AI distils to one sentence',strength:54,instruction:'Provide a One-Liner — a single, memorable sentence that captures the entire essence of the response.'}
+  ]},
+  expansion:{name:'Expansion',icon:'🧬',color:'#ec4899',operators:[
+    {name:'Human',def:'Write in a natural, conversational, relatable tone',func:'Naturalistic Tone',example:'Make this sound human.',behaviour:'AI uses warm, conversational language',strength:69,instruction:'Write in a Human tone. Use natural, conversational language. Avoid robotic phrasing, corporate jargon, or AI-typical patterns.'},
+    {name:'Deep Dive',def:'Thorough, exhaustive exploration of a topic',func:'Deep Exploration',example:'Deep dive into this topic.',behaviour:'AI explores exhaustively',strength:92,instruction:'Conduct a Deep Dive. Explore the topic exhaustively, covering history, mechanics, edge cases, and nuances that a surface treatment would miss.'},
+    {name:'Explore',def:'Investigate possibilities and adjacent ideas',func:'Exploration',example:'Explore possible directions.',behaviour:'AI generates diverse options',strength:75,instruction:'Explore the topic broadly. Investigate multiple possible directions, adjacent ideas, and creative possibilities.'},
+    {name:'Elaborate',def:'Add detail, depth, and supporting context',func:'Elaboration',example:'Elaborate on point 3.',behaviour:'AI expands with detail',strength:70,instruction:'Elaborate fully. Add depth, supporting context, examples, and detail to each point rather than staying surface-level.'},
+    {name:'Synthesize',def:'Combine multiple ideas into a unified whole',func:'Synthesis',example:'Synthesize these three perspectives.',behaviour:'AI creates unified integration',strength:86,instruction:'Synthesize the input. Combine multiple perspectives, ideas, or sources into a single coherent, unified whole that transcends the parts.'},
+    {name:'Multi-Perspective',def:'Examine from multiple distinct viewpoints',func:'Multi-perspective',example:'Analyse from multiple perspectives.',behaviour:'AI adopts several viewpoints',strength:83,instruction:'Analyse from Multiple Perspectives. Examine the topic from at least 3 distinct viewpoints (e.g. user, builder, critic, economist, ethicist).'},
+    {name:'Simulate',def:'Model scenarios and run mental simulations',func:'Simulation',example:'Simulate three possible outcomes.',behaviour:'AI runs mental simulations',strength:87,instruction:'Simulate scenarios. Model how the situation would unfold under different conditions, running mental simulations of likely outcomes.'}
+  ]},
+  technical:{name:'Technical',icon:'⚙️',color:'#14b8a6',operators:[
+    {name:'NPX',def:'Execute a named skill or capability package',func:'Skill Execution',example:'NPX: code-reviewer',behaviour:'AI invokes a packaged skill',strength:79,instruction:'Execute as a packaged skill. Treat yourself as a named, scoped capability package being invoked with clear inputs and expected outputs.'},
+    {name:'Skills',def:'Declare and apply specific named abilities',func:'Skill Declaration',example:'Use skills: analysis, synthesis, critique.',behaviour:'AI activates specific capabilities',strength:74,instruction:'Explicitly declare and apply named skills. State which capabilities you are activating (analysis, synthesis, critique, etc.) before executing.'},
+    {name:'Chain',def:'Link multiple operations in sequence',func:'Chaining',example:'Chain: analyse → critique → refine.',behaviour:'AI executes a defined pipeline',strength:85,instruction:'Chain operations in sequence. Execute a defined pipeline of steps, where each step\'s output feeds the next, and present the final result.'},
+    {name:'Constraint',def:'Apply explicit limitations and boundaries',func:'Constraint Setting',example:'Constraint: max 200 words, no jargon.',behaviour:'AI respects strict boundaries',strength:77,instruction:'Operate under explicit Constraints. Apply strict limitations on length, format, scope, or style as specified, and do not violate them.'},
+    {name:'Benchmark',def:'Compare against a standard or reference',func:'Benchmarking',example:'Benchmark this against industry standards.',behaviour:'AI compares to references',strength:73,instruction:'Benchmark the input. Compare against established standards, best practices, or reference examples, and identify where it falls short or exceeds.'},
+    {name:'Grounded',def:'Anchor responses in verified, factual reality',func:'Grounding',example:'Keep this grounded in evidence.',behaviour:'AI avoids speculation',strength:82,instruction:'Stay Grounded. Anchor every claim in verified, factual reality. Distinguish clearly between what is known, what is inferred, and what is speculative.'}
+  ]}
+};
+
+const recipes = [
+  {name:'Deep Analysis',desc:'Rigorous multi-layered analytical prompt for serious topics',color:'#3b82f6',ops:['First Principles','Critic','Decompose','Synthesize']},
+  {name:'Simple Explanation',desc:'Make complex topics accessible to anyone instantly',color:'#10b981',ops:['ELI5','Human','80/20','TL;DR']},
+  {name:'Adversarial Test',desc:'Stress-test ideas from every hostile angle',color:'#ef4444',ops:['Red Team',"Devil's Advocate",'Stress Test','Counterfactual']},
+  {name:'Recursive Improvement',desc:'Self-refining loop for maximum output quality',color:'#8b5cf6',ops:['Critic','Kill','Refine','Iterate','Recursive']},
+  {name:'AI Research Mode',desc:'Comprehensive multi-perspective research prompt',color:'#ec4899',ops:['Deep Dive','Multi-Perspective','Bayesian','Meta','Recursive']}
+];
+
+const intensityControls = [
+  {id:'reasoning',icon:'🧠',label:'Reasoning Depth'},
+  {id:'critical',icon:'🔍',label:'Critical Intensity'},
+  {id:'iteration',icon:'🔄',label:'Iteration Level'},
+  {id:'compression',icon:'📦',label:'Compression Level'},
+  {id:'creativity',icon:'🧬',label:'Creativity Level'},
+  {id:'human',icon:'👤',label:'Human Tone'}
+];
+
+const rsiSteps = [
+  {icon:'📥',label:'Input'},{icon:'🔍',label:'Analyse'},{icon:'🎯',label:'Critic'},
+  {icon:'⚠️',label:'Weaknesses'},{icon:'🔪',label:'Kill Weak'},{icon:'✨',label:'Refine'},
+  {icon:'🧬',label:'Synthesize'},{icon:'🔄',label:'Iterate'},{icon:'🏆',label:'Final'}
+];
+
+// ============== STATE ==============
+const state = {
+  selectedOperators:[],
+  filter:'all',
+  searchTerm:'',
+  intensity:{reasoning:1,critical:1,iteration:1,compression:0,creativity:1,human:1},
+  rsiIterations:3,
+  rsiRunning:false
+};
+
+// ============== HELPERS ==============
+function findOperator(name){
+  for(const cat in categories){
+    const op = categories[cat].operators.find(o=>o.name===name);
+    if(op) return {...op,category:cat,catColor:categories[cat].color,catName:categories[cat].name};
+  }
+  return null;
+}
+
+function showToast(msg,type='success'){
+  const toast = document.getElementById('toast');
+  toast.textContent = (type==='success'?'✓ ':type==='error'?'✗ ':'')+msg;
+  toast.className = 'toast show '+type;
+  setTimeout(()=>toast.className='toast',2500);
+}
+
+// ============== RENDER: CATEGORIES ==============
+function renderFilters(){
+  const container = document.getElementById('categoryFilter');
+  let html = `<button class="filter-chip ${state.filter==='all'?'active':''}" data-cat="all" style="--cat-color:#6366f1"><span class="dot"></span>All Categories</button>`;
+  for(const cat in categories){
+    const c = categories[cat];
+    const count = c.operators.length;
+    html += `<button class="filter-chip ${state.filter===cat?'active':''}" data-cat="${cat}" style="--cat-color:${c.color}"><span class="dot"></span>${c.icon} ${c.name} <span style="opacity:.7">(${count})</span></button>`;
+  }
+  container.innerHTML = html;
+  container.querySelectorAll('.filter-chip').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      state.filter = btn.dataset.cat;
+      renderFilters();
+      renderOperators();
+    });
+  });
+}
+
+// ============== RENDER: OPERATORS ==============
+function renderOperators(){
+  const grid = document.getElementById('operatorGrid');
+  let html = '';
+  let count = 0;
+  for(const cat in categories){
+    if(state.filter!=='all' && state.filter!==cat) continue;
+    const c = categories[cat];
+    for(const op of c.operators){
+      if(state.searchTerm && !op.name.toLowerCase().includes(state.searchTerm) && !op.def.toLowerCase().includes(state.searchTerm) && !c.name.toLowerCase().includes(state.searchTerm)) continue;
+      const isSelected = state.selectedOperators.includes(op.name);
+      html += `<div class="operator-card ${isSelected?'selected':''}" data-name="${op.name}" style="--cat-color:${c.color}">
+        <div class="check-mark">✓</div>
+        <div class="op-header">
+          <div class="op-name">${op.name}</div>
+          <div class="op-category">${c.name}</div>
+        </div>
+        <div class="op-def">${op.def}</div>
+        <div class="op-func">⚙ ${op.func}</div>
+        <div class="op-strength">
+          <span>Strength</span>
+          <div class="strength-bar"><div class="strength-fill" style="width:${op.strength}%"></div></div>
+          <span>${op.strength}</span>
+        </div>
+        <div class="op-tooltip">
+          <div><strong>Function:</strong> ${op.func}</div>
+          <div><strong>Example:</strong></div>
+          <div class="example">"${op.example}"</div>
+          <div style="margin-top:.4rem"><strong>AI Behaviour:</strong></div>
+          <div>${op.behaviour}</div>
+        </div>
+      </div>`;
+      count++;
+    }
+  }
+  if(count===0) html = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);font-style:italic;">No operators match your search.</div>';
+  grid.innerHTML = html;
+  grid.querySelectorAll('.operator-card').forEach(card=>{
+    card.addEventListener('click',()=>toggleOperator(card.dataset.name));
+  });
+}
+
+// ============== OPERATOR SELECTION ==============
+function toggleOperator(name){
+  const idx = state.selectedOperators.indexOf(name);
+  if(idx>-1) state.selectedOperators.splice(idx,1);
+  else state.selectedOperators.push(name);
+  renderOperators();
+  renderSelectedOps();
+  renderCombination();
+  updateOutput();
+}
+
+function renderSelectedOps(){
+  const container = document.getElementById('selectedOps');
+  if(state.selectedOperators.length===0){
+    container.innerHTML = '<span class="empty-state">No operators selected. Click cards above to add.</span>';
+    return;
+  }
+  container.innerHTML = state.selectedOperators.map(name=>{
+    const op = findOperator(name);
+    if(!op) return '';
+    return `<div class="selected-op-chip" data-name="${name}" style="--cat-color:${op.catColor}">
+      ${name}<span class="remove">✕</span>
+    </div>`;
+  }).join('');
+  container.querySelectorAll('.selected-op-chip').forEach(chip=>{
+    chip.addEventListener('click',()=>toggleOperator(chip.dataset.name));
+  });
+}
+
+// ============== COMBINATION ENGINE ==============
+function generateStrategy(ops){
+  if(ops.length===0) return '';
+  if(ops.length===1) return `Single-mode ${ops[0]} prompt`;
+  const has = n => ops.includes(n);
+  let label = '';
+  if(has('Recursive') && has('Critic')) label = 'Recursive critical refinement loop';
+  else if(has('First Principles') && has('ELI5')) label = 'Foundational simplification stack';
+  else if(has('Red Team') && has("Devil's Advocate")) label = 'Adversarial stress testing matrix';
+  else if(has('Synthesize') && has('Multi-Perspective')) label = 'Multi-perspective synthesis engine';
+  else if(has('Deep Dive') && has('Recursive')) label = 'Recursive deep exploration cascade';
+  else if(has('80/20') && has('TL;DR')) label = 'High-compression prioritisation stack';
+  else if(has('First Principles') && has('Critic')) label = 'Foundational critical analysis';
+  else if(has('Recursive') && has('Refine')) label = 'Self-improving refinement loop';
+  else if(has('Kill') && has('Critic')) label = 'Critical elimination pipeline';
+  else if(has('ELI5') && has('Human')) label = 'Warm accessible explanation';
+  else if(has('Bayesian') && has('Meta')) label = 'Probabilistic meta-reasoning';
+  else if(has('Decompose') && has('Synthesize')) label = 'Decompose-then-synthesize pattern';
+  else label = `${ops.length}-operator cognitive stack`;
+  return label;
+}
+
+function renderCombination(){
+  const flow = document.getElementById('comboFlow');
+  const arrow = document.getElementById('comboArrow');
+  const result = document.getElementById('comboResult');
+  if(state.selectedOperators.length===0){
+    flow.innerHTML = '<span class="empty-state">Select operators to visualise the cognitive strategy</span>';
+    arrow.style.display = 'none';
+    result.style.display = 'none';
+    return;
+  }
+  let html = '';
+  state.selectedOperators.forEach((name,i)=>{
+    const op = findOperator(name);
+    if(!op) return;
+    html += `<div class="combo-op" style="--cat-color:${op.catColor}">${op.name}</div>`;
+    if(i < state.selectedOperators.length-1) html += '<div class="combo-plus">+</div>';
+  });
+  flow.innerHTML = html;
+  arrow.style.display = 'flex';
+  const strategy = generateStrategy(state.selectedOperators);
+  result.style.display = 'flex';
+  result.innerHTML = `<span class="strategy-icon">🎯</span> <span>${strategy}</span>`;
+}
+
+// ============== INTENSITY SLIDERS ==============
+function renderIntensity(){
+  const grid = document.getElementById('intensityGrid');
+  const levels = ['Low','Medium','High','Extreme'];
+  const levelClasses = ['low','medium','high','extreme'];
+  grid.innerHTML = intensityControls.map(c=>`
+    <div class="slider-item">
+      <div class="slider-label">
+        <span class="label-left">${c.icon} ${c.label}</span>
+        <span class="slider-value ${levelClasses[state.intensity[c.id]]}" id="val-${c.id}">${levels[state.intensity[c.id]]}</span>
+      </div>
+      <input type="range" class="slider" min="0" max="3" value="${state.intensity[c.id]}" data-id="${c.id}">
+    </div>
+  `).join('');
+  grid.querySelectorAll('.slider').forEach(s=>{
+    s.addEventListener('input',(e)=>{
+      const id = e.target.dataset.id;
+      const val = parseInt(e.target.value);
+      state.intensity[id] = val;
+      document.getElementById('val-'+id).textContent = levels[val];
+      document.getElementById('val-'+id).className = 'slider-value '+levelClasses[val];
+      updateOutput();
+    });
+  });
+}
+
+// ============== PROMPT GENERATION ==============
+function getIntensityMods(){
+  const mods = [];
+  const levels = ['Low','Medium','High','Extreme'];
+  const i = state.intensity;
+  if(i.reasoning>=2) mods.push(`• Reasoning Depth: ${levels[i.reasoning]} — ${i.reasoning===3?'decompose every assumption to first principles and rebuild rigorously':'apply rigorous multi-step analytical reasoning'}.`);
+  if(i.critical>=2) mods.push(`• Critical Intensity: ${levels[i.critical]} — ${i.critical===3?'assume nothing is correct until proven beyond reasonable doubt':'systematically challenge all assumptions'}.`);
+  if(i.iteration>=2) mods.push(`• Iteration Level: ${levels[i.iteration]} — ${i.iteration===3?'apply multiple recursive refinement passes until convergence':'refine through several improvement passes'}.`);
+  if(i.compression>=2) mods.push(`• Compression Level: ${levels[i.compression]} — ${i.compression===3?'compress to absolute essentials only, every word must earn its place':'be concise, focused, and eliminate fluff'}.`);
+  if(i.creativity>=2) mods.push(`• Creativity Level: ${levels[i.creativity]} — ${i.creativity===3?'explore wildly divergent, unconventional, and unexpected angles':'think creatively and explore novel connections'}.`);
+  if(i.human>=2) mods.push(`• Human Tone: ${levels[i.human]} — ${i.human===3?'write as if talking to a close friend — warm, natural, and personal':'use conversational, natural, relatable language'}.`);
+  return mods;
+}
+
+function generateEnhancedPrompt(){
+  const userInput = document.getElementById('promptInput').value.trim();
+  if(!userInput || state.selectedOperators.length===0) return null;
+  const instructions = state.selectedOperators.map(name=>{
+    const op = findOperator(name);
+    return op ? {name,instruction:op.instruction,catColor:op.catColor} : null;
+  }).filter(Boolean);
+  const mods = getIntensityMods();
+  const strategy = generateStrategy(state.selectedOperators);
+  
+  let prompt = `# 🧠 COGNITIVE ENHANCED PROMPT\n\n## 📋 OPERATOR INSTRUCTIONS\n\n`;
+  instructions.forEach((inst,idx)=>{
+    prompt += `${idx+1}. [${inst.name.toUpperCase()}]\n   ${inst.instruction}\n\n`;
+  });
+  if(mods.length>0){
+    prompt += `## 🎛️ INTENSITY PROFILE\n\n`;
+    mods.forEach(m=>{prompt += m+'\n';});
+    prompt += '\n';
+  }
+  prompt += `## 🎯 COGNITIVE STRATEGY\n\n${strategy}\n\n`;
+  prompt += `## 📥 INPUT\n\n${userInput}\n\n`;
+  prompt += `## 📤 OUTPUT FORMAT\n\nFollow ALL operator instructions above in your response. Structure your output clearly. Begin directly without restating these instructions.`;
+  return {prompt,strategy,userInput};
+}
+
+function updateOutput(){
+  const result = generateEnhancedPrompt();
+  const originalEl = document.getElementById('originalOutput');
+  const strategyEl = document.getElementById('strategyOutput');
+  const enhancedEl = document.getElementById('enhancedOutput');
+  const userInput = document.getElementById('promptInput').value.trim();
+  
+  if(userInput){
+    originalEl.textContent = userInput;
+    originalEl.classList.remove('empty');
+  } else {
+    originalEl.textContent = '— No input yet —';
+    originalEl.classList.add('empty');
+  }
+  
+  if(result){
+    strategyEl.textContent = result.strategy;
+    strategyEl.classList.remove('empty');
+    enhancedEl.textContent = result.prompt;
+    enhancedEl.classList.remove('empty');
+  } else {
+    strategyEl.textContent = '— Select operators to generate strategy —';
+    strategyEl.classList.add('empty');
+    enhancedEl.textContent = 'Enter a prompt and select operators to generate an enhanced prompt...';
+    enhancedEl.classList.add('empty');
+  }
+}
+
+// ============== RECIPES ==============
+function renderRecipes(){
+  const grid = document.getElementById('recipeGrid');
+  grid.innerHTML = recipes.map((r,i)=>`
+    <div class="recipe-card" data-idx="${i}" style="--recipe-color:${r.color}">
+      <div class="recipe-name">${r.name}</div>
+      <div class="recipe-desc">${r.desc}</div>
+      <div class="recipe-ops">
+        ${r.ops.map(op=>`<span class="recipe-op">${op}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.recipe-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const recipe = recipes[parseInt(card.dataset.idx)];
+      state.selectedOperators = [...recipe.ops];
+      renderOperators();
+      renderSelectedOps();
+      renderCombination();
+      updateOutput();
+      showToast(`Loaded recipe: ${recipe.name}`);
+      document.getElementById('laboratory').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+}
+
+// ============== RSI MODE ==============
+function renderRsi(){
+  const flow = document.getElementById('rsiFlow');
+  let html = '';
+  rsiSteps.forEach((step,i)=>{
+    html += `<div class="rsi-step" data-idx="${i}">
+      <div class="rsi-step-icon">${step.icon}</div>
+      <div class="rsi-step-label">${step.label}</div>
+    </div>`;
+    if(i < rsiSteps.length-1) html += '<div class="rsi-arrow">→</div>';
+  });
+  flow.innerHTML = html;
+  document.getElementById('rsiLoop').textContent = `Loop × ${state.rsiIterations} iteration${state.rsiIterations>1?'s':''}`;
+}
+
+function runRsi(){
+  if(state.rsiRunning) return;
+  const userInput = document.getElementById('promptInput').value.trim();
+  if(!userInput){
+    showToast('Enter a prompt before running RSI','error');
+    document.getElementById('promptInput').focus();
+    return;
+  }
+  state.rsiRunning = true;
+  const btn = document.getElementById('runRsiBtn');
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  const steps = document.querySelectorAll('.rsi-step');
+  const totalSteps = rsiSteps.length;
+  const totalIterations = state.rsiIterations;
+  const totalOps = totalSteps * totalIterations;
+  let currentOp = 0;
+  const statusEl = document.getElementById('rsiStatus');
+  const progressFill = document.getElementById('rsiProgressFill');
+  
+  // Reset all steps
+  steps.forEach(s=>s.classList.remove('active','completed'));
+  
+  const interval = setInterval(()=>{
+    if(currentOp >= totalOps){
+      clearInterval(interval);
+      steps.forEach(s=>{s.classList.remove('active');s.classList.add('completed');});
+      statusEl.innerHTML = `✓ <strong style="color:#10b981">RSI Complete</strong> — ${totalIterations} iteration${totalIterations>1?'s':''} processed. Final output ready.`;
+      progressFill.style.width = '100%';
+      // Generate RSI prompt
+      generateRsiPrompt(userInput);
+      state.rsiRunning = false;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      showToast('RSI processing complete!');
+      return;
+    }
+    // Calculate current iteration and step
+    const iter = Math.floor(currentOp / totalSteps) + 1;
+    const stepIdx = currentOp % totalSteps;
+    // If starting new iteration (stepIdx === 0 and currentOp > 0), briefly show loop
+    steps.forEach(s=>s.classList.remove('active'));
+    const currentStep = steps[stepIdx];
+    currentStep.classList.add('active');
+    const stepName = rsiSteps[stepIdx].label;
+    statusEl.innerHTML = `Iteration ${iter}/${totalIterations} — <strong style="color:var(--accent)">${stepName}</strong>`;
+    const progress = ((currentOp+1)/totalOps)*100;
+    progressFill.style.width = progress+'%';
+    currentOp++;
+  },400);
+}
+
+function generateRsiPrompt(userInput){
+  const iter = state.rsiIterations;
+  const rsiPrompt = `# 🔄 RECURSIVE SELF-IMPROVEMENT MODE
+
+## ⚙️ CONFIGURATION
+- Iterations: ${iter}
+- Pipeline: 8-stage recursive refinement
+
+## 📋 PIPELINE
+
+You are entering RSI Mode. Process the input through ${iter} full iteration(s) of the following 8-stage pipeline:
+
+1. **ANALYSE** — Break down the input and identify its core components, structure, and assumptions.
+2. **CRITIC** — Identify weaknesses, gaps, contradictions, assumptions, and logical flaws.
+3. **IDENTIFY WEAKNESSES** — Explicitly list each weakness found in a numbered list.
+4. **KILL WEAK IDEAS** — Remove or replace each weakness with a stronger alternative. Justify each kill.
+5. **REFINE** — Polish and strengthen the surviving content. Improve clarity, precision, and rigour.
+6. **SYNTHESIZE** — Combine the refined components into a unified, coherent whole.
+7. **ITERATE** — Repeat stages 1-6 for ${iter} full iteration(s), each building on the previous.
+8. **FINAL OUTPUT** — Present the fully-refined result.
+
+## 📥 INPUT
+
+ ${userInput}
+
+## 📤 OUTPUT FORMAT
+
+For each iteration, briefly document:
+- Weaknesses found and killed
+- Refinements applied
+- Synthesis output
+
+Then present the **FINAL OUTPUT** after all ${iter} iteration(s) are complete.
+
+Begin Iteration 1 now.`;
+  
+  document.getElementById('enhancedOutput').textContent = rsiPrompt;
+  document.getElementById('enhancedOutput').classList.remove('empty');
+  document.getElementById('strategyOutput').textContent = `Recursive Self-Improvement × ${iter} iterations`;
+  document.getElementById('strategyOutput').classList.remove('empty');
+}
+
+// ============== EXPORT ==============
+function exportPrompt(){
+  const content = document.getElementById('enhancedOutput').textContent;
+  if(!content || content.startsWith('Enter a prompt')){
+    showToast('Generate a prompt first','error');
+    return;
+  }
+  const blob = new Blob([content],{type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'enhanced-prompt-'+Date.now()+'.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Prompt exported');
+}
+
+// ============== THEME ==============
+function toggleTheme(){
+  const body = document.body;
+  const current = body.getAttribute('data-theme');
+  const next = current==='dark'?'light':'dark';
+  body.setAttribute('data-theme',next);
+  document.getElementById('themeToggle').textContent = next==='dark'?'🌙':'☀️';
+}
+
+// ============== INIT ==============
+function init(){
+  // Calculate total operators
+  let total = 0;
+  for(const cat in categories) total += categories[cat].operators.length;
+  document.getElementById('totalOps').textContent = total;
+  
+  renderFilters();
+  renderOperators();
+  renderSelectedOps();
+  renderCombination();
+  renderIntensity();
+  renderRecipes();
+  renderRsi();
+  updateOutput();
+  
+  // Event listeners
+  document.getElementById('searchInput').addEventListener('input',(e)=>{
+    state.searchTerm = e.target.value.toLowerCase().trim();
+    renderOperators();
+  });
+  
+  document.getElementById('promptInput').addEventListener('input',updateOutput);
+  
+  document.getElementById('themeToggle').addEventListener('click',toggleTheme);
+  
+  document.getElementById('generateBtn').addEventListener('click',()=>{
+    const userInput = document.getElementById('promptInput').value.trim();
+    if(!userInput){showToast('Enter a prompt first','error');return;}
+    if(state.selectedOperators.length===0){showToast('Select at least one operator','error');return;}
+    updateOutput();
+    showToast('Enhanced prompt generated');
+    document.querySelector('.output-panel').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  
+  document.getElementById('copyBtn').addEventListener('click',()=>{
+    const content = document.getElementById('enhancedOutput').textContent;
+    if(!content || content.startsWith('Enter a prompt')){showToast('Generate a prompt first','error');return;}
+    navigator.clipboard.writeText(content).then(()=>showToast('Prompt copied to clipboard')).catch(()=>showToast('Copy failed','error'));
+  });
+  
+  document.getElementById('resetBtn').addEventListener('click',()=>{
+    state.selectedOperators = [];
+    document.getElementById('promptInput').value = '';
+    state.intensity = {reasoning:1,critical:1,iteration:1,compression:0,creativity:1,human:1};
+    renderOperators();
+    renderSelectedOps();
+    renderCombination();
+    renderIntensity();
+    updateOutput();
+    showToast('All reset');
+  });
+  
+  document.getElementById('exportBtn').addEventListener('click',exportPrompt);
+  
+  document.getElementById('runRsiBtn').addEventListener('click',runRsi);
+  
+  document.querySelectorAll('.iter-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(state.rsiRunning) return;
+      document.querySelectorAll('.iter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      state.rsiIterations = parseInt(btn.dataset.iter);
+      document.getElementById('rsiLoop').textContent = `Loop × ${state.rsiIterations} iteration${state.rsiIterations>1?'s':''}`;
+    });
+  });
+  
+  // Keyboard shortcut
+  document.addEventListener('keydown',(e)=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
+      e.preventDefault();
+      document.getElementById('generateBtn').click();
+    }
+  });
+}
+
+init();
+</script>
+</body>
+</html>
