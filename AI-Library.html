@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Cognitive Command Library v1.1</title>
+<style>
+:root{--bg:#0a1020;--panel:#111b31;--panel2:#16233d;--line:#2b3c5d;--text:#edf3ff;--muted:#a9b7d0;--accent:#69e0d0;--accent2:#9bb8ff;--warn:#ffd27a;--danger:#ff9a9a;--good:#9ce6b0;--shadow:0 12px 32px #0003}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top left,#17284b 0,transparent 44%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:#1a2945;color:var(--text);padding:.65rem .85rem;border-radius:10px;transition:background .15s,border-color .15s}
+button:hover{border-color:var(--accent);background:#223658}
+button.primary{background:var(--accent);color:#071521;border-color:var(--accent);font-weight:750}
+button.primary:hover{background:#7ae8da}
+button.subtle{background:transparent}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{padding:26px clamp(16px,4vw,52px) 20px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--accent);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.76rem}
+.hero{max-width:1500px;margin:auto}
+h1{font-size:clamp(1.8rem,4vw,3rem);line-height:1.1;margin:.45rem 0}
+h2{font-size:1.12rem;margin:0 0 12px}
+h3{font-size:1rem;margin:0 0 7px}
+p{margin:.45rem 0 .8rem}
+.subtitle{max-width:850px;color:var(--muted)}
+.topmeta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pill{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted);font-size:.78rem}
+main{max-width:1500px;margin:auto;padding:22px clamp(12px,3vw,40px) 48px}
+.layout{display:grid;grid-template-columns:minmax(270px,350px) minmax(0,1fr);gap:18px;align-items:start}
+.panel{background:linear-gradient(155deg,#121e35,#0e172a);border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:var(--shadow);min-width:0}
+.stack{display:grid;gap:16px}
+.field{display:grid;gap:6px;margin-bottom:12px}
+.field label,.smalllabel{font-size:.8rem;color:var(--muted);font-weight:700}
+.field input,.field select,.field textarea,input.search{width:100%;border:1px solid var(--line);background:#0b1427;color:var(--text);border-radius:9px;padding:10px 11px}
+.field textarea{min-height:105px;resize:vertical}
+.search{margin:8px 0 10px}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filter{font-size:.78rem;padding:6px 9px}
+.filter.active{background:var(--accent);color:#071521;border-color:var(--accent);font-weight:800}
+.commandlist{display:grid;gap:6px;max-height:57vh;overflow:auto;padding-right:3px}
+.cmditem{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;width:100%;padding:9px 10px;background:#101b30}
+.cmditem.selected{border-color:var(--accent);background:#1a3446}
+.cmditem .name{font-weight:800}
+.cmditem .desc{font-size:.75rem;color:var(--muted);display:block;line-height:1.35;margin-top:2px}
+.cmditem .tag{font-size:.68rem;color:var(--accent2);white-space:nowrap}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.detailhead{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.cmdtitle{font-size:1.65rem;font-weight:850;line-height:1.2}
+.cmdmeta{color:var(--muted);font-size:.83rem;margin-top:5px}
+.rulebox{background:#0a1425;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px}
+.rulebox strong{color:var(--accent2)}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mini{border:1px solid var(--line);border-radius:11px;padding:11px;background:#0b1528}
+.mini p{color:var(--muted);font-size:.9rem;margin-bottom:0}
+.promptbox{white-space:pre-wrap;overflow-wrap:anywhere;background:#081122;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:190px;font:.87rem/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:#dce9ff;width:100%}
+.sectiontitle{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+.muted{color:var(--muted)}
+.note{border-left:3px solid var(--warn);padding:9px 12px;background:#29231655;border-radius:0 9px 9px 0;color:#f2dfb8}
+.goodnote{border-left-color:var(--good);background:#11291f66;color:#d7f6e1}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chainchips{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;padding:8px;border:1px dashed var(--line);border-radius:10px}
+.chip{display:flex;align-items:center;gap:6px;background:#203451;border:1px solid #3b5276;border-radius:8px;padding:5px 8px;font-size:.8rem}
+.chip button{padding:0 4px;border:0;background:transparent;color:var(--danger);font-size:1.2rem;line-height:1}
+.chainoutput{min-height:210px}
+.twoactions{display:flex;gap:8px;flex-wrap:wrap}
+.gridcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.metric{border:1px solid var(--line);background:#0c1629;border-radius:12px;padding:12px}
+.metric b{font-size:1.25rem;display:block}
+.metric span{font-size:.78rem;color:var(--muted)}
+.checklist{padding-left:1.2rem}
+.checklist li{margin:5px 0}
+.footer{color:var(--muted);font-size:.8rem;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
+.status{font-size:.8rem;color:var(--good);min-height:1.3em}
+.hide{display:none!important}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.commandlist{max-height:340px}.twocol{grid-template-columns:1fr}.gridcards{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.gridcards{grid-template-columns:1fr}.panel{padding:13px}.cmdtitle{font-size:1.4rem}.detailhead{flex-direction:column}.toolbar{width:100%}.toolbar button{flex:1 1 auto}.twoactions button{flex:1 1 auto}}
+</style>
+</head>
+<body>
+<header><div class="hero">
+<div class="eyebrow">Research workbench · v1.1</div>
+<h1>AI Cognitive Command Library</h1>
+<p class="subtitle">A reusable command language for investigative journalism and geopolitics. Build a defensible research chain, test claims against evidence, challenge causal stories, and turn findings into a transparent brief.</p>
+<div class="topmeta"><span class="pill">27 commands + aliases</span><span class="pill">No API required</span><span class="pill">Offline-capable prototype</span><span class="pill">Human verification required</span></div>
+</div></header>
+<main>
+<div class="note" style="margin-bottom:18px"><strong>Operating principle:</strong> commands are prompt conventions, not special built-in model functions. They improve consistency only when the model follows them. A command cannot independently verify a claim unless the model has access to suitable sources or tools.</div>
+<div class="layout">
+<aside class="stack">
+<section class="panel">
+<div class="sectiontitle"><h2>1 · Command explorer</h2><span class="pill" id="countLabel">27 commands</span></div>
+<input class="search" id="search" placeholder="Search command, task, or rule…" aria-label="Search commands">
+<div class="filters" id="filters"></div>
+<div class="commandlist" id="commandList" aria-label="Command list"></div>
+<p class="muted" style="font-size:.78rem;margin-bottom:0">Select a command to inspect its operational definition, validation rules, example, and copy-ready prompt.</p>
+</section>
+<section class="panel">
+<h2>2 · Research mission</h2>
+<div class="field"><label for="topic">Question / investigation</label><textarea id="topic" placeholder="Example: What evidence supports claims that a new shipping incident will disrupt oil flows through the Strait of Hormuz?"></textarea></div>
+<div class="field"><label for="audience">Audience</label><select id="audience"><option>General public</option><option>Investigative editor</option><option>Policy analyst</option><option>Investor / risk team</option><option>Academic researcher</option></select></div>
+<div class="field"><label for="timeframe">Timeframe / as-of date</label><input id="timeframe" placeholder="e.g., 9 October 2026; last 72 hours"></div>
+<div class="field"><label for="region">Geographic scope</label><input id="region" placeholder="e.g., Iran, Gulf states, United States, UK"></div>
+<div class="field"><label for="constraints">Constraints and must-checks</label><textarea id="constraints" placeholder="e.g., distinguish official statements from independently verified events; include Iranian, regional, and Western perspectives; avoid unsupported casualty or market figures."></textarea></div>
+<div class="twoactions"><button type="button" class="primary" id="applyMission">Apply to prompt</button><button type="button" id="clearMission">Clear fields</button></div>
+<p class="status" id="missionStatus" aria-live="polite"></p>
+</section>
+</aside>
+<div class="stack">
+<section class="panel">
+<div class="detailhead"><div><div class="cmdtitle" id="cmdName">/Truth</div><div class="cmdmeta" id="cmdMeta"></div></div><div class="toolbar"><button type="button" class="primary" id="copyPrompt">Copy command prompt</button><button type="button" id="addChain">Add to chain +</button></div></div>
+<div class="badges" id="aliases"></div>
+<div class="twocol" style="margin-top:14px">
+<div class="mini"><h3>Operational definition</h3><p id="definition"></p></div>
+<div class="mini"><h3>Use when</h3><p id="useWhen"></p></div>
+<div class="mini"><h3>Validation rules</h3><p id="validation"></p></div>
+<div class="mini"><h3>Explicit limitations</h3><p id="limitations"></p></div>
+</div>
+<div class="rulebox"><strong>Worked example</strong><p id="example" style="margin:.4rem 0 0"></p></div>
+<div class="sectiontitle" style="margin-top:18px"><h2>Copy-ready prompt</h2><span class="muted" style="font-size:.8rem">Editable before copying</span></div>
+<textarea id="promptEditor" class="promptbox" aria-label="Editable command prompt"></textarea>
+<div class="toolbar" style="margin-top:9px"><button type="button" id="resetPrompt">Reset to definition</button><button type="button" id="runPrompt" class="primary">Send prompt to chat</button></div>
+<p class="muted" style="font-size:.78rem">"Send prompt to chat" submits the selected prompt as a new conversation message. It does not run a hidden research engine.</p>
+<p class="status" id="copyStatus" aria-live="polite"></p>
+</section>
+<section class="panel">
+<div class="sectiontitle"><h2>3 · Chain builder</h2><span class="pill" id="chainCount">0 steps</span></div>
+<p class="muted">Add commands from the explorer, reorder by removing and re-adding, or load a recommended workflow. The chain prompt includes each command's operating instructions in sequence.</p>
+<div class="toolbar" style="margin-bottom:10px">
+<button type="button" data-mode="Quick">Quick fact-check</button><button type="button" data-mode="Investigation">Investigative report</button><button type="button" data-mode="Geopolitics">Geopolitical risk</button><button type="button" data-mode="Forecast">Forecast & early warning</button><button type="button" id="clearChain">Clear chain</button>
+</div>
+<div class="chainchips" id="chainChips"><span class="muted">No commands added yet.</span></div>
+<div class="sectiontitle" style="margin-top:15px"><h2>Generated chain prompt</h2><button type="button" id="copyChain" class="primary">Copy chain</button></div>
+<textarea id="chainOutput" class="promptbox chainoutput" aria-label="Generated chain prompt" placeholder="Load a workflow or add commands to build a chain."></textarea>
+<div class="toolbar" style="margin-top:9px"><button type="button" id="sendChain">Send chain to chat</button><button type="button" id="exportTxt">Export prompt (.txt)</button></div>
+<p class="status" id="chainStatus" aria-live="polite"></p>
+</section>
+<section class="panel">
+<h2>4 · Investigation protocol & quality gate</h2>
+<div class="gridcards">
+<div class="metric"><b>Claim ledger</b><span>Every material claim gets a status and source trail.</span></div>
+<div class="metric"><b>Source diversity</b><span>Independence matters more than raw article count.</span></div>
+<div class="metric"><b>Uncertainty visible</b><span>Separate fact, allegation, inference, and forecast.</span></div>
+</div>
+<div class="twocol" style="margin-top:12px">
+<div class="mini"><h3>Minimum validation checklist</h3><ul class="checklist"><li>Check date, author, provenance, and original publication.</li><li>Trace quotes, images, video, and statistics to primary material where possible.</li><li>Check whether apparently separate outlets repeat one source.</li><li>Seek disconfirming evidence and relevant missing perspectives.</li><li>Label uncertainty; do not convert absence of evidence into proof of absence.</li><li>Recheck fast-moving claims immediately before publication.</li></ul></div>
+<div class="mini"><h3>Editorial safety rules</h3><ul class="checklist"><li>Allegations about named people or groups need careful attribution and a fair opportunity to respond where appropriate.</li><li>Do not publish private personal data merely because it is accessible.</li><li>For conflict reporting, avoid treating state or armed-group claims as independently verified facts.</li><li>Do not expose sources, vulnerable people, or operational details that create foreseeable harm.</li><li>Record what was not checked, not just what was found.</li></ul></div>
+</div>
+<div class="note" style="margin-top:12px">This dashboard is a prompt-construction prototype, not a newsroom CMS, secure source vault, fact-checking service, or live intelligence feed. It does not browse the web by itself and cannot authenticate media or guarantee accuracy.</div>
+</section>
+</div></div>
+<div class="footer">AI Cognitive Command Library v1.1 · Investigative Journalism & Geopolitics · Prototype only. Use professional editorial judgement, independent verification, and appropriate legal/safety review.</div>
+</main>
+
+<script>
+/* ============================================================
+   COMMAND DATA
+   ============================================================ */
+var commands = [
+{n:"Mission",g:"Workflow",alias:[],def:"Translate a broad request into a bounded, testable assignment with a defined audience, timeframe, scope, constraints, and deliverables.",use:"Before research, especially when the question is politically charged or too broad.",val:"Confirm the question is answerable; surface missing scope; do not silently invent the deadline, audience, or success criteria.",lim:"A clear mission does not make an incomplete or biased question neutral.",ex:"Investigate what is known about a reported maritime incident, what remains disputed, and what evidence would change the assessment.",p:"/Mission\nDefine the investigation objective, audience, timeframe, geographic scope, key questions, exclusions, risks, and deliverables. Identify ambiguity and ask only essential clarifying questions. Do not assume disputed premises are true.\nINPUT: [topic]\nAUDIENCE: [audience]\nAS-OF / TIMEFRAME: [timeframe]\nSCOPE: [region]\nCONSTRAINTS: [constraints]\nOUTPUT: mission brief, key questions, evidence needs, exclusions, and success criteria."},
+{n:"Decompose",g:"Workflow",alias:[],def:"Break the main question into smaller, answerable subquestions and identify which evidence can answer each one.",use:"Complex investigations involving multiple actors, events, or causal claims.",val:"Subquestions should be distinct, relevant, and collectively cover the core question; identify dependencies and evidence gaps.",lim:"A decomposition can omit important factors if the initial framing is poor.",ex:"Separate whether an attack occurred, who claims responsibility, what evidence supports attribution, and what its effects were.",p:"/Decompose\nBreak the investigation into answerable subquestions. For each, specify evidence needed, likely primary sources, alternative explanations, and dependencies. Flag questions that cannot be answered from available information.\nQUESTION: [question]\nOUTPUT: numbered subquestions + evidence plan + dependencies + gaps."},
+{n:"Socrates",g:"Analysis",alias:[],def:"Use disciplined questioning to test definitions, assumptions, evidence, contradictions, and implications.",use:"When a premise is vague, loaded, or treated as self-evident.",val:"Ask one focused question at a time when interacting; otherwise list the most consequential questions. Do not smuggle in a preferred conclusion.",lim:"Questions expose weak reasoning but do not establish facts on their own.",ex:"What does 'escalation' mean here: more attacks, wider geography, higher capability, or reduced diplomatic access?",p:"/Socrates\nExamine the question through precise, non-leading questions about definitions, assumptions, evidence, contradictions, and consequences. Prioritise questions that could change the conclusion. Do not presume the answer.\nQUESTION: [question]\nOUTPUT: key questions, why each matters, and what evidence would resolve it."},
+{n:"Meta",g:"Analysis",alias:[],def:"Audit the reasoning process: assumptions, framing, uncertainty, cognitive bias, and alternative approaches.",use:"Before finalising a consequential analysis.",val:"Name concrete assumptions and show how they affect the result; avoid vague claims of being unbiased.",lim:"Self-audit is not proof against bias and does not reveal hidden internal reasoning.",ex:"Check whether focusing on military capability causes diplomatic signals or domestic constraints to be underweighted.",p:"/Meta\nAudit the analysis for framing effects, hidden assumptions, selection bias, false certainty, and missing perspectives. State the concise rationale and evidence for the conclusion, not private chain-of-thought. Suggest corrections.\nINPUT: [analysis]\nOUTPUT: assumptions, potential biases, missing perspectives, sensitivity points, and revised approach."},
+{n:"Truth",g:"Evidence",alias:[],def:"Create a claim ledger and classify each material factual claim by evidential status.",use:"Fact-checking news, speeches, viral posts, policy claims, and reports.",val:"Use labels: verified, supported, disputed, contradicted, inference, or unverified. Attach source and date to each material claim; explain what is not established.",lim:"A language model cannot verify externally without access to sources or tools; sources can themselves be wrong.",ex:"A government says a vessel was attacked: distinguish the statement, vessel/operator confirmation, and independently corroborated evidence.",p:"/Truth\nExtract material factual claims. For each, classify as VERIFIED, SUPPORTED, DISPUTED, CONTRADICTED, INFERENCE, or UNVERIFIED. Provide source, publication date, original evidence if available, corroboration, counterevidence, and what remains unknown. Distinguish an official assertion from an independently verified event. Never fabricate sources, citations, quotes, figures, or verification.\nINPUT: [claim / article / dossier]\nOUTPUT: claim ledger with status, evidence, confidence rationale, and unresolved gaps."},
+{n:"SourceAudit",g:"Evidence",alias:[],def:"Assess source provenance, expertise, access, track record, incentives, transparency, and proximity to the evidence.",use:"Evaluating officials, think tanks, anonymous sources, media reports, social posts, and leaked documents.",val:"Explain the basis for each assessment; distinguish source reliability from whether a particular claim is true.",lim:"A source's reputation is not a substitute for claim-level evidence; do not infer motive without support.",ex:"Assess whether an official statement is first-hand evidence, an interested party's account, or a summary of another source.",p:"/SourceAudit\nAudit each source for identity/provenance, proximity to the event, expertise, track record, transparency, incentives, independence, and corroboration. Separate source reliability from claim validity. Explain ratings with evidence; do not speculate about motives.\nINPUT: [sources and claims]\nOUTPUT: source-by-source audit, strengths, risks, independence links, and follow-up checks."},
+{n:"Freshness",g:"Evidence",alias:[],def:"Check whether facts are current, date-stamped, superseded, or recycled from older reporting.",use:"Breaking news, elections, conflicts, sanctions, prices, leadership changes, and live policy.",val:"State an explicit as-of time and distinguish event date from publication/update date; seek the newest authoritative evidence.",lim:"A recent article can still be wrong; recency alone is not reliability.",ex:"A story reposted today may describe a strike from last month rather than a new event.",p:"/Freshness\nFor every time-sensitive claim, identify event date, original publication date, latest update, and as-of cutoff. Check for corrections, superseding statements, recycled footage, and stale context. If live access is unavailable, say freshness is unverified.\nINPUT: [claims / links]\nAS-OF: [date and time with timezone]\nOUTPUT: current / stale / superseded / date unclear + evidence."},
+{n:"Triangulate",g:"Evidence",alias:[],def:"Compare independent evidence streams and trace repeated reporting back to original sources.",use:"High-stakes claims, casualty figures, battlefield reports, attribution, and allegations.",val:"Map source dependencies; distinguish genuinely independent corroboration from multiple outlets quoting the same wire or official.",lim:"Independent sources may share a common error or incentive; convergence is not absolute proof.",ex:"Compare a maritime agency notice, vessel operator statement, satellite imagery, and independent reporting.",p:"/Triangulate\nCompare primary records, direct witnesses, credible independent reporting, and relevant technical evidence. Trace copied claims to their origin and map source dependencies. Record agreement, contradiction, and unresolved discrepancies.\nCLAIM: [claim]\nOUTPUT: evidence matrix + independence assessment + strongest corroboration and counterevidence."},
+{n:"GapScan",g:"Evidence",alias:[],def:"Identify material unknowns, missing perspectives, unavailable records, and evidence that could alter the conclusion.",use:"Before publication or briefing, particularly on contested issues.",val:"Rank gaps by importance and explain a practical route to close each one.",lim:"A gap list cannot establish that missing evidence exists or is being withheld.",ex:"No independent confirmation of location, timing, or damage in a military claim.",p:"/GapScan\nIdentify missing evidence, absent stakeholders, unresolved timeline points, untested assumptions, and data limitations. Rank each gap by consequence and suggest a realistic verification step. Do not infer concealment from a gap alone.\nINPUT: [draft / findings]\nOUTPUT: ranked gap register with why it matters and how to investigate."},
+{n:"FactLock",g:"Quality",alias:[],def:"Run a final consistency check on names, dates, figures, quotations, links, word counts, and evidence labels.",use:"Immediately before a report, briefing, social post, or publication.",val:"Check each item against a traceable source or mark it unchecked; preserve qualifiers and units.",lim:"A checklist is only as good as the sources and access available; it cannot guarantee correctness.",ex:"Confirm whether a casualty figure is cumulative, who supplied it, and when it was reported.",p:"/FactLock\nAudit the finished draft for names, titles, dates, time zones, quantities, units, quotations, links, attribution, status labels, arithmetic, and internal consistency. Verify each item against source material where accessible; mark unverified items explicitly. Do not silently repair with guesses.\nDRAFT: [draft]\nOUTPUT: issue, severity, evidence needed, suggested correction, and publication blockers."},
+{n:"Stop",g:"Quality",alias:[],def:"Enforce a stop rule when evidence is insufficient, tools are unavailable, or a requested conclusion cannot be supported.",use:"Any time the task invites invention, false precision, or unsupported attribution.",val:"Name the specific missing evidence and offer a bounded next step; do not fill the gap with a plausible story.",lim:"Stopping may leave questions unanswered; it is preferable to fabricated certainty.",ex:"If the only attribution comes from one combatant, report that attribution rather than stating it as fact.",p:"/Stop\nDo not guess or manufacture missing facts. If a material claim cannot be supported, label it UNVERIFIED and explain the exact evidence needed. Distinguish unavailable information from evidence that something did not happen. Offer a limited, defensible answer.\nINPUT: [question / draft]"},
+{n:"Alt3",g:"Analysis",alias:[],def:"Generate three materially different explanations, strategies, or options with evidence and trade-offs.",use:"When a single narrative is dominating or decision-makers need alternatives.",val:"Options must differ in assumptions or mechanism, not merely wording; state what would discriminate between them.",lim:"Three options are not necessarily exhaustive; avoid false balance when evidence strongly favours one.",ex:"A shipping disruption could reflect a verified attack, precautionary rerouting, or a reporting/insurance effect.",p:"/Alt3\nGenerate three materially different explanations or options. For each, give assumptions, supporting evidence, counterevidence, implications, risks, and a discriminating test. Weight options according to evidence; do not force equal plausibility.\nQUESTION: [question]"},
+{n:"CausalMap",g:"Analysis",alias:[],def:"Map causes, triggers, enabling conditions, mechanisms, feedback loops, and downstream consequences.",use:"Explaining escalation, sanctions, displacement, policy failure, or market reactions.",val:"Separate correlation from causation; identify confounders, time order, and evidence needed to test each link.",lim:"A causal diagram is a hypothesis map, not proof of causal relationships.",ex:"A strike may affect oil prices through perceived supply risk, insurance costs, and shipping rerouting—but each link needs evidence.",p:"/CausalMap\nMap proposed causes, triggers, enabling conditions, mechanisms, confounders, feedback loops, and consequences. Label each link as evidenced, plausible, contested, or speculative. Identify evidence that could test or falsify the causal story.\nTOPIC: [topic]"},
+{n:"Steelman",g:"Analysis",alias:[],def:"Present the strongest fair version of a serious opposing interpretation before evaluating it.",use:"Contested geopolitical narratives, editorial debate, and policy analysis.",val:"Represent the opposing case as informed proponents would recognise it; then assess evidence and limits.",lim:"A strong argument is not necessarily true; do not manufacture symmetry where evidence is unequal.",ex:"Present the strongest case for deterrence before assessing the claim that a deployment increases escalation risk.",p:"/Steelman\nState the strongest evidence-based version of the most credible opposing interpretation. Include its best evidence, assumptions, and explanatory power, then assess where it succeeds or fails. Do not create false equivalence.\nCLAIM: [claim]\nOUTPUT: strongest opposing case + fair evaluation."},
+{n:"Roast",g:"Challenge",alias:["/Rost"],def:"Conduct a sharp but evidence-based stress test of an argument, proposal, or draft.",use:"Red-teaming a thesis, investigation plan, policy proposal, or confident conclusion.",val:"Criticise specific claims, logic, evidence, omissions, and feasibility; provide repair steps, not insults.",lim:"A harsh critique can overemphasise weaknesses; pair it with the strongest supporting evidence and a repair plan.",ex:"Challenge a claim that sanctions alone explain a country's economic trajectory by testing confounders and timelines.",p:"/Roast (alias: /Rost)\nStress-test this argument rigorously but fairly. Identify unsupported claims, logical gaps, weak evidence, missing stakeholders, alternative explanations, feasibility risks, and likely expert objections. Separate fatal flaws from fixable weaknesses. For each major criticism, suggest a repair or test. No personal attacks and no invented counterfacts.\nARGUMENT: [argument]"},
+{n:"DevilsAdvocate",g:"Challenge",alias:[],def:"Develop a plausible rival hypothesis and identify observations that distinguish it from the leading hypothesis.",use:"When evidence is ambiguous or a single explanation is becoming entrenched.",val:"Rival hypothesis must be plausible and testable; specify contrasting predictions.",lim:"An alternative can be imaginable without being equally likely.",ex:"Could a pause in attacks reflect logistics rather than diplomatic progress? What observable evidence would distinguish these explanations?",p:"/DevilsAdvocate\nConstruct the strongest plausible rival hypothesis. Explain what it predicts differently from the leading hypothesis and list observable tests that could discriminate between them. Do not treat mere possibility as equal probability.\nLEADING HYPOTHESIS: [hypothesis]"},
+{n:"RedTeam",g:"Challenge",alias:[],def:"Adversarially test the whole analysis for failure modes, strategic deception, and vulnerabilities.",use:"Before consequential publication, security assessments, or policy recommendations.",val:"Prioritise concrete failure modes, likelihood rationale, impact, detection, and mitigation.",lim:"It cannot predict every adversarial move and should not enable harm or operational targeting.",ex:"How might a state actor exploit ambiguous attribution or recycled footage to shape a public narrative?",p:"/RedTeam\nAct as a rigorous adversarial reviewer of this assessment. Identify how it could fail, be manipulated, misread, or cause harm. Rank failure modes by likelihood and impact; provide warning signs and mitigations. Keep analysis at a safe, non-operational level.\nASSESSMENT: [assessment]"},
+{n:"PreMortem",g:"Challenge",alias:[],def:"Imagine the investigation or recommendation failed and work backwards to likely causes and early warning signs.",use:"Planning investigations, editorial decisions, and strategic responses.",val:"Include preventable and external failure causes, indicators, and mitigations.",lim:"A premortem surfaces plausible risks; it does not predict the future.",ex:"The report is withdrawn after publication: perhaps a key quote was mistranslated or a source dependency was missed.",p:"/PreMortem\nAssume this investigation or recommendation failed. Generate plausible reasons, early warning indicators, preventive checks, and contingency actions. Distinguish controllable process failures from external uncertainty.\nPLAN: [plan]"},
+{n:"Predict",g:"Forecast",alias:[],def:"Create bounded scenarios with explicit assumptions, time horizon, indicators, and calibrated probabilities only when justified.",use:"Geopolitical outlooks, escalation risk, elections, policy shifts, and market spillovers.",val:"Define outcomes so scenarios are mutually exclusive and collectively adequate when probabilities are used; probabilities total 100%; explain base rates and uncertainty.",lim:"Forecasts are conditional, not facts. Numerical probabilities without a defensible basis create false precision.",ex:"Estimate whether a diplomatic channel will remain active over 72 hours, and state indicators that would update the view.",p:"/Predict\nBuild baseline, upside/de-escalation, and downside/escalation scenarios for [time horizon]. Define observable outcomes, assumptions, drivers, base rates where available, indicators, and disconfirming evidence. Use probabilities only if defensible; if used for mutually exclusive scenarios, make totals 100% and explain the basis. Separate forecast from fact."},
+{n:"BayesUpdate",g:"Forecast",alias:[],def:"Explain how new evidence should raise, lower, or leave unchanged confidence in a hypothesis.",use:"Updating a developing story as new official statements, imagery, or records emerge.",val:"State prior basis, evidence reliability, likelihood direction, and alternative explanations; avoid fake numeric likelihood ratios.",lim:"Without calibrated priors and likelihoods, a qualitative update is more honest than numeric Bayesian theatre.",ex:"A second independent sensor report should change confidence differently from another outlet repeating the same source.",p:"/BayesUpdate\nUpdate confidence in the hypothesis using the new evidence. State the prior basis if known, evidence reliability, whether it is independent, the direction and qualitative size of the update, and plausible alternative explanations. Use numerical Bayesian calculations only with defensible inputs; otherwise remain qualitative.\nHYPOTHESIS: [hypothesis]\nNEW EVIDENCE: [evidence]"},
+{n:"Sensitivity",g:"Forecast",alias:[],def:"Test how conclusions change when key assumptions, estimates, or weights vary.",use:"Risk analysis, economic scenarios, casualty/impact estimates, and policy comparisons.",val:"Identify the assumptions that drive the result and show ranges or thresholds when data permit.",lim:"Sensitivity analysis cannot repair poor input data or capture every unknown unknown.",ex:"Test whether an oil-price risk conclusion changes under low, medium, and high shipping-disruption assumptions.",p:"/Sensitivity\nIdentify the assumptions that most affect the conclusion. Vary each across plausible ranges, show which outputs change, and identify thresholds that reverse the recommendation. Label illustrative inputs; do not invent data.\nMODEL / CONCLUSION: [model or conclusion]"},
+{n:"EarlyWarning",g:"Forecast",alias:[],def:"Translate scenarios into observable indicators, thresholds, sources, and response triggers.",use:"Ongoing geopolitical monitoring and newsroom updates.",val:"Each indicator must be observable, sourceable, time-bounded, and linked to a specific interpretation or action.",lim:"Indicators can be noisy, delayed, manipulated, or produce false alarms.",ex:"Track verified maritime advisories, vessel routing changes, official talks, and insurance notices rather than social-media rumour alone.",p:"/EarlyWarning\nBuild an indicator tracker for the scenarios. For each indicator specify source, update frequency, threshold, what it may signal, alternative explanations, and the action it triggers. Prefer observable evidence; flag noisy or manipulable indicators.\nSCENARIOS: [scenarios]"},
+{n:"OODA",g:"Decision",alias:[],def:"Structure action as Observe, Orient, Decide, Act, then reassess with new evidence.",use:"Fast-moving stories and operational newsroom decisions.",val:"Specify what is observed, how it is interpreted, who decides, the reversible next action, and the reassessment trigger.",lim:"Speed is not a substitute for verification; slow down when harm or irreversible publication risk is high.",ex:"Observe a new claim; orient against official records and independent sources; decide whether to publish as confirmed or attributed; act; reassess.",p:"/OODA\nApply Observe → Orient → Decide → Act → Reassess. State current observations and source quality, context and competing interpretations, the decision and rationale, next action, owner if relevant, and the trigger for reassessment. Do not let urgency override verification.\nDECISION: [decision]"},
+{n:"Prioritise",g:"Decision",alias:[],def:"Rank questions, risks, or actions by impact, likelihood, urgency, confidence, and effort.",use:"Choosing what to verify first under deadline pressure.",val:"State criteria and weights; distinguish estimated scores from measured data; explain trade-offs.",lim:"Rankings depend on chosen criteria and can hide minority or low-probability catastrophic risks.",ex:"Prioritise confirming location and casualties over analysing speculative motives.",p:"/Prioritise\nRank the open questions or actions by impact, urgency, likelihood/relevance, confidence, and effort. State the criteria, assumptions, and trade-offs. Flag high-impact low-probability risks rather than burying them in an average score.\nITEMS: [items]"},
+{n:"Critic",g:"Quality",alias:[],def:"Review a draft for clarity, logic, evidential discipline, fairness, and fit to assignment.",use:"After drafting and before final fact-lock.",val:"Tie every criticism to a specific passage or reasoning issue; propose concrete revisions.",lim:"Editorial review does not replace legal review, source verification, or specialist expertise.",ex:"Flag where the text shifts from 'officials said' to stating the allegation as established fact.",p:"/Critic\nReview the draft for clarity, structure, logical consistency, evidence quality, fair attribution, uncertainty, missing perspectives, and assignment fit. Cite specific passages, classify severity, and propose revisions. Do not invent facts to improve the narrative.\nDRAFT: [draft]"},
+{n:"Synthesis",g:"Workflow",alias:[],def:"Combine findings into a coherent account while preserving disagreement, source limits, and unresolved questions.",use:"After evidence gathering and before a final briefing.",val:"No claim may become more certain in synthesis than its underlying evidence; retain meaningful conflicts and provenance.",lim:"A clean narrative can conceal uncertainty if synthesis is not carefully audited.",ex:"Summarise what multiple sources agree on while keeping attribution and damage assessment contested.",p:"/Synthesis\nSynthesize the findings into a coherent account. Separate established facts, attributed claims, inferences, disputed points, and unknowns. Preserve material disagreements and source dependencies; do not smooth contradictions away.\nFINDINGS: [findings]"},
+{n:"Brief",g:"Delivery",alias:[],def:"Convert analysis into a concise audience-specific briefing with decisions, evidence, caveats, and next steps.",use:"Editors, policy teams, public explainers, or leadership briefings.",val:"Answer the question first; include date/time, confidence basis, material caveats, and actionable next steps.",lim:"Compression can omit nuance; link or append the evidence ledger for high-stakes use.",ex:"A 1-page editor brief: what happened, what is verified, what is disputed, why it matters, and what to monitor.",p:"/Brief\nProduce an audience-appropriate brief. Lead with the answer and as-of time. Include key verified facts, attributed claims, confidence rationale, implications, strongest counterargument, unresolved questions, and next actions/indicators. Preserve caveats; avoid false certainty.\nAUDIENCE: [audience]\nFINDINGS: [findings]"},
+{n:"SourceSafety",g:"Safety",alias:[],def:"Review source handling, privacy, vulnerable-person risks, operational exposure, and foreseeable harm.",use:"Investigations involving anonymous sources, conflict zones, minors, or sensitive records.",val:"Identify concrete risks and safer alternatives; do not expose identities or unnecessary sensitive details in output.",lim:"A prompt review is not a substitute for newsroom security protocols or professional legal advice.",ex:"A location detail in a witness photo could identify a vulnerable source even if their name is omitted.",p:"/SourceSafety\nReview this plan or draft for source exposure, privacy, consent, vulnerable people, location metadata, operational detail, and foreseeable harm. Recommend data minimisation, secure handling, and safer wording. Do not reproduce sensitive personal data unnecessarily.\nMATERIAL: [plan / draft]"},
+{n:"PerspectiveAudit",g:"Evidence",alias:[],def:"Check whose accounts, interests, language, and lived effects are included or absent.",use:"Geopolitical reporting where state, military, diaspora, civilian, or regional narratives diverge.",val:"Identify specific relevant missing perspectives and realistic ways to seek them; do not treat identity as proof of truth.",lim:"Representing a perspective does not mean endorsing it; not every viewpoint has equal evidential value.",ex:"A regional security story should not rely solely on statements from the two governments in dispute.",p:"/PerspectiveAudit\nAudit whose voices and evidence appear, who is missing, whose terminology frames the story, and who bears the consequences. Suggest relevant perspectives and ways to include them safely. Evaluate claims on evidence, not identity or political alignment.\nDRAFT / TOPIC: [draft or topic]"}
+];
+
+/* ============================================================
+   MAIN LOGIC (wrapped, defensive)
+   ============================================================ */
+(function(){
+  "use strict";
+
+  var groups = ["All","Workflow","Evidence","Analysis","Challenge","Forecast","Decision","Quality","Delivery","Safety"];
+  var selected = "Truth";
+  var activeGroup = "All";
+  var chain = [];
+
+  function $(id){ return document.getElementById(id); }
+
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function byName(n){
+    for (var i=0;i<commands.length;i++){
+      var c = commands[i];
+      if (c.n === n || (c.alias && c.alias.indexOf(n) !== -1)) return c;
+    }
+    return commands[0];
+  }
+
+  /* ---------- COPY WITH FALLBACK ---------- */
+  function copyText(text, statusEl, okMsg){
+    var done = function(ok){
+      if (statusEl && ok) statusEl.textContent = okMsg;
+    };
+    if (navigator.clipboard && window.isSecureContext){
+      return navigator.clipboard.writeText(text).then(function(){
+        done(true);
+        return true;
+      }).catch(function(){
+        return legacyCopy(text, statusEl, okMsg);
+      });
+    }
+    return Promise.resolve(legacyCopy(text, statusEl, okMsg));
+  }
+
+  function legacyCopy(text, statusEl, okMsg){
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly","");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      var ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      if (statusEl) {
+        statusEl.textContent = ok ? okMsg : "Copy unavailable — text selected, press Ctrl/Cmd+C.";
+      }
+      return ok;
+    } catch(e){
+      if (statusEl) statusEl.textContent = "Copy unavailable — text selected, press Ctrl/Cmd+C.";
+      return false;
+    }
+  }
+
+  /* ---------- RENDER FILTERS ---------- */
+  function renderFilters(){
+    var el = $("filters");
+    if (!el) return;
+    var html = "";
+    for (var i=0;i<groups.length;i++){
+      var g = groups[i];
+      html += '<button type="button" class="filter ' + (g===activeGroup?"active":"") + '" data-group="' + esc(g) + '">' + esc(g) + '</button>';
+    }
+    el.innerHTML = html;
+  }
+
+  /* ---------- RENDER COMMAND LIST ---------- */
+  function renderList(){
+    var listEl = $("commandList");
+    var searchEl = $("search");
+    var countEl = $("countLabel");
+    if (!listEl) return;
+    var q = (searchEl && searchEl.value ? searchEl.value : "").toLowerCase().trim();
+    var arr = [];
+    for (var i=0;i<commands.length;i++){
+      var c = commands[i];
+      if (activeGroup !== "All" && c.g !== activeGroup) continue;
+      if (q){
+        var blob = [c.n, c.g, c.def, c.use, (c.alias||[]).join(" ")].join(" ").toLowerCase();
+        if (blob.indexOf(q) === -1) continue;
+      }
+      arr.push(c);
+    }
+    if (countEl) countEl.textContent = arr.length + " shown";
+    if (!arr.length){
+      listEl.innerHTML = '<p class="muted">No matching commands.</p>';
+      return;
+    }
+    var html = "";
+    for (var j=0;j<arr.length;j++){
+      var cc = arr[j];
+      html += '<button type="button" class="cmditem ' + (cc.n===selected?"selected":"") + '" data-cmd="' + esc(cc.n) + '">' +
+              '<span><span class="name">/' + esc(cc.n) + '</span><span class="desc">' + esc(cc.def) + '</span></span>' +
+              '<span class="tag">' + esc(cc.g) + '</span>' +
+              '</button>';
+    }
+    listEl.innerHTML = html;
+  }
+
+  /* ---------- MISSION TEXT ---------- */
+  function missionText(){
+    var topic = $("topic") ? $("topic").value.trim() : "";
+    var aud = $("audience") ? $("audience").value : "";
+    var tf = $("timeframe") ? $("timeframe").value.trim() : "";
+    var reg = $("region") ? $("region").value.trim() : "";
+    var cons = $("constraints") ? $("constraints").value.trim() : "";
+    return "INVESTIGATION: " + (topic || "[investigation question]") + "\n" +
+           "AUDIENCE: " + (aud || "[audience]") + "\n" +
+           "TIMEFRAME / AS-OF: " + (tf || "[specify date/time; timezone]") + "\n" +
+           "GEOGRAPHIC SCOPE: " + (reg || "[specify scope]") + "\n" +
+           "CONSTRAINTS: " + (cons || "[specify constraints]") + "\n\n";
+  }
+
+  /* ---------- SHOW COMMAND ---------- */
+  function showCommand(name){
+    var c = byName(name);
+    if (!c) return;
+    selected = c.n;
+    if ($("cmdName")) $("cmdName").textContent = "/" + c.n;
+    if ($("cmdMeta")) $("cmdMeta").textContent = "Category: " + c.g + " · Command ID: CCL-1.1-" + c.n.toUpperCase();
+    if ($("definition")) $("definition").textContent = c.def;
+    if ($("useWhen")) $("useWhen").textContent = c.use;
+    if ($("validation")) $("validation").textContent = c.val;
+    if ($("limitations")) $("limitations").textContent = c.lim;
+    if ($("example")) $("example").textContent = c.ex;
+    if ($("aliases")){
+      var aliasHtml = "";
+      if (c.alias && c.alias.length){
+        for (var i=0;i<c.alias.length;i++){
+          aliasHtml += '<span class="pill">Alias ' + esc(c.alias[i]) + '</span>';
+        }
+      }
+      aliasHtml += '<span class="pill">User-defined prompt operator</span>';
+      $("aliases").innerHTML = aliasHtml;
+    }
+    if ($("promptEditor")) $("promptEditor").value = c.p;
+    renderList();
+  }
+
+  function fullPrompt(c){
+    return c.p + "\n\n" + missionText() +
+      "\nUse only available evidence and tools. State tool/access limitations. Distinguish verified facts, attributed claims, inference, and forecast. Do not reveal private chain-of-thought; provide concise reasons and a reproducible evidence trail.";
+  }
+
+  /* ---------- BUILD CHAIN ---------- */
+  function buildChain(){
+    if (!$("chainOutput")) return;
+    var topic = missionText();
+    if (!chain.length){
+      $("chainOutput").value = "";
+      if ($("chainCount")) $("chainCount").textContent = "0 steps";
+      if ($("chainChips")) $("chainChips").innerHTML = '<span class="muted">No commands added yet.</span>';
+      return;
+    }
+    if ($("chainCount")) $("chainCount").textContent = chain.length + " step" + (chain.length===1?"":"s");
+    if ($("chainChips")){
+      var chips = "";
+      for (var i=0;i<chain.length;i++){
+        chips += '<span class="chip">' + (i+1) + '. /' + esc(chain[i]) +
+                 '<button type="button" data-remove="' + i + '" aria-label="Remove ' + esc(chain[i]) + '">×</button></span>';
+      }
+      $("chainChips").innerHTML = chips;
+    }
+    var seq = "";
+    for (var j=0;j<chain.length;j++){
+      seq += (j+1) + ". " + byName(chain[j]).p + "\n\n";
+    }
+    $("chainOutput").value =
+      "AI COGNITIVE COMMAND CHAIN v1.1 — INVESTIGATIVE JOURNALISM / GEOPOLITICS\n\n" +
+      topic +
+      "MISSION RULES:\n" +
+      "- Treat this as a research workflow, not a guarantee of truth.\n" +
+      "- Never invent facts, citations, quotes, figures, source access, or calculations.\n" +
+      "- Label claims as verified, supported, disputed, contradicted, inference, or unverified.\n" +
+      "- Distinguish an official or belligerent's assertion from independent confirmation.\n" +
+      "- Trace syndicated/repeated claims to their origin; map source dependencies.\n" +
+      "- Include disconfirming evidence, relevant perspectives, and unresolved gaps.\n" +
+      "- For time-sensitive issues, state the as-of date/time and timezone; if live access is unavailable, say so.\n" +
+      "- Keep facts, analysis, forecasts, and recommendations distinct.\n" +
+      "- Protect vulnerable sources and avoid unnecessary personal or operationally harmful details.\n\n" +
+      "EXECUTION SEQUENCE:\n" +
+      seq +
+      "\nFINAL DELIVERABLE:\n" +
+      "1. Executive brief and as-of time.\n" +
+      "2. Claim/evidence ledger with source dates and status.\n" +
+      "3. What is known, alleged, disputed, inferred, and unknown.\n" +
+      "4. Competing explanations and strongest counterargument.\n" +
+      "5. Causal links and confidence limits.\n" +
+      "6. Implications and scenarios only if requested/justified.\n" +
+      "7. What to verify next, with observable indicators.\n" +
+      "8. Fact-lock issues and publication blockers.\n" +
+      "9. Explicit limitations, source gaps, and review triggers.\n\n" +
+      "Do not expose private chain-of-thought. Provide concise reasoning, evidence, assumptions, and reproducible calculations instead.";
+  }
+
+  function addToChain(n){
+    n = n || selected;
+    if (chain.indexOf(n) === -1) chain.push(n);
+    buildChain();
+  }
+
+  /* ---------- WORKFLOW MODES ---------- */
+  function loadMode(mode){
+    var modes = {
+      Quick:["Mission","Truth","SourceAudit","FactLock","Brief"],
+      Investigation:["Mission","Decompose","Freshness","SourceAudit","Triangulate","Truth","GapScan","PerspectiveAudit","SourceSafety","CausalMap","Steelman","Roast","Synthesis","FactLock","Critic","Brief"],
+      Geopolitics:["Mission","Freshness","SourceAudit","Triangulate","Truth","PerspectiveAudit","CausalMap","Alt3","Steelman","DevilsAdvocate","Predict","EarlyWarning","OODA","FactLock","Brief"],
+      Forecast:["Mission","Freshness","Truth","CausalMap","Alt3","BayesUpdate","Sensitivity","Predict","EarlyWarning","OODA","FactLock","Brief"]
+    };
+    var list = modes[mode] || [];
+    chain = list.slice();
+    buildChain();
+    if ($("chainStatus")) $("chainStatus").textContent = "Loaded " + mode + " workflow.";
+    var btns = document.querySelectorAll("[data-mode]");
+    for (var i=0;i<btns.length;i++){
+      if (btns[i].dataset.mode === mode){
+        btns[i].classList.add("primary");
+      } else {
+        btns[i].classList.remove("primary");
+      }
+    }
+  }
+
+  /* ---------- EVENT WIRING ---------- */
+  function wireEvents(){
+
+    var filtersEl = $("filters");
+    if (filtersEl){
+      filtersEl.addEventListener("click", function(e){
+        var b = e.target.closest("[data-group]");
+        if (!b) return;
+        activeGroup = b.dataset.group;
+        renderFilters();
+        renderList();
+      });
+    }
+
+    var listEl = $("commandList");
+    if (listEl){
+      listEl.addEventListener("click", function(e){
+        var b = e.target.closest("[data-cmd]");
+        if (b) showCommand(b.dataset.cmd);
+      });
+    }
+
+    var searchEl = $("search");
+    if (searchEl) searchEl.addEventListener("input", renderList);
+
+    var copyPromptBtn = $("copyPrompt");
+    if (copyPromptBtn) copyPromptBtn.addEventListener("click", function(){
+      var c = byName(selected);
+      var text = fullPrompt({ n:c.n, g:c.g, p: ($("promptEditor") ? $("promptEditor").value : c.p) });
+      copyText(text, $("copyStatus"), "Command prompt copied.");
+    });
+
+    var resetPromptBtn = $("resetPrompt");
+    if (resetPromptBtn) resetPromptBtn.addEventListener("click", function(){
+      if ($("promptEditor")) $("promptEditor").value = byName(selected).p;
+      if ($("copyStatus")) $("copyStatus").textContent = "Prompt reset.";
+    });
+
+    var addChainBtn = $("addChain");
+    if (addChainBtn) addChainBtn.addEventListener("click", function(){
+      addToChain();
+      if ($("chainStatus")) $("chainStatus").textContent = "Added /" + selected + " to the chain.";
+    });
+
+    var applyMissionBtn = $("applyMission");
+    if (applyMissionBtn) applyMissionBtn.addEventListener("click", function(){
+      buildChain();
+      if ($("missionStatus")) $("missionStatus").textContent = "Mission fields added to the generated chain prompt.";
+    });
+
+    var clearMissionBtn = $("clearMission");
+    if (clearMissionBtn) clearMissionBtn.addEventListener("click", function(){
+      var ids = ["topic","timeframe","region","constraints"];
+      for (var i=0;i<ids.length;i++){ if ($(ids[i])) $(ids[i]).value = ""; }
+      if ($("audience")) $("audience").selectedIndex = 0;
+      buildChain();
+      if ($("missionStatus")) $("missionStatus").textContent = "Mission fields cleared.";
+    });
+
+    var chipsEl = $("chainChips");
+    if (chipsEl){
+      chipsEl.addEventListener("click", function(e){
+        var b = e.target.closest("[data-remove]");
+        if (!b) return;
+        chain.splice(Number(b.dataset.remove), 1);
+        buildChain();
+      });
+    }
+
+    var modeBtns = document.querySelectorAll("[data-mode]");
+    for (var m=0;m<modeBtns.length;m++){
+      (function(btn){
+        btn.addEventListener("click", function(){ loadMode(btn.dataset.mode); });
+      })(modeBtns[m]);
+    }
+
+    var clearChainBtn = $("clearChain");
+    if (clearChainBtn) clearChainBtn.addEventListener("click", function(){
+      chain = [];
+      buildChain();
+      var btns = document.querySelectorAll("[data-mode]");
+      for (var i=0;i<btns.length;i++) btns[i].classList.remove("primary");
+      if ($("chainStatus")) $("chainStatus").textContent = "Chain cleared.";
+    });
+
+    var copyChainBtn = $("copyChain");
+    if (copyChainBtn) copyChainBtn.addEventListener("click", function(){
+      var text = $("chainOutput") ? $("chainOutput").value : "";
+      copyText(text, $("chainStatus"), "Chain prompt copied.");
+    });
+
+    var sendChainBtn = $("sendChain");
+    if (sendChainBtn) sendChainBtn.addEventListener("click", function(){
+      var text = $("chainOutput") ? $("chainOutput").value : "";
+      if (!text.trim()){
+        if ($("chainStatus")) $("chainStatus").textContent = "Build or load a chain first.";
+        return;
+      }
+      copyText(text, null, "").then(function(){
+        if ($("chainOutput")){ $("chainOutput").focus(); $("chainOutput").select(); }
+        if ($("chainStatus")) $("chainStatus").textContent = "Chain copied and selected. Paste into your AI model (Ctrl/Cmd+V).";
+      });
+    });
+
+    var exportTxtBtn = $("exportTxt");
+    if (exportTxtBtn) exportTxtBtn.addEventListener("click", function(){
+      var text = $("chainOutput") ? $("chainOutput").value : "";
+      try {
+        var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "ai-cognitive-command-chain-v1.1.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        if ($("chainStatus")) $("chainStatus").textContent = "Text export prepared.";
+      } catch(e){
+        if ($("chainStatus")) $("chainStatus").textContent = "Export unavailable in this environment.";
+      }
+    });
+
+    var runPromptBtn = $("runPrompt");
+    if (runPromptBtn) runPromptBtn.addEventListener("click", function(){
+      var c = byName(selected);
+      var text = fullPrompt({ n:c.n, g:c.g, p: ($("promptEditor") ? $("promptEditor").value : c.p) });
+      copyText(text, null, "").then(function(){
+        if ($("promptEditor")){ $("promptEditor").focus(); $("promptEditor").select(); }
+        if ($("copyStatus")) $("copyStatus").textContent = "Prompt copied and selected. Paste into your chosen AI model.";
+      });
+    });
+  }
+
+  /* ---------- BOOT ---------- */
+  function boot(){
+    try { renderFilters(); } catch(e){ if (window.console) console.error("renderFilters failed", e); }
+    try { showCommand("Truth"); } catch(e){ if (window.console) console.error("showCommand failed", e); }
+    try { wireEvents(); } catch(e){ if (window.console) console.error("wireEvents failed", e); }
+    try { loadMode("Investigation"); } catch(e){ if (window.console) console.error("loadMode failed", e); }
+  }
+
+  if (document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>
