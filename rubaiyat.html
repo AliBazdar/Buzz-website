@@ -13,6 +13,203 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Temporary inline styles: move these into css/style.css -->
+  <style>
+    /* ---------- Base ---------- */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #faf8f4;
+    }
+
+    a { color: #6b4f2a; }
+    a:hover { text-decoration: underline; }
+
+    /* ---------- Navigation ---------- */
+    .site-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: #2b2118;
+      color: #f5efe6;
+    }
+
+    .site-nav .logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #f5efe6;
+      text-decoration: none;
+      margin-right: auto;
+    }
+
+    .site-nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .site-nav ul a {
+      color: #f5efe6;
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .site-nav ul a:hover,
+    .site-nav ul a[aria-current="page"] {
+      background: #6b4f2a;
+    }
+
+    #theme-toggle {
+      background: transparent;
+      border: 1px solid #f5efe6;
+      color: #f5efe6;
+      border-radius: 4px;
+      padding: 0.25rem 0.6rem;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    #theme-toggle:hover { background: #6b4f2a; }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      padding: 2.5rem 1.5rem;
+      background: #f0e6d6;
+      text-align: center;
+      border-bottom: 1px solid #e0d3bd;
+    }
+
+    .hero h1 { margin: 0 0 0.5rem; font-size: 2rem; }
+    .hero p  { margin: 0; color: #4a3a28; }
+
+    /* ---------- Main ---------- */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    section { margin-bottom: 2.5rem; }
+
+    h2 {
+      border-bottom: 2px solid #e0d3bd;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ---------- Filters (FIXED DROPDOWN FORMATTING) ---------- */
+    .rubaiyat-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: flex-end;
+    }
+
+    .rubaiyat-filters label {
+      display: flex;
+      flex-direction: column;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #4a3a28;
+      gap: 0.35rem;
+    }
+
+    .rubaiyat-filters select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding: 0.5rem 2rem 0.5rem 0.75rem;
+      font-size: 1rem;
+      font-family: inherit;
+      color: #1a1a1a;
+      background-color: #fff;
+      border: 1px solid #c9b79c;
+      border-radius: 6px;
+      cursor: pointer;
+      min-width: 180px;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b4f2a' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 12px 8px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .rubaiyat-filters select:hover { border-color: #6b4f2a; }
+
+    .rubaiyat-filters select:focus {
+      outline: none;
+      border-color: #6b4f2a;
+      box-shadow: 0 0 0 3px rgba(107, 79, 42, 0.2);
+    }
+
+    /* ---------- Rubaiyat entries ---------- */
+    .rubaiyat-entry {
+      background: #fff;
+      border: 1px solid #e0d3bd;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .rubaiyat-entry h3 { margin-top: 0; }
+
+    .rubaiyat-entry .meta {
+      font-size: 0.85rem;
+      color: #6b4f2a;
+      margin-top: -0.5rem;
+    }
+
+    .rubaiyat-entry h4 {
+      margin-bottom: 0.3rem;
+      font-size: 1rem;
+      color: #4a3a28;
+    }
+
+    .translation {
+      border-left: 3px solid #e0d3bd;
+      padding-left: 0.75rem;
+      margin: 0.75rem 0;
+    }
+
+    .translation h5 {
+      margin: 0 0 0.25rem;
+      font-size: 0.9rem;
+      color: #6b4f2a;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: #2b2118;
+      color: #f5efe6;
+      font-size: 0.9rem;
+    }
+
+    /* ---------- Dark mode (optional, activates with JS) ---------- */
+    body.dark-mode {
+      background: #1a1410;
+      color: #e8e0d4;
+    }
+    body.dark-mode .site-nav,
+    body.dark-mode footer { background: #0f0b08; }
+    body.dark-mode .hero { background: #2b2118; color: #e8e0d4; }
+    body.dark-mode .rubaiyat-entry { background: #241c15; border-color: #3a2e22; }
+    body.dark-mode .rubaiyat-filters select { background-color: #241c15; color: #e8e0d4; border-color: #3a2e22; }
+  </style>
 </head>
 
 <body class="rubaiyat-archive">
@@ -27,7 +224,6 @@
         <li><a href="Website-audit.html">Website Audit</a></li>
       </ul>
 
-      <!-- Dark mode button (inactive until JS is added) -->
       <button id="theme-toggle" aria-label="Toggle dark mode">
         <span aria-hidden="true">☾</span>
       </button>
@@ -57,10 +253,10 @@
     <!-- Filters -->
     <section id="filters">
       <h2>Browse by Category</h2>
-      <form class="rubaiyat-filters">
-        <label>
+      <form class="rubaiyat-filters" onsubmit="return false;">
+        <label for="filter-theme">
           Theme:
-          <select name="theme">
+          <select id="filter-theme" name="theme">
             <option value="all">All</option>
             <option value="wine">Wine</option>
             <option value="fate">Fate</option>
@@ -69,9 +265,9 @@
           </select>
         </label>
 
-        <label>
+        <label for="filter-authenticity">
           Authenticity:
-          <select name="authenticity">
+          <select id="filter-authenticity" name="authenticity">
             <option value="all">All</option>
             <option value="core">Core Khayyam</option>
             <option value="disputed">Disputed</option>
@@ -141,7 +337,7 @@
 
     <!-- Technical notes -->
     <section id="technical-notes">
-      <h2>Archival & Versioning Notes</h2>
+      <h2>Archival &amp; Versioning Notes</h2>
       <p>
         This Rubaiyat archive is maintained as Markdown source in the Buzz Codex,
         then rendered to HTML for public access via GitHub Pages.
@@ -157,6 +353,20 @@
   <footer>
     <p>&copy; 2026 Buzz Codex · Rubaiyat Archive</p>
   </footer>
+
+  <script>
+    // Working dark-mode toggle (previously the button was inert)
+    (function () {
+      var toggle = document.getElementById('theme-toggle');
+      if (!toggle) return;
+      toggle.addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+        var isDark = document.body.classList.contains('dark-mode');
+        toggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Toggle dark mode');
+        toggle.querySelector('span').textContent = isDark ? '☀' : '☾';
+      });
+    })();
+  </script>
 
 </body>
 </html>
