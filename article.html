@@ -1,755 +1,680 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Celestia — Your Zodiac Guide</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            serif: ['Playfair Display', 'serif'],
-          },
-          colors: {
-            brand: {
-              black: '#080808',
-              red: '#C41E3A',
-              cream: '#F7F4EB',
-              gold: '#D4A853',
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    * { -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Inter', sans-serif; background: #080808; color: #F7F4EB; overflow-x: hidden; }
-
-    .stars-bg {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8), transparent),
-        radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.6), transparent),
-        radial-gradient(1.5px 1.5px at 40% 15%, rgba(212,168,83,0.9), transparent),
-        radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.5), transparent),
-        radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.7), transparent),
-        radial-gradient(1.5px 1.5px at 85% 55%, rgba(212,168,83,0.7), transparent),
-        radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.4), transparent),
-        radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.6), transparent),
-        radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.5), transparent),
-        radial-gradient(1px 1px at 35% 60%, rgba(255,255,255,0.3), transparent),
-        radial-gradient(1.2px 1.2px at 50% 40%, rgba(212,168,83,0.5), transparent),
-        radial-gradient(1px 1px at 78% 85%, rgba(255,255,255,0.4), transparent),
-        radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,0.6), transparent),
-        radial-gradient(1px 1px at 95% 75%, rgba(255,255,255,0.3), transparent),
-        radial-gradient(1.3px 1.3px at 45% 5%, rgba(212,168,83,0.6), transparent);
-    }
-
-    .reveal-on-scroll {
-      opacity: 0; transform: translateY(30px);
-      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .reveal-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
-
-    @keyframes slowSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .zodiac-ring { animation: slowSpin 90s linear infinite; }
-    .zodiac-ring-reverse { animation: slowSpin 120s linear infinite reverse; }
-
-    @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 20px rgba(212,168,83,0.2), 0 0 40px rgba(196,30,58,0.1); }
-      50% { box-shadow: 0 0 30px rgba(212,168,83,0.4), 0 0 60px rgba(196,30,58,0.2); }
-    }
-    .glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
-    }
-    .float-anim { animation: float 4s ease-in-out infinite; }
-
-    @keyframes shimmer {
-      0% { background-position: -200% center; }
-      100% { background-position: 200% center; }
-    }
-    .text-shimmer {
-      background: linear-gradient(90deg, #D4A853 0%, #F7F4EB 25%, #D4A853 50%, #C41E3A 75%, #D4A853 100%);
-      background-size: 200% auto;
-      -webkit-background-clip: text; background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shimmer 6s linear infinite;
-    }
-
-    .zodiac-scroll {
-      display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 0 20px;
-    }
-    .zodiac-scroll::-webkit-scrollbar { display: none; }
-    .zodiac-scroll > * { scroll-snap-align: center; flex-shrink: 0; }
-
-    .sign-card {
-      transition: all 0.3s ease;
-      border: 1px solid rgba(212,168,83,0.15);
-      cursor: pointer;
-    }
-    .sign-card.active { border-color: rgba(212,168,83,0.6); background: rgba(212,168,83,0.08); }
-    .sign-card:active { transform: scale(0.96); }
-
-    .tab-btn {
-      position: relative;
-      transition: color 0.3s ease;
-      cursor: pointer;
-      background: none;
-      border: none;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #94a3b8;
-    }
-    .tab-btn.active { color: #D4A853; }
-    .tab-btn.active::after {
-      content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
-      width: 20px; height: 2px; background: #D4A853; border-radius: 1px;
-    }
-
-    .trait-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.08); overflow: hidden; }
-    .trait-bar-fill { height: 100%; border-radius: 2px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      15% { transform: scale(1.15); }
-      30% { transform: scale(1); }
-      45% { transform: scale(1.1); }
-    }
-    .heartbeat { animation: heartbeat 2s ease-in-out infinite; }
-
-    .mobile-nav { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-
-    .safe-top { padding-top: env(safe-area-inset-top, 0px); }
-    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
-
-    .toast {
-      position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px);
-      opacity: 0; transition: all 0.4s ease; z-index: 100; pointer-events: none;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    .compat-heart { color: #D4A853; }
-    .compat-heart.empty { color: #334155; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Mobile-friendly AI briefing prompt builder — pick a date, subject, depth, geography, perspective and output format, then copy the prompt and tags into any AI model.">
+<title>Briefing Prompt Studio — AI Briefing Prompt Builder</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --bg:#f7f6f3; --glass:rgba(247,246,243,.85); --card:#ffffff; --text:#25231d;
+    --muted:#6e6b60; --border:#e3e1d8; --input-border:#d3d1c6; --accent:#eceae2;
+    --primary:#047857; --primary-fg:#ffffff; --ring:rgba(4,120,87,.30);
+    --shadow:0 1px 2px rgba(0,0,0,.06); --radius:12px; color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#191816; --glass:rgba(25,24,22,.82); --card:#22211e; --text:#f2f1ec;
+    --muted:#a5a296; --border:#393733; --input-border:#47453e; --accent:#2c2a26;
+    --primary:#10b981; --primary-fg:#08130e; --ring:rgba(16,185,129,.35);
+    --shadow:0 1px 2px rgba(0,0,0,.45); color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#191816; --glass:rgba(25,24,22,.82); --card:#22211e; --text:#f2f1ec;
+    --muted:#a5a296; --border:#393733; --input-border:#47453e; --accent:#2c2a26;
+    --primary:#10b981; --primary-fg:#08130e; --ring:rgba(16,185,129,.35);
+    --shadow:0 1px 2px rgba(0,0,0,.45); color-scheme:dark;
+  }
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;display:flex;flex-direction:column}
+  /* ---------- top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:30;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:var(--glass);border-bottom:1px solid var(--border)}
+  .topbar-inner{max-width:1080px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .logo{width:40px;height:40px;flex:none;border-radius:10px;background:var(--primary);color:var(--primary-fg);display:grid;place-items:center}
+  .brand-name{margin:0;font-size:16px;font-weight:700;letter-spacing:-.01em}
+  .tagline{margin:0;font-size:12px;color:var(--muted)}
+  @media (max-width:480px){.tagline{display:none}}
+  .icon-btn{width:44px;height:44px;flex:none;display:grid;place-items:center;border:0;border-radius:10px;background:transparent;color:var(--text);cursor:pointer}
+  .icon-btn:hover{background:var(--accent)}
+  /* ---------- layout ---------- */
+  main{flex:1;width:100%;max-width:1080px;margin:0 auto;padding:22px 16px 34px}
+  .hero h2{margin:0 0 6px;font-size:clamp(22px,4.5vw,30px);font-weight:800;letter-spacing:-.02em}
+  .hero p{margin:0 0 22px;max-width:640px;font-size:14.5px;color:var(--muted)}
+  @media (min-width:640px){.hero p{font-size:15.5px}}
+  .grid{display:grid;gap:20px}
+  @media (min-width:1024px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:start}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card-pad{padding:20px}
+  .card-title{margin:0 0 2px;font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .card-title svg{color:var(--primary);flex:none}
+  .card-sub{margin:0 0 18px;font-size:13px;color:var(--muted)}
+  /* ---------- fields ---------- */
+  .field{display:block;margin-bottom:16px;font-size:13.5px;font-weight:600}
+  .field > span{display:block;margin-bottom:6px}
+  select,input[type="date"],input[type="text"]{width:100%;height:44px;margin-top:2px;padding:0 12px;font-family:inherit;font-size:15px;font-weight:400;color:var(--text);background:var(--card);border:1px solid var(--input-border);border-radius:10px;outline:none;transition:border-color .15s, box-shadow .15s}
+  select:focus,input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)}
+  .opts{display:grid;gap:0 16px;margin-bottom:16px}
+  @media (min-width:640px){.opts{grid-template-columns:1fr 1fr}}
+  .full{grid-column:1/-1}
+  .foot-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;border-top:1px solid var(--border);padding-top:16px;margin-top:2px}
+  .switch{display:flex;align-items:flex-start;gap:12px;flex:1;min-width:210px;cursor:pointer;font-size:14px;font-weight:600}
+  .switch input{appearance:none;-webkit-appearance:none;width:44px;height:26px;flex:none;margin:1px 0 0;border-radius:999px;background:var(--input-border);border:1px solid var(--input-border);position:relative;cursor:pointer;transition:background .18s}
+  .switch input::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .18s}
+  .switch input:checked{background:var(--primary);border-color:var(--primary)}
+  .switch input:checked::after{transform:translateX(18px)}
+  .switch small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+  .btn{height:44px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;border:1px solid var(--input-border);background:var(--card);color:var(--text);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:filter .15s, background .15s}
+  .btn:hover{background:var(--accent)}
+  .btn-primary{background:var(--primary);border-color:var(--primary);color:var(--primary-fg)}
+  .btn-primary:hover{background:var(--primary);filter:brightness(1.08)}
+  .btn-block{width:100%}
+  /* ---------- output ---------- */
+  .tabs{display:flex;gap:2px;background:var(--accent);border-radius:10px;padding:3px;margin:16px 0 14px}
+  .tab{flex:1;height:40px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+  .tab.active{background:var(--card);color:var(--text);box-shadow:var(--shadow)}
+  .tab .count{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;background:var(--primary);color:var(--primary-fg);font-size:11.5px;font-weight:700}
+  .tip{margin:0 0 10px;padding:9px 12px;border:1px solid rgba(180,120,20,.45);background:rgba(217,155,50,.12);border-radius:10px;font-size:13px;color:#8a5a10}
+  :root[data-theme="dark"] .tip,.dark-auto .tip{color:#f0b95e}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tip{color:#f0b95e}}
+  .tip code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
+  #promptOut{width:100%;min-height:300px;max-height:460px;resize:vertical;padding:14px;font:12.5px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--text);background:var(--accent);border:1px solid var(--border);border-radius:10px;outline:none}
+  #promptOut:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)}
+  .out-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+  .stats{font-size:12px;color:var(--muted)}
+  .tags-box{display:flex;flex-wrap:wrap;gap:8px;padding:16px;background:var(--accent);border:1px solid var(--border);border-radius:10px}
+  .tag{font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:8px 10px;border-radius:999px;background:var(--card);border:1px solid var(--border)}
+  .tags-note{margin:12px 0;font-size:13px;color:var(--muted)}
+  .paste-into{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--border);margin-top:18px;padding-top:16px}
+  .paste-label{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .paste-links{display:flex;flex-wrap:wrap;gap:8px}
+  .paste-links a{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:1px solid var(--input-border);border-radius:9px;font-size:12.5px;font-weight:600;color:var(--text);text-decoration:none;background:var(--card)}
+  .paste-links a:hover{background:var(--accent)}
+  /* ---------- footer / toast ---------- */
+  footer{border-top:1px solid var(--border);background:var(--accent);padding:18px 16px calc(18px + env(safe-area-inset-bottom));text-align:center;font-size:12px;color:var(--muted);margin-top:auto}
+  #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);z-index:50;max-width:90vw;padding:12px 18px;border-radius:10px;background:var(--text);color:var(--bg);font-size:14px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .22s,transform .22s}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  [hidden]{display:none !important}
+</style>
 </head>
-<body class="safe-top safe-bottom">
+<body>
 
-  <div class="stars-bg"></div>
-
-  <div id="toast" class="toast">
-    <div class="bg-brand-gold/90 text-brand-black text-xs font-bold px-4 py-2 rounded-full shadow-lg">
-      <span id="toast-msg">Sign selected!</span>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+      </div>
+      <div>
+        <p class="brand-name">Briefing Prompt Studio</p>
+        <p class="tagline">Date · Subject · Depth → AI-ready prompt</p>
+      </div>
     </div>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">
+      <svg id="iconMoon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      <svg id="iconSun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
   </div>
+</header>
 
-  <header class="fixed top-0 left-0 right-0 z-50 mobile-nav bg-brand-black/80 border-b border-white/5">
-    <div class="flex items-center justify-between px-5 h-14">
-      <div class="flex items-center gap-2">
-        <div class="w-7 h-7 rounded-full border border-brand-gold/40 flex items-center justify-center">
-          <span class="text-brand-gold text-xs">✦</span>
-        </div>
-        <span class="font-serif text-base font-semibold tracking-wide">Celestia</span>
+<main>
+  <section class="hero">
+    <h2>AI Briefing Prompt Builder</h2>
+    <p>Build a professional analyst briefing in seconds. Pick a date from the calendar, choose a subject, set the depth, geography, perspective and output format — then copy the finished prompt and tags into ChatGPT, Claude, Gemini or any other AI model.</p>
+  </section>
+
+  <div class="grid">
+    <!-- ============ CONFIGURATION ============ -->
+    <section class="card card-pad" aria-label="Briefing configuration">
+      <h3 class="card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/></svg>
+        1 · Configure your briefing
+      </h3>
+      <p class="card-sub">Every dropdown updates the final prompt instantly.</p>
+
+      <label class="field"><span>Subject</span>
+        <select id="subject" aria-label="Briefing subject"></select>
+      </label>
+
+      <div id="topicWrap" hidden>
+        <label class="field"><span>Your topic</span>
+          <input type="text" id="topic" placeholder="e.g. Global semiconductor supply chain" autocomplete="off">
+        </label>
       </div>
-      <div class="flex items-center gap-3">
-        <button id="searchBtn" class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:border-brand-gold/40 transition-colors">
-          <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+
+      <label class="field"><span>Briefing date</span>
+        <input type="date" id="date" aria-label="Briefing date (dropdown calendar)">
+      </label>
+
+      <div class="opts">
+        <label class="field"><span>Depth level</span>
+          <select id="depth" aria-label="Depth level"></select>
+        </label>
+        <label class="field"><span>Time horizon</span>
+          <select id="horizon" aria-label="Time horizon"></select>
+        </label>
+        <label class="field"><span id="geoLabel">Geographic focus</span>
+          <select id="geo" aria-label="Geographic focus"></select>
+        </label>
+        <label class="field"><span>Perspective</span>
+          <select id="perspective" aria-label="Perspective"></select>
+        </label>
+        <label class="field full"><span>Output format</span>
+          <select id="format" aria-label="Output format"></select>
+        </label>
+      </div>
+
+      <div id="geoCustomWrap" hidden>
+        <label class="field"><span>Custom region</span>
+          <input type="text" id="geoCustom" placeholder="e.g. Balkans, Sahel, Arctic, Benelux…" autocomplete="off">
+        </label>
+      </div>
+      <div id="narrowCustomWrap" hidden>
+        <label class="field"><span>Custom sub-region</span>
+          <input type="text" id="narrowCustom" placeholder="e.g. Persian Gulf maritime security…" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="foot-row">
+        <label class="switch">
+          <input type="checkbox" id="includeTags" aria-label="Append hashtags to the prompt">
+          <span>Append hashtags to the prompt
+            <small>Embeds the tags at the end of the prompt</small>
+          </span>
+        </label>
+        <button class="btn" id="resetBtn" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset all
         </button>
-        <button id="profileBtn" class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-gold/30 to-brand-red/30 border border-brand-gold/20 flex items-center justify-center">
-          <i data-lucide="user" class="w-4 h-4 text-brand-gold"></i>
+      </div>
+    </section>
+
+    <!-- ============ OUTPUT ============ -->
+    <section class="card card-pad" aria-label="Generated output">
+      <h3 class="card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        Your output — copy &amp; paste into any AI model
+      </h3>
+      <p class="card-sub">The prompt updates live as you change the dropdowns. Copy it, or copy the tags separately for your notes and content planner.</p>
+
+      <div class="tabs" role="tablist" aria-label="Output tabs">
+        <button class="tab active" id="tabPrompt" role="tab" aria-selected="true" aria-controls="panelPrompt" type="button">Final Prompt</button>
+        <button class="tab" id="tabTags" role="tab" aria-selected="false" aria-controls="panelTags" type="button">Tags <span class="count" id="tagCount">0</span></button>
+      </div>
+
+      <div id="panelPrompt" role="tabpanel" aria-label="Final prompt">
+        <p class="tip" id="topicTip" hidden>Tip: type a topic above — it replaces <code>[User-entered topic]</code> in the prompt below.</p>
+        <textarea id="promptOut" readonly aria-label="Generated AI briefing prompt" spellcheck="false"></textarea>
+        <div class="out-row">
+          <span class="stats" id="stats"></span>
+          <button class="btn btn-primary" id="copyPromptBtn" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Copy Prompt
+          </button>
+        </div>
+      </div>
+
+      <div id="panelTags" role="tabpanel" aria-label="Generated hashtags" hidden>
+        <div class="tags-box" id="tagsBox"></div>
+        <p class="tags-note">Use these hashtags in your notes, briefing archive, or paste them after the prompt so any AI model can classify and index the output.</p>
+        <button class="btn btn-block" id="copyTagsBtn" type="button" style="max-width:240px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+          Copy Tags
         </button>
       </div>
-    </div>
-  </header>
 
-  <section class="relative min-h-[85vh] flex flex-col items-center justify-center pt-14 px-5 overflow-hidden">
-    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div class="zodiac-ring w-[300px] h-[300px] md:w-[500px] md:h-[500px] rounded-full border border-brand-gold/10"></div>
-    </div>
-    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div class="zodiac-ring-reverse w-[220px] h-[220px] md:w-[380px] md:h-[380px] rounded-full border border-white/5"></div>
-    </div>
-
-    <div class="relative z-10 mb-6 float-anim">
-      <div class="w-24 h-24 rounded-full bg-gradient-to-br from-brand-gold/20 to-brand-red/10 border border-brand-gold/30 flex items-center justify-center glow-pulse">
-        <span id="heroSymbol" class="text-4xl">♈</span>
+      <div class="paste-into">
+        <span class="paste-label">Then paste it into</span>
+        <nav class="paste-links" aria-label="Open AI chat tools">
+          <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT ↗</a>
+          <a href="https://claude.ai/new" target="_blank" rel="noopener noreferrer">Claude ↗</a>
+          <a href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer">Gemini ↗</a>
+          <a href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer">Perplexity ↗</a>
+        </nav>
       </div>
-    </div>
+    </section>
+  </div>
+</main>
 
-    <p class="relative z-10 text-[10px] font-bold uppercase tracking-[0.25em] text-brand-gold/70 mb-3">
-      <span id="heroDate">Mar 21 – Apr 19</span>
-    </p>
-    <h1 class="relative z-10 font-serif text-4xl md:text-6xl font-bold tracking-tight text-center leading-[1.05] mb-4">
-      <span id="heroName" class="text-shimmer">Aries</span>
-    </h1>
-    <p class="relative z-10 text-sm text-slate-400 text-center max-w-xs leading-relaxed mb-8">
-      <span id="heroDesc">The bold trailblazer. Fearless, energetic, and always ready to ignite the next adventure.</span>
-    </p>
+<footer>
+  Briefing Prompt Studio — a mobile-first, single-file prompt builder. Your settings are saved on this device only. Works with ChatGPT, Claude, Gemini, Perplexity and any other AI model.
+</footer>
 
-    <div class="relative z-10 flex gap-3">
-      <button onclick="scrollToSection('horoscope')" class="bg-brand-gold text-brand-black text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full hover:bg-brand-cream transition-colors">
-        Read Horoscope
-      </button>
-      <button onclick="scrollToSection('compatibility')" class="border border-white/15 text-brand-cream text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full hover:border-brand-gold/40 transition-colors">
-        Compatibility
-      </button>
-    </div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+/* =====================================================================
+   DATA — subjects (templates verbatim) + option sets
+===================================================================== */
+var SUBJECTS = [
+  { value:"politics", label:"Politics", tag:"Politics",
+    hint:"Global & regional politics, elections, legislation, power shifts",
+    template:"You are a senior political analyst and researcher with deep expertise in global and regional politics.\n\nProduce a [Depth Level] daily political briefing covering the [Time Horizon].\n\nFocus areas:\n- Major political developments, elections, legislation, and power shifts\n- Key statements and actions by political leaders and parties\n- Diplomatic tensions, alliances, and international reactions\n- Domestic policy changes with significant impact\n- Emerging risks and opportunities\n\nGeographic focus: [Geographic Focus]\nPerspective: [Perspective]\nOutput format: [Output Format]\n\nStructure your response with clear sections, prioritize verifiable facts, highlight what changed most significantly in the selected period, and flag important open questions. Cite major sources where relevant." },
+  { value:"economy", label:"Economy", tag:"Economy",
+    hint:"Macro data, central banks, fiscal policy, trade, commodities",
+    template:"You are a senior macroeconomic researcher and policy analyst.\n\nProduce a [Depth Level] economic briefing for the [Time Horizon].\n\nCover:\n- Key macroeconomic data releases (GDP, inflation, employment, PMI, etc.)\n- Central bank decisions, statements, and market expectations\n- Fiscal policy developments and government spending/taxation news\n- Trade, supply chain, and commodity-related updates\n- Notable risks to growth, inflation, or financial stability\n\nGeographic focus: [Geographic Focus]\nPerspective: [Perspective]\nOutput format: [Output Format]\n\nEmphasize data-driven insights, quantify impacts where possible, and clearly separate confirmed facts from market interpretation." },
+  { value:"tech", label:"AI & Technology", tag:"AIAndTech",
+    hint:"Models, product launches, regulation, chips, infrastructure",
+    template:"You are a senior technology and AI industry researcher.\n\nProduce a [Depth Level] briefing on AI and technology developments for the [Time Horizon].\n\nFocus on:\n- Major model releases, research breakthroughs, and product launches\n- Corporate strategy moves (funding, partnerships, acquisitions, regulatory filings)\n- Policy and regulatory developments affecting AI and tech\n- Infrastructure (chips, data centers, energy) and supply-chain news\n- Notable debates, safety concerns, and competitive shifts\n\nGeographic focus: [Geographic Focus]\nPerspective: [Perspective]\nOutput format: [Output Format]\n\nPrioritize signal over noise. Highlight what is genuinely new versus incremental. Note implications for businesses, researchers, and policymakers." },
+  { value:"stocks", label:"Stock Investment", tag:"Stocks",
+    hint:"Indices, earnings, M&A, sentiment, equity risk factors",
+    template:"You are a professional equity research analyst.\n\nProduce a [Depth Level] stock market and investment briefing for the [Time Horizon].\n\nCover:\n- Major index and sector performance with key drivers\n- Significant earnings releases, guidance changes, and management commentary\n- Notable M&A, capital markets activity, and activist moves\n- Macro and policy catalysts affecting equities\n- Sentiment shifts, positioning data, and risk factors\n\nGeographic focus: [Geographic Focus]\nPerspective: [Perspective]\nOutput format: [Output Format]\n\nBe precise with numbers, avoid hype, and clearly distinguish between price action, fundamentals, and narrative. Flag high-conviction themes and under-appreciated risks." },
+  { value:"mideast", label:"Middle East", tag:"MiddleEast",
+    hint:"Regional security, diplomacy, energy, escalation risks",
+    template:"You are a senior Middle East political and security analyst.\n\nProduce a [Depth Level] regional briefing for the [Time Horizon].\n\nFocus on:\n- Military, diplomatic, and political developments across the region\n- Key state and non-state actor actions and statements\n- Energy market implications and economic developments\n- International involvement and mediation efforts\n- Humanitarian, security, and escalation risks\n\nGeographic focus: [Geographic Focus]\nPerspective: [Perspective]\nOutput format: [Output Format]\n\nMaintain analytical neutrality, prioritize verified information, and clearly separate facts from competing narratives. Highlight potential second-order effects." },
+  { value:"custom", label:"User Define", tag:"Custom",
+    hint:"Any topic you choose — type it below",
+    template:"You are a senior researcher and analyst specializing in [User-entered topic].\n\nProduce a [Depth Level] research briefing on [User-entered topic] covering the [Time Horizon].\n\nYour briefing should include:\n- Most important developments and announcements\n- Key actors, organizations, and decision-makers involved\n- Underlying drivers and context\n- Implications, risks, and opportunities\n- Open questions and areas to monitor\n\nGeographic focus: [Geographic Focus]\nPerspective: [Perspective]\nOutput format: [Output Format]\n\nBe rigorous, evidence-based, and structured. Avoid speculation presented as fact." }
+];
 
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
-      <span class="text-[9px] uppercase tracking-[0.2em]">Scroll</span>
-      <div class="w-px h-6 bg-gradient-to-b from-white/40 to-transparent"></div>
-    </div>
-  </section>
+var DEPTHS = [
+  { value:"quick",     label:"Quick Scan (~400 words, top 5 items)",           prompt:"Quick Scan — concise, roughly 400 words, covering only the 5 most significant items", tag:"QuickScan" },
+  { value:"standard",  label:"Standard Briefing (~800–1,200 words)",           prompt:"Standard Briefing — roughly 800–1,200 words organized in clear sections", tag:"StandardBrief" },
+  { value:"deep",      label:"In-Depth Analysis (~1,500–2,500 words)",         prompt:"In-Depth Analysis — roughly 1,500–2,500 words with background context, analysis, and implications", tag:"DeepDive" },
+  { value:"executive", label:"Executive Deep-Dive (3,000+ words)",             prompt:"Executive Deep-Dive — 3,000+ words, exhaustive and decision-ready, written for senior leadership", tag:"ExecutiveBrief" },
+  { value:"digest",    label:"Ultra-Condensed Digest (bullets only, 1 page)",  prompt:"Ultra-Condensed Digest — bullet points only, maximum one page, no prose", tag:"Digest" }
+];
 
-  <section class="relative z-10 py-8">
-    <div class="px-5 mb-5">
-      <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Choose Your Sign</p>
-      <h2 class="font-serif text-xl font-semibold">The Zodiac Wheel</h2>
-    </div>
-    <div class="zodiac-scroll" id="zodiacScroll"></div>
-  </section>
+var HORIZONS = [
+  { value:"day",     label:"Selected day only (24h)",     tag:"DailyBrief" },
+  { value:"48h",     label:"Rolling 48 hours",            tag:"48HourBrief" },
+  { value:"7d",      label:"Past 7 days",                 tag:"WeeklyBrief" },
+  { value:"14d",     label:"Past 14 days",                tag:"Fortnightly" },
+  { value:"30d",     label:"Past 30 days",                tag:"MonthlyBrief" },
+  { value:"90d",     label:"Past 90 days",                tag:"QuarterlyBrief" },
+  { value:"ytd",     label:"Year-to-date",                tag:"YearToDate" },
+  { value:"7dahead", label:"Past 7 days + 7-day outlook", tag:"WeeklyOutlook" }
+];
 
-  <section id="horoscope" class="relative z-10 px-5 py-10 reveal-on-scroll">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Today's Reading</p>
-        <h2 class="font-serif text-xl font-semibold">Daily Horoscope</h2>
-      </div>
-      <div class="text-right">
-        <p class="text-[10px] text-slate-500 uppercase tracking-wider" id="todayDate"></p>
-        <div class="flex items-center gap-1 mt-1 justify-end">
-          <span class="text-brand-gold text-xs">★★★</span><span class="text-slate-600 text-xs">★★</span>
-        </div>
-      </div>
-    </div>
+var GEOS = [
+  { value:"global",     label:"Global (worldwide)",                 prompt:"Global — worldwide coverage, prioritizing the most consequential stories", tag:"Global" },
+  { value:"us",         label:"United States",                      prompt:"United States", tag:"US" },
+  { value:"americas",   label:"The Americas (North & South)",       prompt:"The Americas — North, Central, and South America", tag:"Americas" },
+  { value:"europe",     label:"Europe (EU, UK & wider Europe)",     prompt:"Europe — the EU, UK, and wider European region", tag:"Europe" },
+  { value:"mena",       label:"Middle East & North Africa",         prompt:"Middle East and North Africa (MENA)", tag:"MENA" },
+  { value:"subsaharan", label:"Sub-Saharan Africa",                 prompt:"Sub-Saharan Africa", tag:"Africa" },
+  { value:"apac",       label:"Asia-Pacific",                       prompt:"Asia-Pacific region", tag:"APAC" },
+  { value:"china",      label:"China",                              prompt:"China", tag:"China" },
+  { value:"india",      label:"India & South Asia",                 prompt:"India and South Asia", tag:"India" },
+  { value:"russia",     label:"Russia & Eurasia",                   prompt:"Russia and the wider Eurasian region", tag:"Russia" },
+  { value:"latam",      label:"Latin America",                      prompt:"Latin America", tag:"LatAm" },
+  { value:"custom",     label:"Custom region (type below)",         prompt:"", tag:"" }
+];
 
-    <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 mb-4">
-      <div class="flex items-start gap-4 mb-4">
-        <div class="w-12 h-12 rounded-xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center flex-shrink-0">
-          <span id="horoscopeSymbol" class="text-2xl">♈</span>
-        </div>
-        <div>
-          <h3 id="horoscopeTitle" class="font-serif text-base font-semibold mb-1">Aries — Love & Career</h3>
-          <p id="horoscopeText" class="text-xs text-slate-400 leading-relaxed">
-            Today brings a surge of creative energy. A surprise encounter could shift your perspective on a lingering dilemma. Trust your instincts in matters of the heart — boldness is rewarded. Career-wise, an unexpected opportunity may arise from a casual conversation. Stay open.
-          </p>
-        </div>
-      </div>
-      <div class="grid grid-cols-3 gap-3">
-        <div class="text-center p-2 rounded-lg bg-white/[0.03]">
-          <p class="text-[9px] uppercase tracking-wider text-slate-500 mb-1">Love</p>
-          <p id="loveScore" class="text-sm font-semibold text-brand-red">8/10</p>
-        </div>
-        <div class="text-center p-2 rounded-lg bg-white/[0.03]">
-          <p class="text-[9px] uppercase tracking-wider text-slate-500 mb-1">Career</p>
-          <p id="careerScore" class="text-sm font-semibold text-brand-gold">7/10</p>
-        </div>
-        <div class="text-center p-2 rounded-lg bg-white/[0.03]">
-          <p class="text-[9px] uppercase tracking-wider text-slate-500 mb-1">Health</p>
-          <p id="healthScore" class="text-sm font-semibold text-green-400">9/10</p>
-        </div>
-      </div>
-    </div>
+var NARROWS = [
+  { value:"none",    label:"Whole region (no narrowing)",    prompt:"Middle East (with option to narrow further)", tag:"MiddleEast" },
+  { value:"gcc",     label:"Gulf States (GCC)",              prompt:"Middle East — narrowed to the Gulf States (Saudi Arabia, UAE, Qatar, Kuwait, Bahrain, Oman)", tag:"GCC" },
+  { value:"levant",  label:"The Levant",                     prompt:"Middle East — narrowed to the Levant (Israel, Palestine, Lebanon, Syria, Jordan)", tag:"Levant" },
+  { value:"iran",    label:"Iran",                           prompt:"Middle East — narrowed to Iran", tag:"Iran" },
+  { value:"iraq",    label:"Iraq",                           prompt:"Middle East — narrowed to Iraq", tag:"Iraq" },
+  { value:"turkey",  label:"Türkiye",                        prompt:"Middle East — narrowed to Türkiye", tag:"Turkiye" },
+  { value:"egypt",   label:"Egypt & North Africa",           prompt:"Middle East — narrowed to Egypt and North Africa", tag:"Egypt" },
+  { value:"yemen",   label:"Yemen & the Red Sea",            prompt:"Middle East — narrowed to Yemen and the Red Sea region", tag:"Yemen" },
+  { value:"custom",  label:"Custom sub-region (type below)", prompt:"", tag:"" }
+];
 
-    <div class="grid grid-cols-4 gap-2">
-      <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center">
-        <p class="text-lg mb-1">🔢</p>
-        <p class="text-[9px] uppercase tracking-wider text-slate-500">Lucky #</p>
-        <p id="luckyNum" class="text-xs font-semibold mt-0.5">7</p>
-      </div>
-      <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center">
-        <p class="text-lg mb-1">🎨</p>
-        <p class="text-[9px] uppercase tracking-wider text-slate-500">Color</p>
-        <p id="luckyColor" class="text-xs font-semibold mt-0.5">Red</p>
-      </div>
-      <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center">
-        <p class="text-lg mb-1">⏰</p>
-        <p class="text-[9px] uppercase tracking-wider text-slate-500">Hour</p>
-        <p id="luckyHour" class="text-xs font-semibold mt-0.5">3 PM</p>
-      </div>
-      <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center">
-        <p class="text-lg mb-1">💎</p>
-        <p class="text-[9px] uppercase tracking-wider text-slate-500">Stone</p>
-        <p id="luckyStone" class="text-xs font-semibold mt-0.5">Diamond</p>
-      </div>
-    </div>
-  </section>
+var PERSPECTIVES = [
+  { value:"neutral",    label:"Analytically neutral (fact-first)",            prompt:"Analytically neutral — balanced, fact-first, no advocacy for any side", tag:"Neutral" },
+  { value:"investor",   label:"Investor & markets perspective",               prompt:"Investor and markets perspective — emphasize implications for capital allocation and asset prices", tag:"Investor" },
+  { value:"policy",     label:"Policymaker perspective",                      prompt:"Policymaker perspective — emphasize governance, regulation, and statecraft implications", tag:"Policy" },
+  { value:"business",   label:"Business executive perspective",               prompt:"Business executive perspective — emphasize operations, strategy, and supply-chain implications", tag:"Business" },
+  { value:"academic",   label:"Academic / researcher perspective",            prompt:"Academic researcher perspective — emphasize evidence, methodology, and analytical literature", tag:"Academic" },
+  { value:"skeptic",    label:"Professional skeptic (stress-test consensus)", prompt:"Professional skeptic — actively stress-test the consensus view and surface blind spots", tag:"Skeptic" },
+  { value:"optimist",   label:"Opportunity-spotter (upside focus)",           prompt:"Opportunity-spotter — emphasize upside potential, openings, and positive catalysts", tag:"Opportunity" },
+  { value:"contrarian", label:"Contrarian (question the narrative)",          prompt:"Contrarian — question dominant narratives and explore alternative scenarios others may be missing", tag:"Contrarian" }
+];
 
-  <section class="relative z-10 px-5 py-10 reveal-on-scroll">
-    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Personality Profile</p>
-    <h2 class="font-serif text-xl font-semibold mb-5">Key Traits</h2>
+var FORMATS = [
+  { value:"structured", label:"Structured report (numbered sections)",                    prompt:"Structured report with clear headings and numbered sections (Executive Summary, Key Developments, Analysis, Risks, Watch List)", tag:"StructuredReport" },
+  { value:"bluf",       label:"One-page executive summary (BLUF)",                        prompt:"One-page executive summary — bottom line up front (BLUF), followed by max 5 key points", tag:"ExecutiveSummary" },
+  { value:"bullets",    label:"Bullet-point brief (grouped by theme)",                    prompt:"Bullet-point brief grouped by theme, one line per item where possible", tag:"Bullets" },
+  { value:"narrative",  label:"Narrative analysis (flowing prose)",                       prompt:"Narrative analysis in flowing prose with minimal bullet points, like a quality newspaper analysis piece", tag:"Narrative" },
+  { value:"table",      label:"Table brief (Theme | Development | Why it matters)",       prompt:"Table-based brief with columns: Theme | Development | Why it matters", tag:"TableBrief" },
+  { value:"qa",         label:"Q&A format",                                               prompt:"Q&A format — answer the 6–10 key questions a well-informed reader would ask about this period", tag:"QandA" },
+  { value:"slides",     label:"Slide-ready outline (5–10 slides)",                        prompt:"Slide-ready outline — 5–10 slides, each with a title and 2–4 key bullet points, suitable for an executive readout", tag:"Slides" },
+  { value:"timeline",   label:"Chronological timeline",                                   prompt:"Chronological timeline of events, each entry with date, event, and a one-line significance note", tag:"Timeline" }
+];
+</script>
+<script>
+/* =====================================================================
+   HELPERS
+===================================================================== */
+function $id(id){ return document.getElementById(id); }
+function find(list, v){ for (var i=0;i<list.length;i++){ if(list[i].value===v) return list[i]; } return list[0]; }
+function findSubject(v){ for (var i=0;i<SUBJECTS.length;i++){ if(SUBJECTS[i].value===v) return SUBJECTS[i]; } return SUBJECTS[0]; }
 
-    <div class="flex gap-5 mb-6 border-b border-white/5 pb-3">
-      <button class="tab-btn active" data-tab="traits" onclick="switchTab(this,'traits')">Traits</button>
-      <button class="tab-btn text-slate-500" data-tab="strengths" onclick="switchTab(this,'strengths')">Strengths</button>
-      <button class="tab-btn text-slate-500" data-tab="challenges" onclick="switchTab(this,'challenges')">Challenges</button>
-    </div>
+var F_LONG     = new Intl.DateTimeFormat("en-GB",{weekday:"long", day:"numeric", month:"long",  year:"numeric"});
+var F_DAYSHORT = new Intl.DateTimeFormat("en-GB",{weekday:"short", day:"numeric", month:"short"});
+var F_SHORT    = new Intl.DateTimeFormat("en-GB",{day:"numeric", month:"short", year:"numeric"});
+var F_YEAR     = new Intl.DateTimeFormat("en-GB",{year:"numeric"});
 
-    <div id="panel-traits" class="tab-panel space-y-4">
-      <div>
-        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Courage</span><span class="text-brand-gold" id="t1v">92%</span></div>
-        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold to-brand-red" style="width:0%" data-width="92%"></div></div>
-      </div>
-      <div>
-        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Leadership</span><span class="text-brand-gold" id="t2v">88%</span></div>
-        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold to-brand-red" style="width:0%" data-width="88%"></div></div>
-      </div>
-      <div>
-        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Creativity</span><span class="text-brand-gold" id="t3v">75%</span></div>
-        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold to-brand-red" style="width:0%" data-width="75%"></div></div>
-      </div>
-      <div>
-        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Patience</span><span class="text-brand-gold" id="t4v">35%</span></div>
-        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold/60 to-brand-red/40" style="width:0%" data-width="35%"></div></div>
-      </div>
-      <div>
-        <div class="flex justify-between text-xs mb-1.5"><span class="text-slate-300">Diplomacy</span><span class="text-brand-gold" id="t5v">48%</span></div>
-        <div class="trait-bar"><div class="trait-bar-fill bg-gradient-to-r from-brand-gold/60 to-brand-red/40" style="width:0%" data-width="48%"></div></div>
-      </div>
-    </div>
+function addDays(d,n){ var x=new Date(d.getTime()); x.setDate(x.getDate()+n); return x; }
+function toISODate(d){
+  var m=String(d.getMonth()+1); if(m.length<2)m="0"+m;
+  var day=String(d.getDate());  if(day.length<2)day="0"+day;
+  return d.getFullYear()+"-"+m+"-"+day;
+}
 
-    <div id="panel-strengths" class="tab-panel hidden">
-      <div class="space-y-3" id="strengthsList"></div>
-    </div>
+/* Natural-language time-horizon phrase anchored to the selected date */
+function horizonPhrase(horizon, date){
+  var long = F_LONG.format(date);
+  var yyyy = F_YEAR.format(date);
+  switch(horizon){
+    case "day": return "the full 24-hour day of "+long+" (00:00\u201323:59 local time)";
+    case "48h": return "the 48-hour window from "+F_DAYSHORT.format(addDays(date,-1))+" 00:00 to "+long+" 23:59";
+    case "7d":  return "7-day period from "+F_DAYSHORT.format(addDays(date,-6))+" to "+F_DAYSHORT.format(date)+" "+yyyy+" (inclusive)";
+    case "14d": return "14-day period from "+F_DAYSHORT.format(addDays(date,-13))+" to "+F_DAYSHORT.format(date)+" "+yyyy+" (inclusive)";
+    case "30d": return "30-day period from "+F_SHORT.format(addDays(date,-29))+" to "+F_SHORT.format(date)+" (inclusive)";
+    case "90d": return "90-day period from "+F_SHORT.format(addDays(date,-89))+" to "+F_SHORT.format(date)+" (inclusive)";
+    case "ytd": return "year-to-date period from 1 January "+yyyy+" through "+F_SHORT.format(date)+" (inclusive)";
+    case "7dahead": return "7-day period from "+F_DAYSHORT.format(addDays(date,-6))+" to "+F_DAYSHORT.format(date)+" "+yyyy+" (inclusive), plus a forward outlook for the following 7 days (through "+F_DAYSHORT.format(addDays(date,7))+" "+yyyy+")";
+    default: return "7-day period ending "+F_SHORT.format(date);
+  }
+}
 
-    <div id="panel-challenges" class="tab-panel hidden">
-      <div class="space-y-3" id="challengesList"></div>
-    </div>
-  </section>
+function pascalTag(text, fallback){
+  var words = String(text).replace(/[^a-zA-Z0-9\s]/g," ").split(/\s+/).filter(Boolean);
+  var out = words.map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase(); }).join("");
+  out = out.slice(0,28);
+  return out || fallback;
+}
 
-  <section id="compatibility" class="relative z-10 px-5 py-10 reveal-on-scroll">
-    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Cosmic Connections</p>
-    <h2 class="font-serif text-xl font-semibold mb-2">Compatibility</h2>
-    <p class="text-xs text-slate-500 mb-6">Select a sign to check your cosmic match</p>
+function geoPhrase(cfg){
+  if (cfg.subject === "mideast"){
+    var n = find(NARROWS, cfg.geo);
+    if (n.value === "custom" && cfg.narrowCustom.trim()) return "Middle East — narrowed to "+cfg.narrowCustom.trim();
+    return n.prompt;
+  }
+  var g = find(GEOS, cfg.geo);
+  if (g.value === "custom" && cfg.geoCustom.trim()) return cfg.geoCustom.trim();
+  return g.prompt;
+}
 
-    <div class="grid grid-cols-2 gap-3 mb-4">
-      <div class="bg-gradient-to-br from-brand-red/10 to-transparent border border-brand-red/15 rounded-2xl p-4 text-center">
-        <span class="text-3xl mb-2 block heartbeat">❤️</span>
-        <p class="text-[9px] uppercase tracking-wider text-brand-red/70 mb-1">Best Match</p>
-        <p id="bestMatch" class="font-serif text-lg font-semibold">Leo</p>
-        <p id="bestMatchSymbol" class="text-xs text-slate-500">♌</p>
-      </div>
-      <div class="bg-gradient-to-br from-brand-gold/10 to-transparent border border-brand-gold/15 rounded-2xl p-4 text-center">
-        <span class="text-3xl mb-2 block">🤝</span>
-        <p class="text-[9px] uppercase tracking-wider text-brand-gold/70 mb-1">Soul Friend</p>
-        <p id="soulFriend" class="font-serif text-lg font-semibold">Sagittarius</p>
-        <p id="soulFriendSymbol" class="text-xs text-slate-500">♐</p>
-      </div>
-    </div>
+function buildPrompt(cfg){
+  var s   = findSubject(cfg.subject);
+  var dep = find(DEPTHS, cfg.depth);
+  var per = find(PERSPECTIVES, cfg.perspective);
+  var fmt = find(FORMATS, cfg.format);
+  var topic = cfg.topic.trim() || "[User-entered topic]";
+  var out = s.template
+    .split("[Depth Level]").join(dep.prompt)
+    .split("[Time Horizon]").join(horizonPhrase(cfg.horizon, cfg.date))
+    .split("[Geographic Focus]").join(geoPhrase(cfg))
+    .split("[Perspective]").join(per.prompt)
+    .split("[Output Format]").join(fmt.prompt)
+    .split("[User-entered topic]").join(topic);
+  if (cfg.includeTags) out += "\n\nTags: " + buildTags(cfg).join(" ");
+  return out;
+}
 
-    <div class="grid grid-cols-4 gap-2" id="compatGrid"></div>
-  </section>
+function buildTags(cfg){
+  var s   = findSubject(cfg.subject);
+  var dep = find(DEPTHS, cfg.depth);
+  var per = find(PERSPECTIVES, cfg.perspective);
+  var fmt = find(FORMATS, cfg.format);
+  var hor = find(HORIZONS, cfg.horizon);
+  var pad = function(n){ return (n<10?"0":"")+n; };
+  var tags = ["#AIBriefing", "#"+s.tag];
+  if (cfg.subject === "custom" && cfg.topic.trim()) tags.push("#"+pascalTag(cfg.topic,"CustomTopic"));
+  tags.push("#"+cfg.date.getFullYear()+"-"+pad(cfg.date.getMonth()+1)+"-"+pad(cfg.date.getDate()));
+  tags.push("#"+hor.tag, "#"+dep.tag);
+  if (cfg.subject === "mideast"){
+    var n = find(NARROWS, cfg.geo);
+    if (n.value === "custom" && cfg.narrowCustom.trim()) tags.push("#"+pascalTag(cfg.narrowCustom,"SubRegion"));
+    else if (n.value !== "none") tags.push("#"+n.tag);
+  } else {
+    var g = find(GEOS, cfg.geo);
+    if (g.value === "custom" && cfg.geoCustom.trim()) tags.push("#"+pascalTag(cfg.geoCustom,"Region"));
+    else if (g.value !== "custom") tags.push("#"+g.tag);
+  }
+  tags.push("#"+per.tag, "#"+fmt.tag, "#AIModel", "#PromptReady");
+  var seen={}, uniq=[];
+  tags.forEach(function(t){ if(!seen[t]){ seen[t]=1; uniq.push(t); } });
+  return uniq;
+}
 
-  <section class="relative z-10 px-5 py-10 reveal-on-scroll">
-    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold/60 mb-1">Celestial Influence</p>
-    <h2 class="font-serif text-xl font-semibold mb-5">Ruling Planets</h2>
+/* =====================================================================
+   UI WIRING
+===================================================================== */
+var els = {
+  subject:$id("subject"), topic:$id("topic"), topicWrap:$id("topicWrap"),
+  date:$id("date"), depth:$id("depth"), horizon:$id("horizon"),
+  geo:$id("geo"), geoLabel:$id("geoLabel"), perspective:$id("perspective"),
+  format:$id("format"), geoCustomWrap:$id("geoCustomWrap"), geoCustom:$id("geoCustom"),
+  narrowCustomWrap:$id("narrowCustomWrap"), narrowCustom:$id("narrowCustom"),
+  includeTags:$id("includeTags"), resetBtn:$id("resetBtn"),
+  promptOut:$id("promptOut"), stats:$id("stats"), copyPromptBtn:$id("copyPromptBtn"),
+  tagsBox:$id("tagsBox"), copyTagsBtn:$id("copyTagsBtn"), tagCount:$id("tagCount"),
+  tabPrompt:$id("tabPrompt"), tabTags:$id("tabTags"),
+  panelPrompt:$id("panelPrompt"), panelTags:$id("panelTags"),
+  topicTip:$id("topicTip"), toast:$id("toast"),
+  themeBtn:$id("themeBtn"), iconSun:$id("iconSun"), iconMoon:$id("iconMoon")
+};
+var lastRegionGeo = "global";
+var STORAGE_KEY = "briefing-prompt-studio-html-v1";
 
-    <div class="flex gap-3 overflow-x-auto pb-2" style="scrollbar-width:none;">
-      <div class="flex-shrink-0 w-32 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center">
-        <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-brand-red/20 to-brand-gold/10 border border-brand-gold/20 flex items-center justify-center mb-3">
-          <span class="text-2xl">♂</span>
-        </div>
-        <p id="ruler1" class="text-xs font-semibold mb-0.5">Mars</p>
-        <p id="ruler1role" class="text-[10px] text-slate-500">Action & Desire</p>
-      </div>
-      <div class="flex-shrink-0 w-32 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center opacity-50">
-        <div class="w-14 h-14 mx-auto rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-3">
-          <span class="text-2xl">♈</span>
-        </div>
-        <p class="text-xs font-semibold mb-0.5">1st House</p>
-        <p class="text-[10px] text-slate-500">Self & Identity</p>
-      </div>
-      <div class="flex-shrink-0 w-32 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center opacity-30">
-        <div class="w-14 h-14 mx-auto rounded-full bg-white/[0.02] border border-white/[0.04] flex items-center justify-center mb-3">
-          <span class="text-2xl">🔥</span>
-        </div>
-        <p class="text-xs font-semibold mb-0.5">Fire</p>
-        <p class="text-[10px] text-slate-500">Cardinal Modality</p>
-      </div>
-    </div>
-  </section>
+function fillSelect(sel, list, def){
+  sel.innerHTML = "";
+  list.forEach(function(o){
+    var opt = document.createElement("option");
+    opt.value = o.value; opt.textContent = o.label;
+    sel.appendChild(opt);
+  });
+  sel.value = def;
+}
+function fillSubjects(){
+  els.subject.innerHTML = "";
+  SUBJECTS.forEach(function(s){
+    var opt = document.createElement("option");
+    opt.value = s.value; opt.textContent = s.label;
+    els.subject.appendChild(opt);
+  });
+}
 
-  <section class="relative z-10 px-5 py-12 reveal-on-scroll">
-    <div class="relative bg-gradient-to-br from-brand-gold/10 via-brand-red/5 to-transparent border border-brand-gold/15 rounded-3xl p-6 text-center overflow-hidden">
-      <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-brand-gold/5 blur-2xl"></div>
-      <div class="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-brand-red/5 blur-2xl"></div>
+function cfg(){
+  var d = els.date.valueAsDate;
+  if (!d) d = new Date();
+  return {
+    date: new Date(d.getFullYear(), d.getMonth(), d.getDate()),
+    subject: els.subject.value,
+    topic: els.topic.value,
+    depth: els.depth.value,
+    horizon: els.horizon.value,
+    geo: els.geo.value,
+    geoCustom: els.geoCustom.value,
+    narrowCustom: els.narrowCustom.value,
+    perspective: els.perspective.value,
+    format: els.format.value,
+    includeTags: els.includeTags.checked
+  };
+}
 
-      <span class="text-3xl mb-3 block">🌙</span>
-      <h2 class="font-serif text-2xl font-bold mb-2 relative z-10">Unlock Your Birth Chart</h2>
-      <p class="text-xs text-slate-400 leading-relaxed mb-6 max-w-xs mx-auto relative z-10">
-        Discover the exact positions of every planet at the moment you were born. Your full cosmic blueprint awaits.
-      </p>
-      <button onclick="showToast('Birth chart feature coming soon!')" class="relative z-10 bg-brand-gold text-brand-black text-xs font-bold uppercase tracking-widest px-8 py-3.5 rounded-full hover:bg-brand-cream transition-colors">
-        Get Free Chart
-      </button>
-    </div>
-  </section>
+function refreshGeoOptions(reset){
+  var me = els.subject.value === "mideast";
+  if (me){
+    els.geoLabel.textContent = "Geographic focus (narrow)";
+    var cur = els.geo.value;
+    var keep = !reset && NARROWS.some(function(o){return o.value===cur;}) ? cur : "none";
+    fillSelect(els.geo, NARROWS, keep);
+  } else {
+    els.geoLabel.textContent = "Geographic focus";
+    var cur2 = els.geo.value;
+    var keep2 = !reset && GEOS.some(function(o){return o.value===cur2;}) ? cur2 : lastRegionGeo;
+    fillSelect(els.geo, GEOS, keep2);
+    lastRegionGeo = keep2;
+  }
+}
 
-  <footer class="relative z-10 border-t border-white/5 px-5 py-8">
-    <div class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-2">
-        <div class="w-6 h-6 rounded-full border border-brand-gold/30 flex items-center justify-center">
-          <span class="text-brand-gold text-[10px]">✦</span>
-        </div>
-        <span class="font-serif text-sm font-semibold">Celestia</span>
-      </div>
-      <p class="text-[10px] text-slate-600">Written in the stars ✦</p>
-    </div>
-    <div class="flex gap-6 mb-6">
-      <a href="#" class="text-[11px] text-slate-500 hover:text-brand-gold transition-colors">About</a>
-      <a href="#" class="text-[11px] text-slate-500 hover:text-brand-gold transition-colors">Privacy</a>
-      <a href="#" class="text-[11px] text-slate-500 hover:text-brand-gold transition-colors">Contact</a>
-      <a href="#" class="text-[11px] text-slate-500 hover:text-brand-gold transition-colors">FAQ</a>
-    </div>
-    <p class="text-[10px] text-slate-600">© 2025 Celestia. All rights reserved.</p>
-  </footer>
+var toastTimer = null;
+function showToast(msg){
+  els.toast.textContent = msg;
+  els.toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ els.toast.classList.remove("show"); }, 2400);
+}
 
-  <nav class="fixed bottom-0 left-0 right-0 z-50 mobile-nav bg-brand-black/90 border-t border-white/5 safe-bottom">
-    <div class="flex items-center justify-around h-14">
-      <button onclick="scrollToTop()" class="flex flex-col items-center gap-0.5 text-brand-gold">
-        <i data-lucide="home" class="w-5 h-5"></i>
-        <span class="text-[9px] font-medium">Home</span>
-      </button>
-      <button onclick="scrollToSection('horoscope')" class="flex flex-col items-center gap-0.5 text-slate-500">
-        <i data-lucide="sparkles" class="w-5 h-5"></i>
-        <span class="text-[9px] font-medium">Horoscope</span>
-      </button>
-      <button onclick="scrollToSection('compatibility')" class="flex flex-col items-center gap-0.5 text-slate-500">
-        <i data-lucide="heart" class="w-5 h-5"></i>
-        <span class="text-[9px] font-medium">Match</span>
-      </button>
-      <button onclick="showToast('Settings coming soon!')" class="flex flex-col items-center gap-0.5 text-slate-500">
-        <i data-lucide="settings" class="w-5 h-5"></i>
-        <span class="text-[9px] font-medium">Settings</span>
-      </button>
-    </div>
-  </nav>
+function copyText(text, label){
+  function done(){ showToast(label + " copied — paste it into any AI model chat or document."); }
+  function fallback(){
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    ok ? done() : showToast("Copy failed — please select the text and copy manually.");
+  }
+  if (navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else fallback();
+}
 
-  <div class="h-16"></div>
+function render(){
+  var c = cfg();
+  var isME = c.subject === "mideast";
+  var isCustom = c.subject === "custom";
 
-  <script>
-    // ===== ZODIAC DATA (all 12 signs) =====
-    const zodiac = [
-      { name:'Aries', symbol:'♈', dates:'Mar 21 – Apr 19', element:'Fire', ruler:'Mars', rulerRole:'Action & Desire',
-        desc:'The bold trailblazer. Fearless, energetic, and always ready to ignite the next adventure.',
-        horoscope:'Today brings a surge of creative energy. A surprise encounter could shift your perspective on a lingering dilemma. Trust your instincts in matters of the heart — boldness is rewarded. Career-wise, an unexpected opportunity may arise from a casual conversation. Stay open.',
-        love:8, career:7, health:9, luckyNum:7, luckyColor:'Red', luckyHour:'3 PM', luckyStone:'Diamond',
-        traits:[92,88,75,35,48], bestMatch:'Leo', bestMatchSym:'♌', soulFriend:'Sagittarius', soulFriendSym:'♐',
-        compat:[3,2,1,0,2,3,3,1,2,0,1,3],
-        strengths:['Natural Leader','Fearless Pioneer','Boundless Energy'],
-        challenges:['Impulsivity','Short Temper','Restlessness'] },
-      { name:'Taurus', symbol:'♉', dates:'Apr 20 – May 20', element:'Earth', ruler:'Venus', rulerRole:'Love & Beauty',
-        desc:'The grounded sensualist. Reliable, patient, with an eye for beauty and a love for life\'s pleasures.',
-        horoscope:'A financial opportunity may present itself today. Take your time evaluating — your patience will pay off. In love, small gestures speak louder than grand declarations.',
-        love:7, career:9, health:8, luckyNum:6, luckyColor:'Green', luckyHour:'6 AM', luckyStone:'Emerald',
-        traits:[60,70,80,95,75], bestMatch:'Virgo', bestMatchSym:'♍', soulFriend:'Capricorn', soulFriendSym:'♑',
-        compat:[1,3,2,2,1,0,1,3,3,2,2,0],
-        strengths:['Unwavering Loyalty','Keen Aesthetic Sense','Financial Wisdom'],
-        challenges:['Stubbornness','Possessiveness','Resistance to Change'] },
-      { name:'Gemini', symbol:'♊', dates:'May 21 – Jun 20', element:'Air', ruler:'Mercury', rulerRole:'Communication',
-        desc:'The celestial communicator. Witty, curious, and endlessly adaptable — the social butterfly of the zodiac.',
-        horoscope:'Your words carry extra weight today. A conversation could open doors you didn\'t know existed. Stay mentally flexible — the best insight comes from an unexpected source.',
-        love:6, career:8, health:7, luckyNum:5, luckyColor:'Yellow', luckyHour:'11 AM', luckyStone:'Agate',
-        traits:[55,50,95,40,90], bestMatch:'Aquarius', bestMatchSym:'♒', soulFriend:'Libra', soulFriendSym:'♎',
-        compat:[0,2,3,1,2,1,2,1,3,3,2,1],
-        strengths:['Master Communicator','Versatile Thinker','Quick Wit'],
-        challenges:['Inconsistency','Superficiality','Restless Mind'] },
-      { name:'Cancer', symbol:'♋', dates:'Jun 21 – Jul 22', element:'Water', ruler:'Moon', rulerRole:'Emotions & Intuition',
-        desc:'The nurturing protector. Deeply intuitive, fiercely loyal, and the emotional anchor of the zodiac.',
-        horoscope:'Your intuition is razor-sharp today. Pay attention to your dreams — they carry a message. Home life brings comfort; consider creating something beautiful in your personal space.',
-        love:9, career:6, health:7, luckyNum:2, luckyColor:'Silver', luckyHour:'9 PM', luckyStone:'Pearl',
-        traits:[50,55,70,85,65], bestMatch:'Scorpio', bestMatchSym:'♏', soulFriend:'Pisces', soulFriendSym:'♓',
-        compat:[0,1,2,3,0,2,1,2,3,1,0,3],
-        strengths:['Emotional Depth','Protective Instincts','Creative Imagination'],
-        challenges:['Moodiness','Over-sensitivity','Clinginess'] },
-      { name:'Leo', symbol:'♌', dates:'Jul 23 – Aug 22', element:'Fire', ruler:'Sun', rulerRole:'Vitality & Self-Expression',
-        desc:'The radiant king. Charismatic, generous, and born to shine — the spotlight finds them naturally.',
-        horoscope:'Your natural magnetism is at an all-time high. Use it to inspire others and rally support for a project you believe in. Romance is particularly favorable — a grand gesture will be well received.',
-        love:9, career:8, health:8, luckyNum:1, luckyColor:'Gold', luckyHour:'12 PM', luckyStone:'Ruby',
-        traits:[85,90,70,45,60], bestMatch:'Aries', bestMatchSym:'♈', soulFriend:'Sagittarius', soulFriendSym:'♐',
-        compat:[2,1,1,2,3,3,0,1,2,0,2,3],
-        strengths:['Infectious Confidence','Natural Leader','Big Heart'],
-        challenges:['Ego-driven','Stubborn','Over-dramatic'] },
-      { name:'Virgo', symbol:'♍', dates:'Aug 23 – Sep 22', element:'Earth', ruler:'Mercury', rulerRole:'Analysis & Detail',
-        desc:'The meticulous perfectionist. Analytical, practical, and driven by a desire to serve and improve.',
-        horoscope:'Your attention to detail is your superpower today. A careful review of your finances or a project will uncover hidden savings. In relationships, your thoughtful actions speak louder than words.',
-        love:6, career:9, health:7, luckyNum:5, luckyColor:'Navy', luckyHour:'5 AM', luckyStone:'Sapphire',
-        traits:[70,65,85,90,55], bestMatch:'Taurus', bestMatchSym:'♉', soulFriend:'Capricorn', soulFriendSym:'♑',
-        compat:[2,3,3,0,1,1,0,3,2,1,0,2],
-        strengths:['Meticulous','Reliable','Service-oriented'],
-        challenges:['Over-critical','Worry-prone','Perfectionist'] },
-      { name:'Libra', symbol:'♎', dates:'Sep 23 – Oct 22', element:'Air', ruler:'Venus', rulerRole:'Balance & Harmony',
-        desc:'The graceful diplomat. Charming, fair, and always seeking balance — the peacemaker of the zodiac.',
-        horoscope:'Social connections are highlighted today. A networking event or casual gathering could lead to a valuable partnership. In love, compromise is the key to a deeper bond.',
-        love:8, career:6, health:7, luckyNum:6, luckyColor:'Pink', luckyHour:'2 PM', luckyStone:'Opal',
-        traits:[45,50,80,55,90], bestMatch:'Gemini', bestMatchSym:'♊', soulFriend:'Aquarius', soulFriendSym:'♒',
-        compat:[1,2,3,2,0,2,1,2,1,3,0,2],
-        strengths:['Diplomatic','Socially Graceful','Aesthetically Driven'],
-        challenges:['Indecisive','People-pleasing','Avoids Conflict'] },
-      { name:'Scorpio', symbol:'♏', dates:'Oct 23 – Nov 21', element:'Water', ruler:'Pluto', rulerRole:'Transformation & Power',
-        desc:'The intense transformer. Passionate, mysterious, and unafraid to dive into the depths of life.',
-        horoscope:'A powerful emotional breakthrough is on the horizon. Old wounds may resurface, but facing them now will lead to profound healing. Trust your instincts in financial matters.',
-        love:9, career:8, health:6, luckyNum:9, luckyColor:'Crimson', luckyHour:'8 PM', luckyStone:'Topaz',
-        traits:[80,75,60,70,60], bestMatch:'Cancer', bestMatchSym:'♋', soulFriend:'Pisces', soulFriendSym:'♓',
-        compat:[0,2,3,3,1,1,1,3,0,0,2,2],
-        strengths:['Intuitive','Determined','Passionate'],
-        challenges:['Jealous','Secretive','Obsessive'] },
-      { name:'Sagittarius', symbol:'♐', dates:'Nov 22 – Dec 21', element:'Fire', ruler:'Jupiter', rulerRole:'Expansion & Wisdom',
-        desc:'The adventurous philosopher. Optimistic, freedom-loving, and always chasing the next horizon.',
-        horoscope:'Travel or higher education is calling. A spontaneous trip or a new course of study could expand your worldview. In love, honesty and freedom are the foundations of happiness.',
-        love:7, career:7, health:8, luckyNum:3, luckyColor:'Purple', luckyHour:'10 AM', luckyStone:'Turquoise',
-        traits:[70,65,90,50,55], bestMatch:'Aries', bestMatchSym:'♈', soulFriend:'Leo', soulFriendSym:'♌',
-        compat:[3,0,1,1,3,0,1,2,1,2,3,1],
-        strengths:['Optimistic','Intellectual','Adventurous'],
-        challenges:['Tactless','Impatient','Overconfident'] },
-      { name:'Capricorn', symbol:'♑', dates:'Dec 22 – Jan 19', element:'Earth', ruler:'Saturn', rulerRole:'Discipline & Structure',
-        desc:'The ambitious achiever. Disciplined, responsible, and built for long-term success.',
-        horoscope:'Your career takes center stage today. A new responsibility or promotion could be on the horizon. Stay focused and methodical. In personal life, make time for loved ones — they miss you.',
-        love:5, career:10, health:7, luckyNum:8, luckyColor:'Brown', luckyHour:'7 AM', luckyStone:'Garnet',
-        traits:[85,90,60,95,50], bestMatch:'Taurus', bestMatchSym:'♉', soulFriend:'Virgo', soulFriendSym:'♍',
-        compat:[1,3,2,0,1,0,2,1,0,3,2,2],
-        strengths:['Disciplined','Practical','Ambitious'],
-        challenges:['Pessimistic','Stubborn','Workaholic'] },
-      { name:'Aquarius', symbol:'♒', dates:'Jan 20 – Feb 18', element:'Air', ruler:'Uranus', rulerRole:'Innovation & Rebellion',
-        desc:'The visionary rebel. Original, independent, and ahead of their time — a true trailblazer of ideas.',
-        horoscope:'Your innovative thinking is in demand. A problem that has stumped others will yield to your unique perspective. Social causes and friendships bring fulfillment. In love, intellectual connection is paramount.',
-        love:7, career:8, health:7, luckyNum:4, luckyColor:'Blue', luckyHour:'4 PM', luckyStone:'Amethyst',
-        traits:[60,55,95,40,85], bestMatch:'Gemini', bestMatchSym:'♊', soulFriend:'Libra', soulFriendSym:'♎',
-        compat:[2,1,3,0,2,2,3,2,0,2,1,3],
-        strengths:['Innovative','Humanitarian','Intellectually Curious'],
-        challenges:['Detached','Unpredictable','Stubborn'] },
-      { name:'Pisces', symbol:'♓', dates:'Feb 19 – Mar 20', element:'Water', ruler:'Neptune', rulerRole:'Dreams & Spirituality',
-        desc:'The mystical dreamer. Empathetic, artistic, and deeply connected to the unseen realms.',
-        horoscope:'Your intuition is at its peak. Pay attention to your dreams and synchronicities — they guide you. Creative projects flourish. In relationships, emotional honesty creates deep intimacy.',
-        love:9, career:6, health:6, luckyNum:7, luckyColor:'Lavender', luckyHour:'9 PM', luckyStone:'Moonstone',
-        traits:[55,50,90,70,65], bestMatch:'Cancer', bestMatchSym:'♋', soulFriend:'Scorpio', soulFriendSym:'♏',
-        compat:[3,1,0,3,1,2,2,0,1,3,2,3],
-        strengths:['Empathetic','Artistic','Intuitive'],
-        challenges:['Escapist','Overwhelmed','Gullible'] }
-    ];
+  els.topicWrap.hidden = !isCustom;
+  els.topicTip.hidden = !(isCustom && !c.topic.trim());
+  els.geoCustomWrap.hidden = !(!isME && c.geo === "custom");
+  els.narrowCustomWrap.hidden = !(!isME ? false : (c.geo === "custom"));
 
-    // ===== STATE =====
-    let currentSignIndex = 0; // Aries
+  var prompt = buildPrompt(c);
+  var tags = buildTags(c);
 
-    // ===== DOM REFS =====
-    const $ = id => document.getElementById(id);
-    const heroSymbol = $('heroSymbol');
-    const heroDate = $('heroDate');
-    const heroName = $('heroName');
-    const heroDesc = $('heroDesc');
-    const horoscopeSymbol = $('horoscopeSymbol');
-    const horoscopeTitle = $('horoscopeTitle');
-    const horoscopeText = $('horoscopeText');
-    const loveScore = $('loveScore');
-    const careerScore = $('careerScore');
-    const healthScore = $('healthScore');
-    const luckyNum = $('luckyNum');
-    const luckyColor = $('luckyColor');
-    const luckyHour = $('luckyHour');
-    const luckyStone = $('luckyStone');
-    const bestMatch = $('bestMatch');
-    const bestMatchSymbol = $('bestMatchSymbol');
-    const soulFriend = $('soulFriend');
-    const soulFriendSymbol = $('soulFriendSymbol');
-    const compatGrid = $('compatGrid');
-    const zodiacScroll = $('zodiacScroll');
-    const strengthsList = $('strengthsList');
-    const challengesList = $('challengesList');
-    const ruler1 = $('ruler1');
-    const ruler1role = $('ruler1role');
-    const todayDate = $('todayDate');
-    const traitFills = document.querySelectorAll('.trait-bar-fill');
-    const traitLabels = [
-      document.getElementById('t1v'),
-      document.getElementById('t2v'),
-      document.getElementById('t3v'),
-      document.getElementById('t4v'),
-      document.getElementById('t5v')
-    ];
+  els.promptOut.value = prompt;
+  var words = prompt.trim() ? prompt.trim().split(/\s+/).length : 0;
+  els.stats.textContent = words.toLocaleString() + " words · " + prompt.length.toLocaleString() + " characters";
 
-    // ===== TOAST =====
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toast-msg').textContent = msg;
-      toast.classList.add('show');
-      clearTimeout(toast._timer);
-      toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+  els.tagsBox.innerHTML = "";
+  tags.forEach(function(t){
+    var span = document.createElement("span");
+    span.className = "tag"; span.textContent = t;
+    els.tagsBox.appendChild(span);
+  });
+  els.tagCount.textContent = tags.length;
+
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    date: toISODate(c.date), subject:c.subject, topic:c.topic, depth:c.depth,
+    horizon:c.horizon, geo:c.geo, geoCustom:c.geoCustom, narrowCustom:c.narrowCustom,
+    perspective:c.perspective, format:c.format, includeTags:c.includeTags
+  })); } catch(e){}
+}
+
+/* ---------------- events ---------------- */
+fillSubjects();
+fillSelect(els.depth, DEPTHS, "standard");
+fillSelect(els.horizon, HORIZONS, "7d");
+fillSelect(els.geo, GEOS, "global");
+fillSelect(els.perspective, PERSPECTIVES, "neutral");
+fillSelect(els.format, FORMATS, "structured");
+els.date.value = toISODate(new Date());
+
+/* restore saved settings */
+(function restore(){
+  var s = null;
+  try { s = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); } catch(e){}
+  if (s){
+    if (s.subject) els.subject.value = s.subject;
+    if (s.date && /^\d{4}-\d{2}-\d{2}$/.test(s.date)){
+      var p = s.date.split("-");
+      els.date.value = s.date;
+      void p;
     }
-
-    // ===== SCROLL HELPERS =====
-    function scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    function scrollToSection(id) {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // ===== TAB SWITCH =====
-    function switchTab(btn, tab) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-      document.getElementById('panel-' + tab).classList.remove('hidden');
-    }
-
-    // ===== UPDATE UI =====
-    function updateUI(index) {
-      const sign = zodiac[index];
-      currentSignIndex = index;
-
-      // Hero
-      heroSymbol.textContent = sign.symbol;
-      heroDate.textContent = sign.dates;
-      heroName.textContent = sign.name;
-      heroDesc.textContent = sign.desc;
-
-      // Horoscope
-      horoscopeSymbol.textContent = sign.symbol;
-      horoscopeTitle.textContent = sign.name + ' — Love & Career';
-      horoscopeText.textContent = sign.horoscope;
-      loveScore.textContent = sign.love + '/10';
-      careerScore.textContent = sign.career + '/10';
-      healthScore.textContent = sign.health + '/10';
-      luckyNum.textContent = sign.luckyNum;
-      luckyColor.textContent = sign.luckyColor;
-      luckyHour.textContent = sign.luckyHour;
-      luckyStone.textContent = sign.luckyStone;
-
-      // Compatibility
-      bestMatch.textContent = sign.bestMatch;
-      bestMatchSymbol.textContent = sign.bestMatchSym;
-      soulFriend.textContent = sign.soulFriend;
-      soulFriendSymbol.textContent = sign.soulFriendSym;
-
-      // Ruling planet
-      ruler1.textContent = sign.ruler;
-      ruler1role.textContent = sign.rulerRole;
-
-      // Traits bars
-      const vals = sign.traits;
-      traitFills.forEach((fill, i) => {
-        const w = vals[i] || 0;
-        fill.style.width = w + '%';
-        traitLabels[i].textContent = w + '%';
-      });
-
-      // Strengths & Challenges
-      strengthsList.innerHTML = sign.strengths.map(s =>
-        `<div class="flex items-start gap-3 bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
-          <span class="text-brand-gold text-sm mt-0.5">✦</span>
-          <div><p class="text-xs font-semibold mb-0.5">${s}</p></div>
-        </div>`
-      ).join('');
-      challengesList.innerHTML = sign.challenges.map(s =>
-        `<div class="flex items-start gap-3 bg-white/[0.03] rounded-xl p-3 border border-brand-red/10">
-          <span class="text-brand-red text-sm mt-0.5">△</span>
-          <div><p class="text-xs font-semibold mb-0.5">${s}</p></div>
-        </div>`
-      ).join('');
-
-      // Compatibility grid
-      renderCompatGrid(index);
-
-      // Active card in scroll
-      document.querySelectorAll('.sign-card').forEach((card, i) => {
-        card.classList.toggle('active', i === index);
-      });
-
-      // Today's date
-      const now = new Date();
-      todayDate.textContent = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-
-      // Update lucide icons
-      if (window.lucide) lucide.createIcons();
-    }
-
-    // ===== RENDER COMPATIBILITY GRID =====
-    function renderCompatGrid(index) {
-      const sign = zodiac[index];
-      const compat = sign.compat; // array of 12 scores 0-3
-      compatGrid.innerHTML = zodiac.map((z, i) => {
-        const score = compat[i] || 0;
-        const hearts = '❤️'.repeat(score) + '🖤'.repeat(3 - score);
-        return `<div class="text-center bg-white/[0.03] border border-white/[0.06] rounded-xl p-2 transition hover:bg-white/[0.06] cursor-pointer" onclick="selectSign(${i})">
-          <div class="text-lg">${z.symbol}</div>
-          <div class="text-[10px] text-slate-400 truncate">${z.name}</div>
-          <div class="text-[10px] mt-1">${hearts}</div>
-        </div>`;
-      }).join('');
-    }
-
-    // ===== RENDER ZODIAC SCROLL =====
-    function renderZodiacScroll() {
-      zodiacScroll.innerHTML = zodiac.map((z, i) =>
-        `<div class="sign-card ${i === 0 ? 'active' : ''} w-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] p-3 text-center" onclick="selectSign(${i})">
-          <div class="text-xl">${z.symbol}</div>
-          <div class="text-[10px] text-slate-400 truncate">${z.name}</div>
-        </div>`
-      ).join('');
-    }
-
-    // ===== SELECT SIGN =====
-    function selectSign(index) {
-      updateUI(index);
-      // Scroll the selected card into view
-      const cards = document.querySelectorAll('.sign-card');
-      if (cards[index]) {
-        cards[index].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    if (s.topic) els.topic.value = s.topic;
+    if (s.depth) els.depth.value = s.depth;
+    if (s.horizon) els.horizon.value = s.horizon;
+    if (s.geoCustom) els.geoCustom.value = s.geoCustom;
+    if (s.narrowCustom) els.narrowCustom.value = s.narrowCustom;
+    if (s.perspective) els.perspective.value = s.perspective;
+    if (s.format) els.format.value = s.format;
+    els.includeTags.checked = !!s.includeTags;
+    if (s.geo){
+      if (els.subject.value === "mideast"){
+        fillSelect(els.geo, NARROWS, NARROWS.some(function(o){return o.value===s.geo;}) ? s.geo : "none");
+      } else {
+        fillSelect(els.geo, GEOS, GEOS.some(function(o){return o.value===s.geo;}) ? s.geo : "global");
+        lastRegionGeo = els.geo.value;
       }
-      showToast(zodiac[index].name + ' selected');
+    } else {
+      refreshGeoOptions(true);
     }
+  }
+  if (els.subject.value === "mideast" && !els.geo.options.length) refreshGeoOptions(true);
+  if (els.subject.value !== "mideast" && !GEOS.some(function(o){return o.value===els.geo.value;})) refreshGeoOptions(true);
+})();
 
-    // ===== REVEAL ON SCROLL (Intersection Observer) =====
-    function initRevealObserver() {
-      const els = document.querySelectorAll('.reveal-on-scroll');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-          }
-        });
-      }, { threshold: 0.15 });
-      els.forEach(el => observer.observe(el));
-    }
+els.subject.addEventListener("change", function(){ refreshGeoOptions(true); render(); });
+["change","input"].forEach(function(evt){
+  els.topic.addEventListener(evt, render);
+  els.geoCustom.addEventListener(evt, render);
+  els.narrowCustom.addEventListener(evt, render);
+  els.date.addEventListener(evt, render);
+});
+els.depth.addEventListener("change", render);
+els.horizon.addEventListener("change", render);
+els.geo.addEventListener("change", function(){ if (els.subject.value !== "mideast") lastRegionGeo = els.geo.value; render(); });
+els.perspective.addEventListener("change", render);
+els.format.addEventListener("change", render);
+els.includeTags.addEventListener("change", render);
 
-    // ===== INIT =====
-    document.addEventListener('DOMContentLoaded', function() {
-      renderZodiacScroll();
-      updateUI(0);
-      initRevealObserver();
-      // Lucide icons
-      if (window.lucide) lucide.createIcons();
+els.copyPromptBtn.addEventListener("click", function(){ copyText(els.promptOut.value, "Prompt"); });
+els.copyTagsBtn.addEventListener("click", function(){
+  var tags = buildTags(cfg());
+  copyText(tags.join(" "), "Tags");
+});
+els.resetBtn.addEventListener("click", function(){
+  els.subject.value = "politics";
+  els.topic.value = "";
+  els.depth.value = "standard";
+  els.horizon.value = "7d";
+  fillSelect(els.geo, GEOS, "global"); lastRegionGeo = "global";
+  els.geoCustom.value = ""; els.narrowCustom.value = "";
+  els.perspective.value = "neutral";
+  els.format.value = "structured";
+  els.includeTags.checked = false;
+  els.date.value = toISODate(new Date());
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+  render();
+  showToast("Settings reset to defaults.");
+});
 
-      // Search & Profile buttons
-      document.getElementById('searchBtn').addEventListener('click', () => showToast('Search coming soon!'));
-      document.getElementById('profileBtn').addEventListener('click', () => showToast('Profile coming soon!'));
+/* tabs */
+els.tabPrompt.addEventListener("click", function(){
+  els.tabPrompt.classList.add("active"); els.tabPrompt.setAttribute("aria-selected","true");
+  els.tabTags.classList.remove("active"); els.tabTags.setAttribute("aria-selected","false");
+  els.panelPrompt.hidden = false; els.panelTags.hidden = true;
+});
+els.tabTags.addEventListener("click", function(){
+  els.tabTags.classList.add("active"); els.tabTags.setAttribute("aria-selected","true");
+  els.tabPrompt.classList.remove("active"); els.tabPrompt.setAttribute("aria-selected","false");
+  els.panelTags.hidden = false; els.panelPrompt.hidden = true;
+});
 
-      // Update traits bars on first load after a small delay to allow animation
-      setTimeout(() => {
-        traitFills.forEach(fill => {
-          const w = fill.getAttribute('data-width') || '0%';
-          fill.style.width = w;
-        });
-      }, 300);
-    });
+/* theme toggle (auto → light/dark cycle, persisted) */
+var THEME_KEY = "bps-theme";
+function applyTheme(t){
+  if (t === "dark") document.documentElement.setAttribute("data-theme","dark");
+  else if (t === "light") document.documentElement.setAttribute("data-theme","light");
+  else document.documentElement.removeAttribute("data-theme");
+  var dark = t === "dark" || (t !== "light" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  els.iconSun.hidden = !dark;
+  els.iconMoon.hidden = dark;
+  try { localStorage.setItem(THEME_KEY, t); } catch(e){}
+}
+(function(){
+  var t = null;
+  try { t = localStorage.getItem(THEME_KEY); } catch(e){}
+  applyTheme(t === "light" || t === "dark" ? t : "auto");
+})();
+els.themeBtn.addEventListener("click", function(){
+  var cur = document.documentElement.getAttribute("data-theme");
+  var darkNow = cur === "dark" || (!cur && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  applyTheme(darkNow ? "light" : "dark");
+});
 
-    // Make functions globally accessible for onclick attributes
-    window.selectSign = selectSign;
-    window.switchTab = switchTab;
-    window.scrollToSection = scrollToSection;
-    window.scrollToTop = scrollToTop;
-    window.showToast = showToast;
-  </script>
+els.promptOut.addEventListener("focus", function(){ try { els.promptOut.select(); } catch(e){} });
 
+render();
+</script>
 </body>
 </html>
